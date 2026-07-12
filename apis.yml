@@ -51,6 +51,8 @@ modified: '2026-05-24'
 specificationVersion: '0.20'
 apis: []
 common:
+  - type: DomainSecurity
+    url: security/blacksky-domain-security.yml
   - type: Website
     url: https://blacksky.com
   - type: Technology
@@ -87,6 +89,8 @@ common:
     url: https://www.linkedin.com/company/blackskyinc
   - type: YouTube
     url: https://www.youtube.com/@BlackSkyInc
+  - type: Blog
+    url: https://blacksky.com/news/
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
