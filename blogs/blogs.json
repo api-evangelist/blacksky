@@ -1,0 +1,21 @@
+{
+  "repo": "blacksky",
+  "feeds": [
+    {
+      "source": "https://blacksky.com/news/",
+      "feed_url": "https://blacksky.com/news/",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    },
+    {
+      "source": "https://www.youtube.com/@BlackSkyInc",
+      "feed_url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCAa4mFTgGENehVDQ2WZIRJw",
+      "title": "",
+      "saved": 0,
+      "method": "discovered"
+    }
+  ],
+  "fetched": "2026-07-11T11:50:51Z",
+  "post_count": 5
+}
