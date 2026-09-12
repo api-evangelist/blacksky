@@ -2,13 +2,18 @@
   "repo": "blacksky",
   "feeds": [
     {
+      "source": "https://www.youtube.com/@BlackSkyInc",
+      "feed_url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCAa4mFTgGENehVDQ2WZIRJw",
+      "title": "",
+      "saved": 0,
+      "method": "discovered"
+    },
+    {
       "source": "https://blacksky.com/news/",
       "feed_url": "https://blacksky.com/news/",
       "title": "",
       "saved": 0,
-      "method": "none",
-      "nature": "undetermined",
-      "nature_basis": null
+      "method": "none"
     },
     {
       "source": "https://www.youtube.com/feeds/videos.xml?channel_id=UCAa4mFTgGENehVDQ2WZIRJw",
@@ -16,16 +21,9 @@
       "title": "",
       "saved": 0,
       "method": "feed"
-    },
-    {
-      "source": "https://www.youtube.com/@BlackSkyInc",
-      "feed_url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCAa4mFTgGENehVDQ2WZIRJw",
-      "title": "",
-      "saved": 0,
-      "method": "discovered"
     }
   ],
-  "fetched": "2026-08-30T22:33:40Z",
+  "fetched": "2026-09-06T19:17:18Z",
   "post_count": 5,
   "feed_nature": "undetermined",
   "feed_nature_basis": null,
