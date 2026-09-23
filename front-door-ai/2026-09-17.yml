@@ -1,0 +1,26 @@
+# Front Door AI Index — blacksky — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: blacksky
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: blacksky.com
+  final_host: blacksky.com
+  ownership: own
+  owner: blacksky
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 1
+  host_score: 1
+  density: 2.53
+  words: 395
+  tiers:
+    agentic: 0
+    core: 1
+    model: 0
+  ambiguous: 7
+  top_terms:
+    intelligence: 7
+    AI: 1
