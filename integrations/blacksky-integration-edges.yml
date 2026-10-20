@@ -13,6 +13,7 @@ checked:
 - https://registry.opendata.aws/
 - https://stacindex.org/api/catalogs
 - https://www.fcc.gov/sites/default/files/ssal.xlsx
+- https://aws.amazon.com/marketplace/search/results?FULFILLMENT_OPTION_TYPE=DATA_EXCHANGE
 summary: null
 marketplace_apps: []
 edges:
@@ -53,4 +54,33 @@ edges:
     detected: '2026-10-20'
   detected_by: sweep-space-satellite.py
   first_seen: '2026-10-20'
+- partner_name: AWS Data Exchange
+  partner: amazon-data-exchange
+  partner_match: aggregator
+  type: marketplace
+  marketplace: amazon-data-exchange-marketplace
+  channel: distribution
+  relationship: distribution-channel
+  direction: third-party
+  evidence: https://aws.amazon.com/marketplace/seller-profile?id=44101d99-56f4-40dc-8395-2054c0d6b2c2
+  category: data product listing
+  contract_reference:
+    register: AWS Data Exchange (AWS Marketplace discovery search, FULFILLMENT_OPTION_TYPE=DATA_EXCHANGE + seller-profile
+      sellerWebsiteUrl)
+    spec_file: null
+    role: data-marketplace-seller
+    registered_name: BlackSky
+    matched_domain: blacksky.com
+    matched_by: domain
+    listings: 1
+    sample_listings:
+    - ARGUS BlackSky Tasking Overview
+    signal_note: 'participation: the provider lists data products on this marketplace; counts are context'
+    detected_by: sweep-data-marketplaces.py
+    detected: '2026-10-20'
+  detected_by: sweep-data-marketplaces.py
+  detected: '2026-10-20'
+  publisher_verified:
+  - Deployed on AWS
+  - Standard Data Agreement
 templates: []
