@@ -1,0 +1,29 @@
+slug: blacksky
+provider: BlackSky
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Defense & Aerospace
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: Tasking
+  spec_file: blacksky-tasking-api-openapi.yml
+  capability_id: BC-1730.10
+  capability_id_l1: BC-1730
+  capability_name: Intelligence Collection Management
+  confidence: 0.75
+  evidence: POST /v2/tasking/orders/feasibility  checkOrderFeasibility  Check feasibility study requirements;
+    POST /v2/tasking/orders/opportunities  listV2TaskingOrderOpportunities  Get tasking order opportunities;
+    getOrderAcquisitionDateExtensions  Get acquisition date extensions
+  reason: 'These operations task satellite collection: assessing feasibility, listing collection opportunities,
+    choosing acquisition windows and measuring area coverage (AreaCoverageMetrics) for a high-revisit
+    ISR constellation. That is collection planning and tasking of a GEOINT/IMINT sensor, matching BC-1730.10.
+    Confidence capped at 0.75 because quotation/feasibility decision endpoints also carry a commercial-ordering
+    flavour.'
