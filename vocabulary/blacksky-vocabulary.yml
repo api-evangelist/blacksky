@@ -1,0 +1,419 @@
+generated: '2026-10-20'
+method: derived
+generator: derive-vocabulary.py
+source: openapi/blacksky-up42-api-openapi.yml
+vocabulary:
+  name: BlackSky Domain Vocabulary
+  description: 'Terms declared by BlackSky''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-20'
+  terms:
+  - term: Sort
+    definition: 'Object declared by the contract with fields: empty, sorted, unsorted.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/Sort
+  - term: PageableObject
+    definition: 'Object declared by the contract with fields: pageNumber, pageSize, sort, offset, paged, unpaged.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/PageableObject
+  - term: CollectionType
+    definition: The type of the collection.
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CollectionType
+  - term: Collection
+    definition: Information about the collection.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/Collection
+  - term: Provider
+    definition: 'Object declared by the contract with fields: name, title, description.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/Provider
+  - term: PageableResponse
+    definition: 'Object declared by the contract with fields: pageable, last, totalElements, totalPages, size, number, sort, numberOfElements,
+      first, empty.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/PageableResponse
+  - term: ResolutionValue
+    definition: The level of detail achievable for the collection.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/ResolutionValue
+  - term: ProductType
+    definition: The type of product the collection delivers.
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/ProductType
+  - term: ProviderRolesArray
+    definition: 'Object declared by the contract with fields: roles.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/ProviderRolesArray
+  - term: ProviderRole
+    definition: 'Enumeration declared by the contract with values: PRODUCER, HOST.'
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/ProviderRole
+  - term: CollectionInfoExtension
+    definition: 'Object declared by the contract with fields: metadata, integrations.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CollectionInfoExtension
+  - term: CollectionIntegrationArray
+    definition: '[Integration values](https://docs.up42.com/developers/api-glossary#integrations) that indicate mandatory ordering steps, available
+      actions, and mandatory or optional operations for a given collection.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CollectionIntegrationArray
+  - term: CollectionIntegration
+    definition: 'Enumeration declared by the contract with values: ACCESS_APPROVAL_REQUIRED, SAMPLE_DATA_AVAILABLE, MANUAL_REQUEST_REQUIRED, FEASIBILITY_STUDY_REQUIRED,
+      FEASIBILITY_STUDY_MAY_BE_REQUIRED, QUOTATION_REQUIRED, PRICE_ESTIMATION_AVAILABLE, SEARCH_AVAILABLE, THUMBNAIL_AVAILABLE, QUICKLOOK_AVAILABLE,
+      TASKING_OPPORTUNITIES_AVAILABLE.'
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CollectionIntegration
+  - term: CollectionMetadata
+    definition: The collection metadata.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CollectionMetadata
+  - term: ResolutionClass
+    definition: The spatial resolution class.
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/ResolutionClass
+  - term: DataProduct
+    definition: 'Object declared by the contract with fields: id, name, title, description, eulaId.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/DataProduct
+  - term: PriorityArray
+    definition: '[Priority tiers](https://docs.up42.com/data/reference/priority) available for a tasking collection.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/PriorityArray
+  - term: Priority
+    definition: 'Enumeration declared by the contract with values: STANDARD, HIGH, RUSH.'
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/Priority
+  - term: AcquisitionModeArray
+    definition: '[Acquisition modes](https://docs.up42.com/data/reference/acquisition-modes) available for a collection.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/AcquisitionModeArray
+  - term: AcquisitionMode
+    definition: 'Enumeration declared by the contract with values: MONO, STEREO, TRISTEREO, SPOT, SPOT_DWELL, SPOT_DWELL_FINE, SPOT_DWELL_PRECISE,
+      SPOT_FINE, SPOT_EXTENDED, SPOT_ENHANCED, SPOT_ULTRA, SPOT_HIGH_RES. (11 more)'
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/AcquisitionMode
+  - term: BasicErrorResponse
+    definition: 'Object declared by the contract with fields: detail, status, title.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/BasicErrorResponse
+  - term: WorkspaceId
+    definition: The workspace ID.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/WorkspaceId
+  - term: AccountId
+    definition: The account ID.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/AccountId
+  - term: Auditor
+    definition: The ID and type of the user who performed the action.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/Auditor
+  - term: TaskingQuotationListResponse
+    definition: A list of quotations.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/TaskingQuotationListResponse
+  - term: TaskingQuotation
+    definition: A response for a decided tasking quotation.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/TaskingQuotation
+  - term: TaskingQuotationPreSave
+    definition: Tasking Quotation DTO before creation
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/TaskingQuotationPreSave
+  - term: TaskingQuotationDecision
+    definition: The decision for this quotation.
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/TaskingQuotationDecision
+  - term: OrderId
+    definition: The order ID.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderId
+  - term: ErrorResponseV1
+    definition: Legacy error wrapper used for authentication failures and some data-adapter schema errors.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/ErrorResponseV1
+  - term: ErrorResponseObject
+    definition: 'Object declared by the contract with fields: code, message, details.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/ErrorResponseObject
+  - term: TaskingQuotationPatchRequest
+    definition: Tasking Quotation Patch Request
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/TaskingQuotationPatchRequest
+  - term: TaskingQuotationDecisionFinal
+    definition: The decision made for this quotation.
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/TaskingQuotationDecisionFinal
+  - term: InvalidParam
+    definition: 'Object declared by the contract with fields: name, reason.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/InvalidParam
+  - term: OrderingProblem
+    definition: RFC 9457 Problem Details for HTTP APIs
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderingProblem
+  - term: FeatureCollection
+    definition: A GeoJSON feature collection.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeatureCollection
+  - term: AreaCoverageMetrics
+    definition: 'Object declared by the contract with fields: covered, remainder.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/AreaCoverageMetrics
+  - term: GeometryMetrics
+    definition: 'Object declared by the contract with fields: sqKmArea, percentage, geometry.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/GeometryMetrics
+  - term: CoverageFeature
+    definition: A spatially bounded GeoJSON feature.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CoverageFeature
+  - term: CoverageGeometry
+    definition: The geometry in the GeoJSON format.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CoverageGeometry
+  - term: FeasibilityStudyListResponse
+    definition: Feasibility Study Page
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityStudyListResponse
+  - term: FeasibilityStudy
+    definition: feasibility study DTO
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityStudy
+  - term: FeasibilityStudyWithoutOption
+    definition: feasibility study DTO
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityStudyWithoutOption
+  - term: FeasibilityStudyPreSave
+    definition: feasibility study DTO before creation
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityStudyPreSave
+  - term: FeasibilityStudyDecision
+    definition: The decision for this feasibility study.
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityStudyDecision
+  - term: FeasibilityOption
+    definition: 'Object declared by the contract with fields: id, createdAt, updatedAt, studyId.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityOption
+  - term: FeasibilityOptionPreSave
+    definition: Tasking feasibility study option DTO before creation
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityOptionPreSave
+  - term: FeasibilityDifficulty
+    definition: The acquisition difficulty determined by order parameters.
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityDifficulty
+  - term: FeasibilityStudyPatchRequest
+    definition: Feasibility Study Update Request
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityStudyPatchRequest
+  - term: FeasibilityStudyPatchResponse
+    definition: Feasibility Study Update Response
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityStudyPatchResponse
+  - term: Tag
+    definition: A tag that consists of letters, numbers, spaces, and special characters (`.`, `-`, `_`, `/`, `:`).
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/Tag
+  - term: Tags
+    definition: A list of tags that categorize the order. A tag can consist of letters, numbers, spaces, and special characters (`.`, `-`, `_`,
+      `/`, `:`).
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/Tags
+  - term: OrderDisplayName
+    definition: A human-readable name that describes the order.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderDisplayName
+  - term: CreateV2OrderRequest
+    definition: 'Object declared by the contract with fields: dataProduct, displayName, tags, budgetId, params, featureCollection.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CreateV2OrderRequest
+  - term: OrderingFeature
+    definition: A spatially bounded GeoJSON feature.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderingFeature
+  - term: OrderingFeatureCollection
+    definition: A GeoJSON feature collection.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderingFeatureCollection
+  - term: BatchEndpointErrorDetail
+    definition: Errors associated with individual geometries returned by batch endpoints, including validation failures due to AOI size or vertex-count
+      limits.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/BatchEndpointErrorDetail
+  - term: OrderingGeometry
+    definition: The geometry in the GeoJSON format.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderingGeometry
+  - term: FeasibilityRequirementsResponse
+    definition: The feasibility requirements for the specified order parameters.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityRequirementsResponse
+  - term: FeasibilityRequirementsResult
+    definition: Results for each of the specified geometries.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityRequirementsResult
+  - term: FeasibilityOutcome
+    definition: The automatic feasibility outcome for this order. Returned only when feasibility study isn't required.
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/FeasibilityOutcome
+  - term: ListTaskingOrderOpportunitiesV2Response
+    definition: The cost estimation.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/ListTaskingOrderOpportunitiesV2Response
+  - term: OpportunitiesV2ResponseFeature
+    definition: A tasking opportunity.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OpportunitiesV2ResponseFeature
+  - term: AcquisitionDateExtensionsListResponse
+    definition: Acquisition date extension page
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/AcquisitionDateExtensionsListResponse
+  - term: AcquisitionDateExtensionResponse
+    definition: 'Object declared by the contract with fields: id, orderId, extendedFrom, extendedTo, createdAt, status, reason.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/AcquisitionDateExtensionResponse
+  - term: AcquisitionDateExtensionRequest
+    definition: Acquisition date extension request
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/AcquisitionDateExtensionRequest
+  - term: Link
+    definition: 'Object declared by the contract with fields: rel, href.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/Link
+  - term: SearchRequestDto
+    definition: 'Object declared by the contract with fields: collections, ids, datetime, limit, query, bbox, intersects.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/SearchRequestDto
+  - term: Properties
+    definition: 'Object declared by the contract with fields: id, acquisitionDate, datetime, start_datetime, end_datetime, constellation, collection,
+      providerName, cloudCoverage, up42:usageType, providerProperties, sceneId. (3 more)'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/Properties
+  - term: StacResponse
+    definition: 'Object declared by the contract with fields: features, links, type.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/StacResponse
+  - term: Polygon
+    definition: A polygon in the GeoJSON format.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/Polygon
+  - term: CatalogFeature
+    definition: A list of full scenes with the defined parameters from the chosen host.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CatalogFeature
+  - term: CatalogStacQuery
+    definition: A STAC query object.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CatalogStacQuery
+  - term: CatalogGeometry
+    definition: The geometry in the GeoJSON format.
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/CatalogGeometry
+  - term: OrderSubStatus
+    definition: An [additional status](https://docs.up42.com/developers/api-tasking#order-substatuses) for the tasking order.
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderSubStatus
+  - term: OrderResponseSharedProperties
+    definition: 'Object declared by the contract with fields: id, workspaceId, accountId, type, dataProductId, createdAt, updatedAt, createdBy,
+      updatedBy, tags, budgetId.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderResponseSharedProperties
+  - term: TaskingOrderDetailsSharedProperties
+    definition: 'Object declared by the contract with fields: acquisitionStart, acquisitionEnd, geometry, extraDescription, subStatus.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/TaskingOrderDetailsSharedProperties
+  - term: OrderType
+    definition: The order type.
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderType
+  - term: OrderV2Status
+    definition: The [order status](https://docs.up42.com/developers/api-tasking#order-statuses).
+    tags:
+    - Enumeration
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderV2Status
+  - term: OrderV2Response
+    definition: 'Object declared by the contract with fields: displayName, orderDetails, status.'
+    tags:
+    - Object
+    source: openapi/blacksky-up42-api-openapi.yml#/components/schemas/OrderV2Response

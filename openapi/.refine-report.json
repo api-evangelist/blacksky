@@ -1,0 +1,34 @@
+{
+  "provider": "blacksky",
+  "sources": [
+    "blacksky-up42-api-openapi.yml"
+  ],
+  "outputs": [
+    "blacksky-budgets-api-openapi.yml",
+    "blacksky-catalog-api-openapi.yml",
+    "blacksky-data-management-api-openapi.yml",
+    "blacksky-eulas-api-openapi.yml",
+    "blacksky-geometries-api-openapi.yml",
+    "blacksky-glossary-api-openapi.yml",
+    "blacksky-orders-api-openapi.yml",
+    "blacksky-processing-api-openapi.yml",
+    "blacksky-tasking-api-openapi.yml"
+  ],
+  "archived": [
+    "deleted 1 superseded output(s) from the previous generation"
+  ],
+  "errors": [],
+  "warnings": [
+    "blacksky-up42-api-openapi.yml: previously refined output kept for 57 operation(s) no archived document covers (e.g. /catalog/hosts/{host-name}/stac/search post, /catalog/{host-name}/image/{image-id}/quicklook get, /catalog/{host-name}/image/{image-id}/thumbnail get); its other 0 operation(s) came from the archive and were dropped from it. The archive is incomplete for this provider \u2014 re-harvest to restore _original/ as the full source of truth."
+  ],
+  "notes": [
+    "sourced from openapi/_original/ (0 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "blacksky-up42-api-openapi.yml: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "blacksky-up42-api-openapi.yml: declared missing tag: Budgets",
+    "blacksky-up42-api-openapi.yml: declared missing tag: Data management",
+    "blacksky-up42-api-openapi.yml: declared missing tag: EULAs",
+    "superseded outputs removed: blacksky-up42-api-openapi.yml",
+    "apis.yml register: written (+9 apis, 10 total)"
+  ],
+  "skipped": []
+}

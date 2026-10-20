@@ -1,0 +1,556 @@
+openapi: 3.2.0
+info:
+  title: UP42 Geometries API
+  contact:
+    name: Contact support
+    email: support@up42.com
+  license:
+    name: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+    url: http://creativecommons.org/licenses/by-nc-nd/4.0/
+  version: '1.2'
+servers:
+- url: https://api.up42.com
+security:
+- httpBearer: []
+tags:
+- name: Geometries
+paths:
+  /v2/spatial/geometries:
+    get:
+      tags:
+      - Geometries
+      summary: Get geometries
+      description: Get a list of geometries saved in the library.
+      operationId: listGeometries
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceIdQuery'
+      - $ref: '#/components/parameters/DisplayNameQuery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagableGeometryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/WorkspaceNotFound'
+      security:
+      - httpBearer: []
+    post:
+      tags:
+      - Geometries
+      summary: Create a geometry
+      description: Add a new geometry to the library.
+      operationId: addGeometry
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceIdQueryRequired'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGeometryRequest'
+        required: true
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeometryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/WorkspaceNotFound'
+      security:
+      - httpBearer: []
+  /v2/spatial/geometries/{geometry-id}:
+    get:
+      tags:
+      - Geometries
+      summary: Get a geometry
+      description: Get information about a specific geometry saved in the library.
+      operationId: getGeometry
+      parameters:
+      - $ref: '#/components/parameters/GeometryIdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeometryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/GeometryNotFound'
+      security:
+      - httpBearer: []
+    delete:
+      tags:
+      - Geometries
+      summary: Delete a geometry
+      description: Delete a geometry from the library.
+      operationId: deleteGeometry
+      parameters:
+      - $ref: '#/components/parameters/GeometryIdPath'
+      responses:
+        '204':
+          description: Deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/GeometryNotFound'
+      security:
+      - httpBearer: []
+    patch:
+      tags:
+      - Geometries
+      summary: Update a geometry
+      description: Update an existing geometry saved in the library.
+      operationId: patchGeometry
+      parameters:
+      - $ref: '#/components/parameters/GeometryIdPath'
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/PatchGeometryRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeometryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/GeometryNotFound'
+      security:
+      - httpBearer: []
+components:
+  parameters:
+    WorkspaceIdQuery:
+      name: workspaceId
+      in: query
+      description: 'The workspace ID.
+
+
+        Use to get objects from a specific workspace. Otherwise, objects from the entire account will be returned.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    GeometryIdPath:
+      name: geometry-id
+      in: path
+      description: 'The geometry ID.
+
+        '
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: 15b2dc9a-0cd3-4d4c-8180-07ebcd615468
+    WorkspaceIdQueryRequired:
+      name: workspaceId
+      in: query
+      description: 'The workspace ID.
+
+        '
+      required: true
+      style: form
+      explode: true
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    DisplayNameQuery:
+      name: displayName
+      in: query
+      description: The name of the geometry.
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: Berlin Tiergarten
+  schemas:
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          example: 10
+        sort:
+          $ref: '#/components/schemas/Sort'
+        offset:
+          type: integer
+          format: int64
+          example: 0
+        paged:
+          type: boolean
+          example: true
+        unpaged:
+          type: boolean
+          example: false
+    CoverageGeometry:
+      required:
+      - coordinates
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of geometry. Only AOIs are supported.
+          example: Polygon
+          enum:
+          - Polygon
+        coordinates:
+          type: array
+          description: The coordinates.
+          example:
+          - - - 77.259584
+              - 28.622331
+            - - 77.287879
+              - 28.622632
+            - - 77.287621
+              - 28.594794
+            - - 77.259389
+              - 28.594983
+            - - 77.259584
+              - 28.622331
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+      description: 'The geometry in the GeoJSON format.
+
+        '
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#geometry-objects
+    FeatureCollection:
+      required:
+      - features
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'The type of geometry. The only allowed value is `FeatureCollection`.
+
+            '
+          enum:
+          - FeatureCollection
+        features:
+          type: array
+          description: 'GeoJSON features.
+
+            '
+          items:
+            $ref: '#/components/schemas/CoverageFeature'
+      description: 'A GeoJSON feature collection.
+
+        '
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7946#section-3.3
+    PagableGeometryResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeometryResponse'
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/Sort'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        size:
+          type: integer
+          format: int32
+        number:
+          type: integer
+          format: int32
+        empty:
+          type: boolean
+    Sort:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          example: false
+        sorted:
+          type: boolean
+          example: true
+        unsorted:
+          type: boolean
+          example: false
+    CoverageFeature:
+      required:
+      - geometry
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'The type of geometry. The only allowed value is `Feature`.
+
+            '
+          enum:
+          - Feature
+        geometry:
+          $ref: '#/components/schemas/CoverageGeometry'
+        properties:
+          type: object
+          description: 'Properties of the geometry.
+
+            '
+      description: 'A spatially bounded GeoJSON feature.
+
+        '
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7946#section-3.2
+    GeometryResponse:
+      required:
+      - accountId
+      - createdAt
+      - displayName
+      - featureCollection
+      - id
+      - updatedAt
+      - workspaceId
+      type: object
+      properties:
+        id:
+          type: string
+          description: The geometry ID.
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        displayName:
+          maxLength: 200
+          minLength: 1
+          type: string
+          description: The name of the geometry.
+          example: Berlin Tiergarten
+        featureCollection:
+          $ref: '#/components/schemas/FeatureCollection'
+        accountId:
+          type: string
+          description: The account ID.
+          format: uuid
+          example: ca4f7511-d3b9-4cde-b1fa-05d9d16e7b57
+        workspaceId:
+          type: string
+          description: The workspace ID.
+          format: uuid
+          example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+        createdAt:
+          type: string
+          description: 'The timestamp when the geometry was created.
+
+            '
+          format: date-time
+        updatedAt:
+          type: string
+          description: 'The timestamp when the geometry was last updated.
+
+            '
+          format: date-time
+    PatchGeometryRequest:
+      type: object
+      properties:
+        displayName:
+          maxLength: 200
+          minLength: 1
+          type: string
+          description: The name of the geometry.
+          example: Berlin Tiergarten
+        featureCollection:
+          $ref: '#/components/schemas/FeatureCollection'
+    CreateGeometryRequest:
+      required:
+      - displayName
+      - featureCollection
+      type: object
+      properties:
+        displayName:
+          maxLength: 200
+          minLength: 1
+          type: string
+          description: The name of the geometry.
+          example: Berlin Tiergarten
+        featureCollection:
+          $ref: '#/components/schemas/FeatureCollection'
+  responses:
+    GeometryNotFound:
+      description: Geometry not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 404
+              title:
+                type: string
+                example: Geometry with id 'f010c2fd-728a-4c10-bdce-3240d93fc6aa' of account '561ca749-5286-4464-9a0d-6d6eb47b1a01' not found.
+              detail: {}
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type:
+                - object
+                - 'null'
+                example: null
+              error:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: 'An error occurred while attempting to decode the Jwt: Jwt expired at 2023-02-15T11:29:44Z
+
+                      '
+                  details:
+                    type:
+                    - object
+                    - 'null'
+                    example: null
+    WorkspaceNotFound:
+      description: Workspace not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 404
+              title:
+                type: string
+                example: Workspace `68567134-27ad-7bd7-4b65-d61adb11fc78` not found.
+              detail: {}
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2Profiles:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+        authorizationCode:
+          authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+x-provenance:
+  method: searched
+  source: https://developer.up42.com/reference
+  harvested: '2026-10-20'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://developer.up42.com/reference/accepteuladocumentv2.md
+  - https://developer.up42.com/reference/addgeometry.md
+  - https://developer.up42.com/reference/cancelorder.md
+  - https://developer.up42.com/reference/checkorderfeasibility.md
+  - https://developer.up42.com/reference/createextensionrequest.md
+  - https://developer.up42.com/reference/createv2orderunderworkspace.md
+  - https://developer.up42.com/reference/deletegeometry.md
+  - https://developer.up42.com/reference/deletesascollection.md
+  - https://developer.up42.com/reference/estimatev2order.md
+  - https://developer.up42.com/reference/generatedownloadurlexternal.md
+  - https://developer.up42.com/reference/getbudget.md
+  - https://developer.up42.com/reference/getbudgetsettings.md
+  - https://developer.up42.com/reference/getbudgetusage.md
+  - https://developer.up42.com/reference/getcollectionv2.md
+  - https://developer.up42.com/reference/getdataproductv2.md
+  - https://developer.up42.com/reference/geteuladocumentv2.md
+  - https://developer.up42.com/reference/geteulav2.md
+  - https://developer.up42.com/reference/getgeometry.md
+  - https://developer.up42.com/reference/getjsonschema.md
+  - https://developer.up42.com/reference/getorderacquisitiondateextensions.md
+  - https://developer.up42.com/reference/getordercoverage.md
+  - https://developer.up42.com/reference/getorderv2.md
+  - https://developer.up42.com/reference/getproviderv2.md
+  - https://developer.up42.com/reference/getquicklookimage.md
+  - https://developer.up42.com/reference/getsascollection.md
+  - https://developer.up42.com/reference/getsascollections.md
+  - https://developer.up42.com/reference/getsasitem.md
+  - https://developer.up42.com/reference/getsasitems.md
+  - https://developer.up42.com/reference/getsaslandingpage.md
+  - https://developer.up42.com/reference/getsasqueryables.md
+  - https://developer.up42.com/reference/getthumbnailimage.md
+  - https://developer.up42.com/reference/listbudgets.md
+  - https://developer.up42.com/reference/listcollectionsv2.md
+  - https://developer.up42.com/reference/listdataproductsv2.md
+  - https://developer.up42.com/reference/listeuladocumentsv2.md
+  - https://developer.up42.com/reference/listeulasv2.md
+  - https://developer.up42.com/reference/listgeometries.md
+  - https://developer.up42.com/reference/listordersv2.md
+  - https://developer.up42.com/reference/listprovidersv2.md
+  - https://developer.up42.com/reference/listtaskingfeasibilitystudies.md
+  - https://developer.up42.com/reference/listtaskingquotation.md
+  - https://developer.up42.com/reference/listv2taskingorderopportunities.md
+  - https://developer.up42.com/reference/patchgeometry.md
+  - https://developer.up42.com/reference/patchorder.md
+  - https://developer.up42.com/reference/patchsasitem.md
+  - https://developer.up42.com/reference/postsassearch.md
+  - https://developer.up42.com/reference/processingevaluate.md
+  - https://developer.up42.com/reference/processingexecute.md
+  - https://developer.up42.com/reference/processinggetjob.md
+  - https://developer.up42.com/reference/processinggetjobs.md
+  - https://developer.up42.com/reference/processinggetprocess.md
+  - https://developer.up42.com/reference/processinggetprocesses.md
+  - https://developer.up42.com/reference/processingvalidate.md
+  - https://developer.up42.com/reference/searchbyhost.md
+  - https://developer.up42.com/reference/updatetaskingfeasibilitystudy.md
+  - https://developer.up42.com/reference/updatetaskingquotation.md
+  - https://developer.up42.com/reference/validatev2order.md
+  merge:
+    pages: 57
+    deduped: 593
+    conflicts_kept_first: 0

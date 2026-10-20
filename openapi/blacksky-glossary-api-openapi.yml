@@ -1,0 +1,792 @@
+openapi: 3.2.0
+info:
+  title: UP42 Glossary API
+  contact:
+    name: Contact support
+    email: support@up42.com
+  license:
+    name: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+    url: http://creativecommons.org/licenses/by-nc-nd/4.0/
+  version: '1.2'
+servers:
+- url: https://api.up42.com
+security:
+- httpBearer: []
+tags:
+- name: Glossary
+paths:
+  /v2/collections:
+    get:
+      tags:
+      - Glossary
+      summary: Get geospatial collections
+      description: Get a list of collections. A collection is a geospatial dataset that is available for catalog or tasking ordering.
+      operationId: listCollectionsV2
+      parameters:
+      - $ref: '#/components/parameters/Integrations'
+      - $ref: '#/components/parameters/CollectionType'
+      - $ref: '#/components/parameters/PageablePage'
+      - $ref: '#/components/parameters/PageableSize'
+      - $ref: '#/components/parameters/PageableSorting'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfCollections'
+      security: []
+  /v2/collections/{collection-name}:
+    get:
+      tags:
+      - Glossary
+      summary: Get a geospatial collection
+      description: Get information about a specific collection. A collection is a geospatial dataset that is available for catalog or tasking ordering.
+      operationId: getCollectionV2
+      parameters:
+      - $ref: '#/components/parameters/CollectionNameInPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionFullAggregate'
+        '404':
+          description: Collection not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicErrorResponse'
+              example:
+                code: 404
+                message: Collection with name $collectionName not found
+                details: null
+  /v2/data-products:
+    get:
+      tags:
+      - Glossary
+      summary: Get data products
+      description: Get a list of data products. A data product is a type of imagery with a specific geometric and radiometric processing level and file format.
+      operationId: listDataProductsV2
+      parameters:
+      - $ref: '#/components/parameters/DataProductId'
+      - $ref: '#/components/parameters/PageablePage'
+      - $ref: '#/components/parameters/PageableSize'
+      - $ref: '#/components/parameters/PageableSorting'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfDataProducts'
+      security: []
+  /v2/data-products/{data-product-name}:
+    get:
+      tags:
+      - Glossary
+      summary: Get a data product
+      description: Get information about a specific data product. A data product is a type of imagery with a specific geometric and radiometric processing level and file format.
+      operationId: getDataProductV2
+      parameters:
+      - $ref: '#/components/parameters/DataProductNameInPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProductAggregate'
+        '404':
+          description: Data product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicErrorResponse'
+              example:
+                error:
+                  code: 404
+                  message: Data product with name $dataProductName not found
+                  details: null
+  /v2/providers:
+    get:
+      tags:
+      - Glossary
+      summary: Get providers
+      description: Get a list of providers. A provider is an organization that offers geospatial data by producing or hosting it.
+      operationId: listProvidersV2
+      parameters:
+      - $ref: '#/components/parameters/PageablePage'
+      - $ref: '#/components/parameters/PageableSize'
+      - $ref: '#/components/parameters/PageableSorting'
+      - $ref: '#/components/parameters/ProviderRole'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfProviders'
+      security: []
+  /v2/providers/{provider-name}:
+    get:
+      tags:
+      - Glossary
+      summary: Get a provider
+      description: Get information about a specific provider. A provider is an organization that offers geospatial data by producing or hosting it.
+      operationId: getProviderV2
+      parameters:
+      - $ref: '#/components/parameters/ProviderNameInPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderWithRoles'
+        '404':
+          description: Provider not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicErrorResponse'
+              example:
+                error:
+                  code: 404
+                  message: Provider with name $providerName not found
+                  details: null
+components:
+  parameters:
+    DataProductNameInPath:
+      name: data-product-name
+      in: path
+      description: 'The data product name.
+
+        '
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+      example: worlddem-neo-dsm
+    CollectionNameInPath:
+      name: collection-name
+      in: path
+      description: 'The collection name.
+
+        '
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+      example: vexcel-elevate-dtm-15cm
+    PageableSize:
+      name: size
+      in: query
+      description: 'The number of results on a result page.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 10
+        default: 20
+    Integrations:
+      name: integrations
+      in: query
+      description: '[Integration values](https://docs.up42.com/developers/api-glossary#integrations) that indicate mandatory ordering steps, available actions, and mandatory or optional operations for a given collection.
+
+        '
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/CollectionIntegration'
+    PageablePage:
+      name: page
+      in: query
+      description: 'The result page number. To get the first page, set the parameter to `0`.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 1
+        default: 0
+    PageableSorting:
+      name: sort
+      in: query
+      description: 'The results sorting method that arranges elements in ascending or descending order based on a chosen field. The format is `<field name>,<asc or desc>`.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: id,asc
+        default: createdAt,desc
+    ProviderRole:
+      name: role
+      in: query
+      description: 'The provider role. Use to filter results to hosts or producers only.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/ProviderRole'
+    DataProductId:
+      name: dataProductId
+      in: query
+      description: 'The data product ID.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        format: uuid
+        example: 8fbccd60-c828-4d8c-a4ef-3c2730d9d6bc
+    CollectionType:
+      name: type
+      in: query
+      description: 'Collection types. Use to search for either tasking or catalog collections.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/CollectionType'
+    ProviderNameInPath:
+      name: provider-name
+      in: path
+      description: 'The name of the provider.
+
+        '
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+      example: vexcel-v2
+  schemas:
+    DataProduct:
+      required:
+      - description
+      - name
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The data product ID.
+
+            '
+          format: uuid
+          example: d28f2b14-b8c2-4b3c-b184-11334933eeb2
+        name:
+          type: string
+          description: 'The data product name.
+
+            '
+          example: vexcel-elevate-dtm-15cm
+        title:
+          type: string
+          description: 'The title of the data product.
+
+            '
+          example: Vexcel Elevate — DTM 15 cm
+        description:
+          type: string
+          description: 'The description of the data product.
+
+            '
+          example: A digital terrain model with a resolution of 15–20 cm.
+        eulaId:
+          type: string
+          description: 'The EULA ID.
+
+            '
+          format: uuid
+          example: f79efe14-bc8d-4892-bd9d-7565cb3620a5
+    PageableResponse:
+      type: object
+      properties:
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        last:
+          type: boolean
+          example: false
+        totalElements:
+          type: integer
+          format: int64
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          example: 20
+        size:
+          type: integer
+          format: int32
+          example: 10
+        number:
+          type: integer
+          format: int32
+          example: 0
+        sort:
+          $ref: '#/components/schemas/Sort'
+        numberOfElements:
+          type: integer
+          format: int32
+          example: 10
+        first:
+          type: boolean
+          example: true
+        empty:
+          type: boolean
+          example: false
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          example: 10
+        sort:
+          $ref: '#/components/schemas/Sort'
+        offset:
+          type: integer
+          format: int64
+          example: 0
+        paged:
+          type: boolean
+          example: true
+        unpaged:
+          type: boolean
+          example: false
+    ProviderRolesArray:
+      required:
+      - roles
+      type: object
+      properties:
+        roles:
+          type: array
+          description: "Provider roles:\n  - `PRODUCER`: a producer is a provider that initially acquired and processed the source data. Data acquired by a producer can be distributed to various hosts.\n  - `HOST`: a host is a provider that offers access to data acquired by a producer.\n"
+          example:
+          - HOST
+          - PRODUCER
+          items:
+            $ref: '#/components/schemas/ProviderRole'
+    CollectionMetadata:
+      type: object
+      properties:
+        productType:
+          $ref: '#/components/schemas/ProductType'
+        resolutionClass:
+          $ref: '#/components/schemas/ResolutionClass'
+        resolutionValue:
+          $ref: '#/components/schemas/ResolutionValue'
+        priority:
+          $ref: '#/components/schemas/PriorityArray'
+        acquisitionMode:
+          $ref: '#/components/schemas/AcquisitionModeArray'
+      description: The collection metadata.
+    ResolutionValue:
+      required:
+      - minimum
+      type: object
+      properties:
+        minimum:
+          type: number
+          description: 'The best possible resolution available for the collection, in meters.
+
+            '
+          example: 0.15
+        maximum:
+          type:
+          - number
+          - 'null'
+          description: 'The least detailed resolution available for the collection, in meters. The parameter is omitted if the collection has only one resolution value, specified in `minimum`.
+
+            '
+          example: 0.2
+      description: 'The level of detail achievable for the collection.
+
+        '
+    CollectionIntegrationArray:
+      type: array
+      description: '[Integration values](https://docs.up42.com/developers/api-glossary#integrations) that indicate mandatory ordering steps, available actions, and mandatory or optional operations for a given collection.
+
+        '
+      example:
+      - SAMPLE_DATA_AVAILABLE
+      - QUICKLOOK_AVAILABLE
+      - SEARCH_AVAILABLE
+      - PRICE_ESTIMATION_AVAILABLE
+      - THUMBNAIL_AVAILABLE
+      items:
+        $ref: '#/components/schemas/CollectionIntegration'
+    ProviderWithRoles:
+      allOf:
+      - $ref: '#/components/schemas/ProviderRolesArray'
+      - $ref: '#/components/schemas/Provider'
+    Collection:
+      required:
+      - description
+      - name
+      - title
+      - type
+      type: object
+      properties:
+        name:
+          type: string
+          description: 'The name of the collection.
+
+            '
+          example: vexcel-elevate-dtm-15cm
+        title:
+          type: string
+          description: 'The title of the collection.
+
+            '
+          example: Vexcel Elevate — DTM 15 cm
+        description:
+          type: string
+          description: 'The description of the collection.
+
+            '
+          example: A very high resolution 15 cm digital terrain model, acquired over areas all over the world. The collection contains data from 2019 to the present.
+        type:
+          $ref: '#/components/schemas/CollectionType'
+      description: 'Information about the collection.
+
+        '
+    PageOfProviders:
+      allOf:
+      - $ref: '#/components/schemas/PageableResponse'
+      - type: object
+        properties:
+          content:
+            type: array
+            items:
+              $ref: '#/components/schemas/ProviderWithRoles'
+    DataProductAggregate:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/DataProduct'
+      - type: object
+        properties:
+          collection:
+            $ref: '#/components/schemas/CollectionAggregatedWithProviders'
+    ProductType:
+      type: string
+      description: 'The type of product the collection delivers.
+
+        '
+      example: ELEVATION
+      enum:
+      - OPTICAL
+      - SAR
+      - ELEVATION
+    Sort:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          example: false
+        sorted:
+          type: boolean
+          example: true
+        unsorted:
+          type: boolean
+          example: false
+    CollectionIntegration:
+      type: string
+      enum:
+      - ACCESS_APPROVAL_REQUIRED
+      - SAMPLE_DATA_AVAILABLE
+      - MANUAL_REQUEST_REQUIRED
+      - FEASIBILITY_STUDY_REQUIRED
+      - FEASIBILITY_STUDY_MAY_BE_REQUIRED
+      - QUOTATION_REQUIRED
+      - PRICE_ESTIMATION_AVAILABLE
+      - SEARCH_AVAILABLE
+      - THUMBNAIL_AVAILABLE
+      - QUICKLOOK_AVAILABLE
+      - TASKING_OPPORTUNITIES_AVAILABLE
+    CollectionType:
+      type: string
+      description: 'The type of the collection.
+
+        '
+      example: ARCHIVE
+      enum:
+      - ARCHIVE
+      - TASKING
+    CollectionInfoExtension:
+      required:
+      - integrations
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/CollectionMetadata'
+        integrations:
+          $ref: '#/components/schemas/CollectionIntegrationArray'
+    PageOfDataProducts:
+      allOf:
+      - $ref: '#/components/schemas/PageableResponse'
+      - type: object
+        properties:
+          content:
+            type: array
+            items:
+              $ref: '#/components/schemas/DataProductAggregate'
+    AcquisitionMode:
+      type: string
+      enum:
+      - MONO
+      - STEREO
+      - TRISTEREO
+      - SPOT
+      - SPOT_DWELL
+      - SPOT_DWELL_FINE
+      - SPOT_DWELL_PRECISE
+      - SPOT_FINE
+      - SPOT_EXTENDED
+      - SPOT_ENHANCED
+      - SPOT_ULTRA
+      - SPOT_HIGH_RES
+      - SPOT_HIGH_RES_300
+      - SITE
+      - STRIP
+      - STRIP_ENHANCED
+      - SCAN
+      - SCAN_WIDE
+      - SCAN_ENHANCED
+      - STEREO_BURST
+      - STEREO_AREA_COVERAGE
+      - STEREO_SINGLE_PASS
+      - STEREO_MULTI_PASS
+    Provider:
+      required:
+      - description
+      - name
+      - title
+      type: object
+      properties:
+        name:
+          type: string
+          description: 'The name of the provider.
+
+            '
+          example: vexcel-v2
+        title:
+          type: string
+          description: 'The title of the provider.
+
+            '
+          example: Vexcel
+        description:
+          type: string
+          description: 'The description of the provider.
+
+            '
+          example: Vexcel delivers geospatial data products with high accuracy, spatial resolution, and consistency. The Vexcel Data Program is the largest in the world capturing ultra-high-resolution imagery (at 7.5 to 15cm resolution) and related geospatial data in more than 30 countries, including the U.S., Canada, U.K., Western and Eastern Europe, Australia, New Zealand, and Japan.
+    AcquisitionModeArray:
+      type: array
+      description: '[Acquisition modes](https://docs.up42.com/data/reference/acquisition-modes) available for a collection.
+
+        '
+      example:
+      - MONO
+      items:
+        $ref: '#/components/schemas/AcquisitionMode'
+    PageOfCollections:
+      allOf:
+      - $ref: '#/components/schemas/PageableResponse'
+      - type: object
+        properties:
+          content:
+            type: array
+            items:
+              $ref: '#/components/schemas/CollectionFullAggregate'
+    CollectionExtended:
+      allOf:
+      - $ref: '#/components/schemas/Collection'
+      - $ref: '#/components/schemas/CollectionInfoExtension'
+    Priority:
+      type: string
+      enum:
+      - STANDARD
+      - HIGH
+      - RUSH
+    BasicErrorResponse:
+      required:
+      - detail
+      - status
+      - title
+      properties:
+        detail:
+          title: Detail
+          type: string
+        status:
+          title: Status
+          type: string
+        title:
+          title: Title
+          type: string
+    CollectionAggregatedWithProviders:
+      allOf:
+      - $ref: '#/components/schemas/CollectionExtended'
+      - required:
+        - providers
+        type: object
+        properties:
+          providers:
+            type: array
+            items:
+              $ref: '#/components/schemas/ProviderWithRoles'
+    CollectionFullAggregate:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/CollectionExtended'
+      - type: object
+        properties:
+          providers:
+            type: array
+            items:
+              $ref: '#/components/schemas/ProviderWithRoles'
+      - type: object
+        properties:
+          dataProducts:
+            type: array
+            items:
+              $ref: '#/components/schemas/DataProduct'
+    PriorityArray:
+      type: array
+      description: '[Priority tiers](https://docs.up42.com/data/reference/priority) available for a tasking collection.
+
+        '
+      example:
+      - STANDARD
+      items:
+        $ref: '#/components/schemas/Priority'
+    ResolutionClass:
+      type: string
+      description: 'The spatial resolution class.
+
+        '
+      example: VERY_HIGH
+      enum:
+      - VERY_HIGH
+      - HIGH
+      - MEDIUM
+      - LOW
+    ProviderRole:
+      type: string
+      enum:
+      - PRODUCER
+      - HOST
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2Profiles:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+        authorizationCode:
+          authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+x-provenance:
+  method: searched
+  source: https://developer.up42.com/reference
+  harvested: '2026-10-20'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://developer.up42.com/reference/accepteuladocumentv2.md
+  - https://developer.up42.com/reference/addgeometry.md
+  - https://developer.up42.com/reference/cancelorder.md
+  - https://developer.up42.com/reference/checkorderfeasibility.md
+  - https://developer.up42.com/reference/createextensionrequest.md
+  - https://developer.up42.com/reference/createv2orderunderworkspace.md
+  - https://developer.up42.com/reference/deletegeometry.md
+  - https://developer.up42.com/reference/deletesascollection.md
+  - https://developer.up42.com/reference/estimatev2order.md
+  - https://developer.up42.com/reference/generatedownloadurlexternal.md
+  - https://developer.up42.com/reference/getbudget.md
+  - https://developer.up42.com/reference/getbudgetsettings.md
+  - https://developer.up42.com/reference/getbudgetusage.md
+  - https://developer.up42.com/reference/getcollectionv2.md
+  - https://developer.up42.com/reference/getdataproductv2.md
+  - https://developer.up42.com/reference/geteuladocumentv2.md
+  - https://developer.up42.com/reference/geteulav2.md
+  - https://developer.up42.com/reference/getgeometry.md
+  - https://developer.up42.com/reference/getjsonschema.md
+  - https://developer.up42.com/reference/getorderacquisitiondateextensions.md
+  - https://developer.up42.com/reference/getordercoverage.md
+  - https://developer.up42.com/reference/getorderv2.md
+  - https://developer.up42.com/reference/getproviderv2.md
+  - https://developer.up42.com/reference/getquicklookimage.md
+  - https://developer.up42.com/reference/getsascollection.md
+  - https://developer.up42.com/reference/getsascollections.md
+  - https://developer.up42.com/reference/getsasitem.md
+  - https://developer.up42.com/reference/getsasitems.md
+  - https://developer.up42.com/reference/getsaslandingpage.md
+  - https://developer.up42.com/reference/getsasqueryables.md
+  - https://developer.up42.com/reference/getthumbnailimage.md
+  - https://developer.up42.com/reference/listbudgets.md
+  - https://developer.up42.com/reference/listcollectionsv2.md
+  - https://developer.up42.com/reference/listdataproductsv2.md
+  - https://developer.up42.com/reference/listeuladocumentsv2.md
+  - https://developer.up42.com/reference/listeulasv2.md
+  - https://developer.up42.com/reference/listgeometries.md
+  - https://developer.up42.com/reference/listordersv2.md
+  - https://developer.up42.com/reference/listprovidersv2.md
+  - https://developer.up42.com/reference/listtaskingfeasibilitystudies.md
+  - https://developer.up42.com/reference/listtaskingquotation.md
+  - https://developer.up42.com/reference/listv2taskingorderopportunities.md
+  - https://developer.up42.com/reference/patchgeometry.md
+  - https://developer.up42.com/reference/patchorder.md
+  - https://developer.up42.com/reference/patchsasitem.md
+  - https://developer.up42.com/reference/postsassearch.md
+  - https://developer.up42.com/reference/processingevaluate.md
+  - https://developer.up42.com/reference/processingexecute.md
+  - https://developer.up42.com/reference/processinggetjob.md
+  - https://developer.up42.com/reference/processinggetjobs.md
+  - https://developer.up42.com/reference/processinggetprocess.md
+  - https://developer.up42.com/reference/processinggetprocesses.md
+  - https://developer.up42.com/reference/processingvalidate.md
+  - https://developer.up42.com/reference/searchbyhost.md
+  - https://developer.up42.com/reference/updatetaskingfeasibilitystudy.md
+  - https://developer.up42.com/reference/updatetaskingquotation.md
+  - https://developer.up42.com/reference/validatev2order.md
+  merge:
+    pages: 57
+    deduped: 593
+    conflicts_kept_first: 0

@@ -1,0 +1,84 @@
+generated: '2026-10-20'
+method: derived
+generator: derive-problem-types.py
+source:
+- openapi/blacksky-up42-api-openapi.yml
+format: rfc9457
+envelope:
+  media_type: application/json
+  schema: OrderingProblem
+coverage:
+  operations: 57
+  statuses_declared: 10
+problems:
+- status: 400
+  title: Bad Request
+  description: Order request not valid
+  operations: 13
+  media_types:
+  - application/problem+json
+  - application/json
+  schema: OrderingProblem
+- status: 401
+  title: Unauthorized
+  description: Unauthorized
+  operations: 37
+  media_types:
+  - application/json
+  schema: ErrorResponseV1
+- status: 402
+  title: Payment Required
+  description: Not enough credits
+  operations: 1
+  media_types:
+  - application/problem+json
+  schema: OrderingProblem
+- status: 403
+  title: Forbidden
+  description: Forbidden
+  operations: 2
+  media_types:
+  - application/problem+json
+  schema: OrderingProblem
+- status: 404
+  title: Not Found
+  description: Resource not found
+  operations: 36
+  media_types:
+  - application/json
+  - application/problem+json
+  schema: HTTP404Response
+- status: 422
+  title: Unprocessable Content
+  description: Request error. Check the `detail` property for a specific error message
+  operations: 9
+  media_types:
+  - application/json
+  schema: HTTP422Response
+- status: 500
+  title: Internal Server Error
+  description: Server error. Please contact support
+  operations: 9
+  media_types: []
+  schema: null
+- status: 501
+  title: Not Implemented
+  description: Not supported
+  operations: 1
+  media_types:
+  - application/problem+json
+  schema: OrderingProblem
+- status: 503
+  title: Service Unavailable
+  description: Service unavailable, please try again later
+  operations: 1
+  media_types:
+  - application/problem+json
+  schema: OrderingProblem
+- status: 542
+  title: null
+  description: Request failed due to an outage on the host side
+  operations: 3
+  media_types:
+  - application/json
+  schema: null

@@ -1,0 +1,1443 @@
+openapi: 3.2.0
+info:
+  title: UP42 Processing API
+  contact:
+    name: Contact support
+    email: support@up42.com
+  license:
+    name: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+    url: http://creativecommons.org/licenses/by-nc-nd/4.0/
+  version: '1.2'
+servers:
+- url: https://api.up42.com
+security:
+- httpBearer: []
+tags:
+- name: Processing
+paths:
+  /v2/processing/jobs:
+    get:
+      tags:
+      - Processing
+      summary: Get processing jobs
+      description: Get a list of processing jobs. Jobs are specific instances of a process execution.
+      operationId: processing.getJobs
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/sort'
+      - $ref: '#/components/parameters/workspaceIdListJobs'
+      - $ref: '#/components/parameters/processIdListJobs'
+      - $ref: '#/components/parameters/statusListJobs'
+      - $ref: '#/components/parameters/jobIds'
+      - $ref: '#/components/parameters/minDuration'
+      - $ref: '#/components/parameters/maxDuration'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jobList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 401
+                title: Unauthorized
+      security:
+      - httpBearer: []
+  /v2/processing/jobs/{job-id}:
+    get:
+      tags:
+      - Processing
+      summary: Get a processing job
+      description: Get information about a specific processing job.
+      operationId: processing.getJob
+      parameters:
+      - $ref: '#/components/parameters/jobId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/statusInfo'
+              examples:
+                pansharpening:
+                  $ref: '#/components/examples/pansharpeningJobExample'
+                upsampling-ns:
+                  $ref: '#/components/examples/upsamplingJobExample'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 401
+                title: Unauthorized
+        '404':
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 404
+                title: Not Found
+      security:
+      - httpBearer: []
+  /v2/processing/processes:
+    get:
+      tags:
+      - Processing
+      summary: Get processes
+      description: Get a list of all processing capabilities.
+      operationId: processing.getProcesses
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/processList'
+      security: []
+  /v2/processing/processes/{process-id}:
+    get:
+      tags:
+      - Processing
+      summary: Get a process
+      description: Get information about a specific processing capability.
+      operationId: processing.getProcess
+      parameters:
+      - $ref: '#/components/parameters/processId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/process'
+        '404':
+          description: Process not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 404
+                title: Not Found
+      security: []
+  /v2/processing/processes/{process-id}/cost:
+    post:
+      tags:
+      - Processing
+      summary: Determine the cost of a process
+      description: 'Determine the cost before creating a processing job.
+
+
+        You will receive an overview of the overall UP42 credit amount that will be deducted from your credit balance if you decide to run the selected process.'
+      operationId: processing.evaluate
+      parameters:
+      - $ref: '#/components/parameters/JobPricingexecutionProcessId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobPricinginputs'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/areaJobPrice'
+                - $ref: '#/components/schemas/jobPrice'
+        '400':
+          description: Unprocessable input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 400
+                title: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 401
+                title: Unauthorized
+        '404':
+          description: Process not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 404
+                title: Not Found
+        '422':
+          description: Errors in input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 422
+                title: Unprocessable Content
+      security:
+      - httpBearer: []
+  /v2/processing/processes/{process-id}/execution:
+    post:
+      tags:
+      - Processing
+      summary: Run a process
+      description: Create a new processing job by running a selected process.
+      operationId: processing.execute
+      parameters:
+      - $ref: '#/components/parameters/executionProcessId'
+      - $ref: '#/components/parameters/workspaceId'
+      - $ref: '#/components/parameters/budgetId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/execute'
+        required: true
+      responses:
+        '201':
+          description: OK
+          headers:
+            Location:
+              description: The URL to check the status of the job.
+              style: simple
+              explode: false
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/statusInfo'
+              examples:
+                pansharpening:
+                  $ref: '#/components/examples/pansharpeningJobExample'
+        '400':
+          description: Unprocessable input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 400
+                title: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 401
+                title: Unauthorized
+        '404':
+          description: Process not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              example:
+                status: 404
+                title: Not Found
+      security:
+      - httpBearer: []
+  /v2/processing/processes/{process-id}/validation:
+    post:
+      tags:
+      - Processing
+      summary: Validate input for a process
+      description: Validate input for a process to be used to create a new processing job.
+      operationId: processing.validate
+      parameters:
+      - $ref: '#/components/parameters/ValidationexecutionProcessId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/inputs'
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Unprocessable input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/schemaError'
+        '422':
+          description: Errors in input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/validationErrors'
+      security:
+      - httpBearer: []
+components:
+  schemas:
+    results:
+      type:
+      - object
+      - 'null'
+      additionalProperties:
+        $ref: '#/components/schemas/inlineOrRefData'
+      description: 'Job results.
+
+        '
+      example:
+        collection: https://api.up42.com/v2/assets/stac/collections/ca57a57d-5f2c-4b1c-957b-ea2c54be6262
+    propertiesSchema:
+      type: object
+      properties:
+        enum:
+          minItems: 1
+          uniqueItems: false
+          type: array
+          items: {}
+        type:
+          type: string
+          enum:
+          - array
+          - boolean
+          - integer
+          - number
+          - object
+          - string
+        description:
+          type: string
+        maximum:
+          type: number
+        minimum:
+          type: number
+      additionalProperties: false
+    inputDescription:
+      allOf:
+      - type: object
+        properties:
+          title:
+            type: string
+            description: 'The title of the input parameter.
+
+              '
+            example: Item
+          description:
+            type: string
+            description: 'The description of the input parameter.
+
+              '
+            example: The absolute API path to the input data item.
+      - required:
+        - schema
+        type: object
+        properties:
+          minOccurs:
+            type: integer
+            description: 'The minimum allowable number of occurrences of this input value.
+
+              '
+            default: 1
+          maxOccurs:
+            description: 'The maximum allowable number of occurrences of this input value. When there''s no limit, `unbounded` is used.
+
+              '
+            oneOf:
+            - type: integer
+              default: 1
+            - type: string
+              enum:
+              - unbounded
+          schema:
+            $ref: '#/components/schemas/schema'
+    reference:
+      required:
+      - $ref
+      type: object
+      properties:
+        $ref:
+          type: string
+          format: uri-reference
+    error:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Bad Request
+        status:
+          type: integer
+          example: 400
+    jobType:
+      type: string
+      description: 'The type of job. The only allowed value is `process`.
+
+        '
+      enum:
+      - process
+    inputValueNoObject:
+      oneOf:
+      - type: string
+      - type: number
+      - type: integer
+      - type: boolean
+      - type: array
+        items:
+          type: string
+      - $ref: '#/components/schemas/JobPricingbinaryInputValue'
+      - $ref: '#/components/schemas/bbox'
+    statusInfo:
+      required:
+      - jobID
+      - status
+      - type
+      type: object
+      properties:
+        processID:
+          $ref: '#/components/schemas/processId'
+        jobID:
+          type: string
+          description: 'The job ID.
+
+            '
+          example: 04fc6806-fd2c-4a5b-a335-fd563e5399ce
+        accountID:
+          type: string
+          description: 'The account ID.
+
+            '
+          example: d40c3960-d79a-4925-9828-fadc15ce5ec3
+        workspaceID:
+          type: string
+          description: 'The workspace ID.
+
+            '
+          example: d40c3960-d79a-4925-9828-fadc15ce5ec3
+        definition:
+          $ref: '#/components/schemas/execute'
+        results:
+          $ref: '#/components/schemas/results'
+        status:
+          $ref: '#/components/schemas/statusCode'
+        type:
+          $ref: '#/components/schemas/jobType'
+        created:
+          type: string
+          description: 'The timestamp when the job was created.
+
+            '
+          format: date-time
+        updated:
+          type: string
+          description: 'The timestamp when the job was last updated.
+
+            '
+          format: date-time
+        started:
+          type: string
+          description: 'The timestamp when the job was started.
+
+            '
+          format: date-time
+        finished:
+          type: string
+          description: 'The timestamp when the job was finished.
+
+            '
+          format: date-time
+        creditConsumption:
+          type:
+          - object
+          - 'null'
+          properties:
+            credits:
+              type: integer
+          description: 'The number of consumed credits. If the process has failed, the value is `null`.
+
+            '
+      description: 'Job metadata.
+
+        '
+    transmissionMode:
+      type: string
+      default: reference
+      enum:
+      - value
+      - reference
+    itemsSchema:
+      type: object
+      properties:
+        required:
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        enum:
+          minItems: 1
+          uniqueItems: false
+          type: array
+          items: {}
+        type:
+          type: string
+          enum:
+          - array
+          - boolean
+          - integer
+          - number
+          - object
+          - string
+        properties:
+          type: object
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/propertiesSchema'
+            - $ref: '#/components/schemas/reference'
+        description:
+          type: string
+        format:
+          type: string
+      additionalProperties: false
+    paginationLinks:
+      type: array
+      description: "Navigation links for traversing paginated results. \nIncludes references to the current, next, previous, first, and last pages.\n"
+      example:
+      - rel: self
+        href: /v2/processing/jobs?page=3&limit=1&sort=created
+      - rel: next
+        href: /v2/processing/jobs?page=4&limit=1&sort=created
+      - rel: prev
+        href: /v2/processing/jobs?page=2&limit=1&sort=created
+      - rel: first
+        href: /v2/processing/jobs?limit=1&sort=created
+      - rel: last
+        href: /v2/processing/jobs?page=7&limit=1&sort=created
+      items:
+        required:
+        - href
+        - rel
+        type: object
+        properties:
+          rel:
+            type: string
+            description: The relationship of the link to the current resource.
+            example: next
+          href:
+            type: string
+            description: The relative or absolute URI.
+            example: /v2/processing/jobs?page=4&limit=1&sort=created
+    format:
+      type: object
+      properties:
+        mediaType:
+          type: string
+        encoding:
+          type: string
+        schema:
+          oneOf:
+          - type: string
+            format: url
+          - type: object
+    jobId:
+      type: string
+      description: 'The job ID.
+
+        '
+      format: uuid
+    Validationlink:
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+          example: service
+        type:
+          type: string
+          example: application/json
+        hreflang:
+          type: string
+          example: en
+        title:
+          type: string
+    qualifiedInputValue:
+      allOf:
+      - $ref: '#/components/schemas/format'
+      - required:
+        - value
+        type: object
+        properties:
+          value:
+            $ref: '#/components/schemas/inputValue'
+    validationError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: MissingProjection
+        message:
+          type: string
+          example: The STAC item isn't georectified or orthorectified.
+    schemaError:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Bad Request
+        status:
+          type: integer
+          example: 400
+        schema-error:
+          type: string
+          example: data.inputs must contain ['item', 'title'] properties
+    areaJobPrice:
+      allOf:
+      - $ref: '#/components/schemas/jobPrice'
+      - type: object
+        properties:
+          totalSize:
+            type: number
+            description: 'The size of the input STAC item.
+
+              '
+            example: 100
+          unit:
+            type: string
+            description: 'The unit of measurement used to calculate the size.
+
+              '
+            example: SQ_KM
+    JobPricinginputs:
+      type: object
+      properties:
+        inputs:
+          type: object
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/JobPricinginlineOrRefData'
+            - type: array
+              items:
+                $ref: '#/components/schemas/JobPricinginlineOrRefData'
+          description: 'The input parameters. Specify the STAC item you want to process.
+
+            '
+      description: 'An implementation of the [OGC Standard](https://docs.ogc.org/is/18-062r2/18-062r2.html), but with different default response values. Results are always provided with permanent links and a job''s results field only contains references or errors.
+
+        '
+      example:
+        inputs:
+          item: https://api.up42.com/v2/assets/stac/collections/21c0b14e-3434-4675-98d1-f225507ded99/items/23e4567-e89b-12d3-a456-426614174000
+    jobList:
+      required:
+      - jobs
+      - links
+      type: object
+      properties:
+        jobs:
+          type: array
+          description: 'A list of jobs.
+
+            '
+          items:
+            $ref: '#/components/schemas/statusInfo'
+        links:
+          type: array
+          description: 'Links to jobs.
+
+            '
+          items:
+            $ref: '#/components/schemas/paginationLinks'
+    validationErrors:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Unprocessable Content
+        status:
+          type: integer
+          example: 422
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/validationError'
+    processId:
+      type: string
+      description: 'The process ID in a name format.
+
+        '
+    ValidationinlineOrRefData:
+      oneOf:
+      - $ref: '#/components/schemas/inputValueNoObject'
+      - $ref: '#/components/schemas/qualifiedInputValue'
+      - $ref: '#/components/schemas/Validationlink'
+    process:
+      allOf:
+      - $ref: '#/components/schemas/processSummary'
+      - type: object
+        properties:
+          inputs:
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/inputDescription'
+          outputs:
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/outputDescription'
+    inputValue:
+      oneOf:
+      - $ref: '#/components/schemas/inputValueNoObject'
+      - type: object
+    execute:
+      type: object
+      properties:
+        inputs:
+          type: object
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/inlineOrRefData'
+            - type: array
+              items:
+                $ref: '#/components/schemas/inlineOrRefData'
+          description: 'The input parameters. The schemas are different, depending on the selected process.
+
+            '
+        outputs:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/output'
+          description: 'The output parameters.
+
+            '
+        response:
+          type: string
+          description: 'The response type. The only allowed value is `document`.
+
+            '
+          enum:
+          - document
+      description: 'An implementation of the [OGC Standard](https://docs.ogc.org/is/18-062r2/18-062r2.html), but with different default response values. Results are always provided with permanent links and a job''s results field only contains references or errors.
+
+        '
+      example:
+        inputs:
+          title: Pansharpening SPOT imagery
+          item: https://api.up42.com/v2/assets/stac/collections/21c0b14e-3434-4675-98d1-f225507ded99/items/23e4567-e89b-12d3-a456-426614174000
+          greyWeights:
+          - band: blue
+            weight: 0.2
+          - band: green
+            weight: 0.34
+          - band: red
+            weight: 0.23
+    output:
+      type: object
+      properties:
+        format:
+          $ref: '#/components/schemas/format'
+        transmissionMode:
+          $ref: '#/components/schemas/transmissionMode'
+    outputDescription:
+      allOf:
+      - type: object
+        properties:
+          title:
+            type: string
+            description: 'The title of the output parameter.
+
+              '
+            example: STAC collection
+          description:
+            type: string
+            description: 'The description of the output parameter.
+
+              '
+            example: The STAC collection of outputs.
+      - required:
+        - schema
+        type: object
+        properties:
+          schema:
+            $ref: '#/components/schemas/schema'
+    link:
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          description: 'The URL of the related link.
+
+            '
+        hreflang:
+          type: string
+          description: 'The language of the related link.
+
+            '
+          example: en
+        rel:
+          type: string
+          description: 'The type of relation of the link in `links.href` to the current job.
+
+            '
+          example: next
+        type:
+          type: string
+          description: 'The media type the link returns.
+
+            '
+          example: application/json
+        title:
+          type: string
+          description: 'The link title.
+
+            '
+    JobPricinginlineOrRefData:
+      oneOf:
+      - $ref: '#/components/schemas/inputValueNoObject'
+      - $ref: '#/components/schemas/qualifiedInputValue'
+      - $ref: '#/components/schemas/link'
+    statusCode:
+      type: string
+      description: The [job status](https://docs.up42.com/developers/api-processing#job-statuses).
+      enum:
+      - created
+      - licensed
+      - unlicensed
+      - valid
+      - invalid
+      - accepted
+      - rejected
+      - running
+      - successful
+      - failed
+      - captured
+      - released
+    additionalParameter:
+      required:
+      - name
+      - value
+      type: object
+      properties:
+        name:
+          type: string
+          description: 'The name of the parameter.
+
+            '
+        value:
+          type: array
+          description: 'The value of the parameter.
+
+            '
+          example:
+          - credits: 4
+            unit: SQ_KM
+          items:
+            oneOf:
+            - type: string
+            - type: number
+            - type: integer
+            - type: array
+              items: {}
+            - type: object
+    bbox:
+      required:
+      - bbox
+      type: object
+      properties:
+        bbox:
+          type: array
+          items:
+            type: number
+        crs:
+          type: string
+          format: uri
+          default: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+          enum:
+          - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+          - http://www.opengis.net/def/crs/OGC/0/CRS84h
+    processSummary:
+      allOf:
+      - $ref: '#/components/schemas/descriptionType'
+      - required:
+        - id
+        - version
+        type: object
+        properties:
+          id:
+            type: string
+            description: 'The process ID in a name format.
+
+              '
+            example: pansharpening
+          version:
+            type: string
+            description: 'The version number of the process.
+
+              '
+            example: 1.0.0
+          jobControlOptions:
+            type: array
+            description: 'The execution mode of the process. The only available value is `async-execute`, which indicates that processes are executed asynchronously.
+
+              '
+            items:
+              type: string
+              enum:
+              - async-execute
+            default:
+            - async-execute
+          outputTransmission:
+            type: array
+            description: 'The transmission mode of output values. The only available value is `reference`, which indicates that processes produce a link to the processing result.
+
+              '
+            items:
+              type: string
+              enum:
+              - reference
+            default:
+            - reference
+    jobPrice:
+      type: object
+      properties:
+        pricingStrategy:
+          type: string
+          description: 'The pricing strategy used to calculate the cost.
+
+            '
+          example: area
+          enum:
+          - free
+          - area
+        totalCredits:
+          minimum: 0
+          type: integer
+          description: 'The process cost, in credits.
+
+            '
+          example: 400
+    processList:
+      required:
+      - processes
+      type: object
+      properties:
+        processes:
+          type: array
+          items:
+            $ref: '#/components/schemas/processSummary'
+    JobPricingbinaryInputValue:
+      type: string
+      format: byte
+    inlineOrRefData:
+      oneOf:
+      - $ref: '#/components/schemas/inputValue'
+      - $ref: '#/components/schemas/qualifiedInputValue'
+      - $ref: '#/components/schemas/link'
+    descriptionType:
+      type: object
+      properties:
+        title:
+          type: string
+          description: 'The title of the process.
+
+            '
+          example: Pansharpening
+        description:
+          type: string
+          description: 'The description of the process.
+
+            '
+          example: A fusion algorithm that upsamples the image to the resolution of the panchromatic band.
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/metadata'
+        additionalParameters:
+          type: object
+          properties:
+            role:
+              type: string
+              description: 'The role of the additional parameter.
+
+                '
+              example: up42-parameters
+            parameters:
+              type: array
+              items:
+                $ref: '#/components/schemas/additionalParameter'
+    metadata:
+      type: object
+      properties:
+        role:
+          type: string
+          description: 'The role of the metadata.
+
+            '
+          example: processor
+        title:
+          type: string
+          description: 'The title of the metadata.
+
+            '
+          example: Airbus
+        href:
+          type: string
+          description: 'A link to more information about the metadata.
+
+            '
+          example: https://www.airbus.com
+    schema:
+      type: object
+      properties:
+        maximum:
+          type: number
+        minimum:
+          type: number
+        maxLength:
+          minimum: 0
+          type: integer
+        minLength:
+          minimum: 0
+          type: integer
+          default: 0
+        maxItems:
+          minimum: 0
+          type: integer
+        minItems:
+          minimum: 0
+          type: integer
+          default: 0
+        uniqueItems:
+          type: boolean
+          default: false
+        required:
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        enum:
+          minItems: 1
+          uniqueItems: false
+          type: array
+          items: {}
+        type:
+          type: string
+          enum:
+          - array
+          - boolean
+          - integer
+          - number
+          - object
+          - string
+        items:
+          oneOf:
+          - $ref: '#/components/schemas/itemsSchema'
+          - $ref: '#/components/schemas/reference'
+        description:
+          type: string
+        format:
+          type: string
+        default:
+          type: boolean
+      additionalProperties: false
+      description: 'A definition that conforms to the [JSON schema specification](https://json-schema.org/specification).
+
+        '
+    inputs:
+      type: object
+      properties:
+        inputs:
+          type: object
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/ValidationinlineOrRefData'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ValidationinlineOrRefData'
+          description: 'The input parameters. The schemas are different, depending on the selected process.
+
+            '
+      description: 'An implementation of the [OGC Standard](https://docs.ogc.org/is/18-062r2/18-062r2.html), but with different default response values. Results are always provided with permanent links and a job''s results field only contains references or errors.
+
+        '
+      example:
+        inputs:
+          title: Pansharpened SPOT imagery over Germany
+          item: https://api.up42.com/v2/assets/stac/collections/21c0b14e-3434-4675-98d1-f225507ded99/items/23e4567-e89b-12d3-a456-426614174000
+          greyWeights:
+          - band: blue
+            weight: 0.2
+          - band: green
+            weight: 0.34
+          - band: red
+            weight: 0.23
+  parameters:
+    workspaceId:
+      name: workspaceId
+      in: query
+      description: The workspace ID.
+      required: true
+      style: form
+      explode: true
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    minDuration:
+      name: minDuration
+      in: query
+      description: 'The minimum duration of a job. Use to get jobs with runtimes greater than or equal to a specific number of seconds. Only jobs with the following statuses will be displayed:
+
+        - `running`
+
+        - `successful`
+
+        - `captured`
+
+        - `released`
+
+        - `failed`
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        format: int32
+        example: 30
+    executionProcessId:
+      name: process-id
+      in: path
+      description: The process ID in a name format.
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/processId'
+    processId:
+      name: process-id
+      in: path
+      description: The process ID in a name format.
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+      example: true-color-conversion
+    page:
+      name: page
+      in: query
+      description: The result page number. To get the first page, set the parameter to `0`.
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 10
+        default: 0
+    limit:
+      name: limit
+      in: query
+      description: 'The maximum number of results on a result page.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 10
+        default: 20
+    budgetId:
+      name: budgetId
+      in: query
+      description: 'The ID of the budget selected for this processing job. Credit consumption is recorded when a job reaches a [consumption event](https://docs.up42.com/developers/api-budgets#consumption-events) associated with a specific status.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    ValidationexecutionProcessId:
+      name: process-id
+      in: path
+      description: The process ID in a name format.
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        enum:
+        - pansharpening
+    processIdListJobs:
+      name: processId
+      in: query
+      description: 'Process IDs. Use to search for jobs running any of the provided processes.
+
+        '
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        example:
+        - pansharpening
+        items:
+          $ref: '#/components/schemas/processId'
+    sort:
+      name: sort
+      in: query
+      description: "The results sorting method that arranges elements in ascending or descending order based on a chosen field. The format is `<field name>,<asc or desc>`.\n\nThe allowed sort fields:\n  - `processID`\n  - `status`\n  - `created`\n  - `creditConsumption.credits`\n"
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: processID,asc
+    jobId:
+      name: job-id
+      in: path
+      description: The job ID.
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: a0d443a2-41e8-4995-8b54-a5cc4c448227
+    jobIds:
+      name: ids
+      in: query
+      description: 'Job IDs. Use to search for jobs with any of the provided IDs.
+
+        '
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        example:
+        - 68567134-27ad-7bd7-4b65-d61adb11fc78
+        items:
+          $ref: '#/components/schemas/jobId'
+    workspaceIdListJobs:
+      name: workspaceId
+      in: query
+      description: 'The workspace ID. Use to get jobs from a specific workspace. Otherwise, jobs from the entire account will be returned.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    maxDuration:
+      name: maxDuration
+      in: query
+      description: 'The maximum duration of a job. Use to get jobs with runtimes less than or equal to a specific number of seconds. Only jobs with the following statuses will be displayed:
+
+        - `running`
+
+        - `successful`
+
+        - `captured`
+
+        - `released`
+
+        - `failed`
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        format: int32
+        example: 30
+    JobPricingexecutionProcessId:
+      name: process-id
+      in: path
+      description: The process ID in a name format.
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        enum:
+        - pansharpening
+    statusListJobs:
+      name: status
+      in: query
+      description: '[Job statuses](https://docs.up42.com/developers/api-processing#job-statuses). Use to search for jobs with any of the provided statuses.
+
+        '
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        example:
+        - successful
+        - failed
+        items:
+          $ref: '#/components/schemas/statusCode'
+  examples:
+    pansharpeningJobExample:
+      value:
+        processID: pansharpening
+        jobID: 04fc6806-fd2c-4a5b-a335-fd563e5399ce
+        accountID: 04eb7366-f2a4-401f-953d-517aea4353d1
+        workspaceID: d40c3960-d79a-4925-9828-fadc15ce5ec3
+        definition:
+          inputs:
+            title: Pansharpening SPOT imagery
+            item: https://api.up42.com/v2/assets/stac/collections/21c0b14e-3434-4675-98d1-f225507ded99/items/23e4567-e89b-12d3-a456-426614174000
+            greyWeights:
+            - band: blue
+              weight: 0.2
+            - band: green
+              weight: 0.34
+            - band: red
+              weight: 0.23
+        results:
+          collection: https://api.up42.com/v2/assets/stac/collections/ca57a57d-5f2c-4b1c-957b-ea2c54be6262
+        status: captured
+        type: process
+        created: '2025-11-19T09:12:28Z'
+        started: '2025-11-19T09:12:45Z'
+        finished: '2025-11-19T09:18:26Z'
+        updated: '2025-11-19T09:18:26Z'
+        creditConsumption:
+          credits: 5
+    upsamplingJobExample:
+      value:
+        processID: upsampling-ns
+        jobID: 04fc6806-fd2c-4a5b-a335-fd563e5399ce
+        accountID: d40c3960-d79a-4925-9828-fadc15ce5ec3
+        workspaceID: d40c3960-d79a-4925-9828-fadc15ce5ec3
+        definition:
+          inputs:
+            title: Upsampling imagery
+            item: https://api.up42.com/v2/assets/stac/collections/21c0b14e-3434-4675-98d1-f225507ded99/items/23e4567-e89b-12d3-a456-426614174000
+        results:
+          collection: https://api.up42.com/v2/assets/stac/collections/ca57a57d-5f2c-4b1c-957b-ea2c54be6262
+        status: captured
+        type: process
+        created: '2025-11-19T09:12:28Z'
+        started: '2025-11-19T09:12:45Z'
+        finished: '2025-11-19T09:18:26Z'
+        updated: '2025-11-19T09:18:26Z'
+        creditConsumption:
+          credits: 10
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2Profiles:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+        authorizationCode:
+          authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+x-provenance:
+  method: searched
+  source: https://developer.up42.com/reference
+  harvested: '2026-10-20'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://developer.up42.com/reference/accepteuladocumentv2.md
+  - https://developer.up42.com/reference/addgeometry.md
+  - https://developer.up42.com/reference/cancelorder.md
+  - https://developer.up42.com/reference/checkorderfeasibility.md
+  - https://developer.up42.com/reference/createextensionrequest.md
+  - https://developer.up42.com/reference/createv2orderunderworkspace.md
+  - https://developer.up42.com/reference/deletegeometry.md
+  - https://developer.up42.com/reference/deletesascollection.md
+  - https://developer.up42.com/reference/estimatev2order.md
+  - https://developer.up42.com/reference/generatedownloadurlexternal.md
+  - https://developer.up42.com/reference/getbudget.md
+  - https://developer.up42.com/reference/getbudgetsettings.md
+  - https://developer.up42.com/reference/getbudgetusage.md
+  - https://developer.up42.com/reference/getcollectionv2.md
+  - https://developer.up42.com/reference/getdataproductv2.md
+  - https://developer.up42.com/reference/geteuladocumentv2.md
+  - https://developer.up42.com/reference/geteulav2.md
+  - https://developer.up42.com/reference/getgeometry.md
+  - https://developer.up42.com/reference/getjsonschema.md
+  - https://developer.up42.com/reference/getorderacquisitiondateextensions.md
+  - https://developer.up42.com/reference/getordercoverage.md
+  - https://developer.up42.com/reference/getorderv2.md
+  - https://developer.up42.com/reference/getproviderv2.md
+  - https://developer.up42.com/reference/getquicklookimage.md
+  - https://developer.up42.com/reference/getsascollection.md
+  - https://developer.up42.com/reference/getsascollections.md
+  - https://developer.up42.com/reference/getsasitem.md
+  - https://developer.up42.com/reference/getsasitems.md
+  - https://developer.up42.com/reference/getsaslandingpage.md
+  - https://developer.up42.com/reference/getsasqueryables.md
+  - https://developer.up42.com/reference/getthumbnailimage.md
+  - https://developer.up42.com/reference/listbudgets.md
+  - https://developer.up42.com/reference/listcollectionsv2.md
+  - https://developer.up42.com/reference/listdataproductsv2.md
+  - https://developer.up42.com/reference/listeuladocumentsv2.md
+  - https://developer.up42.com/reference/listeulasv2.md
+  - https://developer.up42.com/reference/listgeometries.md
+  - https://developer.up42.com/reference/listordersv2.md
+  - https://developer.up42.com/reference/listprovidersv2.md
+  - https://developer.up42.com/reference/listtaskingfeasibilitystudies.md
+  - https://developer.up42.com/reference/listtaskingquotation.md
+  - https://developer.up42.com/reference/listv2taskingorderopportunities.md
+  - https://developer.up42.com/reference/patchgeometry.md
+  - https://developer.up42.com/reference/patchorder.md
+  - https://developer.up42.com/reference/patchsasitem.md
+  - https://developer.up42.com/reference/postsassearch.md
+  - https://developer.up42.com/reference/processingevaluate.md
+  - https://developer.up42.com/reference/processingexecute.md
+  - https://developer.up42.com/reference/processinggetjob.md
+  - https://developer.up42.com/reference/processinggetjobs.md
+  - https://developer.up42.com/reference/processinggetprocess.md
+  - https://developer.up42.com/reference/processinggetprocesses.md
+  - https://developer.up42.com/reference/processingvalidate.md
+  - https://developer.up42.com/reference/searchbyhost.md
+  - https://developer.up42.com/reference/updatetaskingfeasibilitystudy.md
+  - https://developer.up42.com/reference/updatetaskingquotation.md
+  - https://developer.up42.com/reference/validatev2order.md
+  merge:
+    pages: 57
+    deduped: 593
+    conflicts_kept_first: 0

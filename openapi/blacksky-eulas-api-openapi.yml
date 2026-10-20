@@ -1,0 +1,566 @@
+openapi: 3.2.0
+info:
+  title: UP42 EULAs API
+  contact:
+    name: Contact support
+    email: support@up42.com
+  license:
+    name: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+    url: http://creativecommons.org/licenses/by-nc-nd/4.0/
+  version: '1.2'
+servers:
+- url: https://api.up42.com
+security:
+- httpBearer: []
+tags:
+- name: EULAs
+paths:
+  /v2/eulas:
+    get:
+      tags:
+      - EULAs
+      summary: Get EULAs
+      description: Get a list of end-user license agreements (EULAs). A EULA is associated either with a data product or a processing algorithm, or with a group of data products or processing algorithms from the same provider.
+      operationId: listEulasV2
+      parameters:
+      - name: term
+        in: query
+        description: 'The term for partial search filtering. The search is performed across EULAs'' titles and descriptions.
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/PageablePage'
+      - $ref: '#/components/parameters/PageableSize'
+      - $ref: '#/components/parameters/PageableSorting'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfEulas'
+      security:
+      - oauth2Profiles:
+        - account
+  /v2/eulas/{eula-id}:
+    get:
+      tags:
+      - EULAs
+      summary: Get a EULA
+      description: Get information about a specific end-user license agreement (EULA). A EULA is associated either with a data product or a processing algorithm, or with a group of data products or processing algorithms from the same provider.
+      operationId: getEulaV2
+      parameters:
+      - $ref: '#/components/parameters/EulaId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EulaResponse'
+      security:
+      - oauth2Profiles:
+        - account
+  /v2/eulas/{eula-id}/documents:
+    get:
+      tags:
+      - EULAs
+      summary: Get EULA documents
+      description: Get a list of digital documents associated with an end-user license agreement (EULA).
+      operationId: listEulaDocumentsV2
+      parameters:
+      - $ref: '#/components/parameters/EulaId'
+      - $ref: '#/components/parameters/PageablePage'
+      - $ref: '#/components/parameters/PageableSize'
+      - $ref: '#/components/parameters/PageableSorting'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfEulaDocuments'
+      security:
+      - oauth2Profiles:
+        - account
+  /v2/eulas/{eula-id}/documents/{eula-document-id}:
+    get:
+      tags:
+      - EULAs
+      summary: Get a EULA document
+      description: Get information about a specific digital document associated with an end-user license agreement (EULA).
+      operationId: getEulaDocumentV2
+      parameters:
+      - $ref: '#/components/parameters/EulaId'
+      - $ref: '#/components/parameters/EulaDocumentId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EulaDocumentResponse'
+      security:
+      - oauth2Profiles:
+        - account
+    patch:
+      tags:
+      - EULAs
+      summary: Accept a EULA document
+      description: Accept a specific digital document associated with an end-user license agreement (EULA).
+      operationId: acceptEulaDocumentV2
+      parameters:
+      - $ref: '#/components/parameters/EulaId'
+      - $ref: '#/components/parameters/EulaDocumentId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EulaDocumentPatchRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EulaDocumentResponse'
+      security:
+      - oauth2Profiles:
+        - account
+        - eula.w
+components:
+  schemas:
+    EulaDescription:
+      type: string
+      description: 'The description of the EULA.
+
+        '
+      example: End-user license agreement (commercial) for Airbus Pléiades Neo.
+    PageableResponse:
+      type: object
+      properties:
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        last:
+          type: boolean
+          example: false
+        totalElements:
+          type: integer
+          format: int64
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          example: 20
+        size:
+          type: integer
+          format: int32
+          example: 10
+        number:
+          type: integer
+          format: int32
+          example: 0
+        sort:
+          $ref: '#/components/schemas/Sort'
+        numberOfElements:
+          type: integer
+          format: int32
+          example: 10
+        first:
+          type: boolean
+          example: true
+        empty:
+          type: boolean
+          example: false
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          example: 10
+        sort:
+          $ref: '#/components/schemas/Sort'
+        offset:
+          type: integer
+          format: int64
+          example: 0
+        paged:
+          type: boolean
+          example: true
+        unpaged:
+          type: boolean
+          example: false
+    EulaResponse:
+      required:
+      - description
+      - id
+      - isAccepted
+      - title
+      properties:
+        id:
+          $ref: '#/components/schemas/EulaId'
+        currentDocumentId:
+          $ref: '#/components/schemas/EulaDocumentCurrentId'
+        currentDocumentValidFrom:
+          $ref: '#/components/schemas/EulaDocumentValidFrom'
+        currentDocumentUrl:
+          $ref: '#/components/schemas/EulaDocumentUrl'
+        currentDocumentCreatedAt:
+          $ref: '#/components/schemas/EulaDocumentCreatedAt'
+        currentDocumentFilename:
+          $ref: '#/components/schemas/EulaDocumentFilename'
+        title:
+          $ref: '#/components/schemas/EulaTitle'
+        description:
+          $ref: '#/components/schemas/EulaDescription'
+        isAccepted:
+          $ref: '#/components/schemas/EulaDocumentisAccepted'
+        acceptedAt:
+          $ref: '#/components/schemas/EulaAcceptanceAcceptedAt'
+        acceptedById:
+          $ref: '#/components/schemas/EulaAcceptanceAcceptedById'
+      description: 'A single EULA.
+
+        '
+    PageOfEulaDocuments:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EulaDocumentResponse'
+      description: 'A list of EULA documents.
+
+        '
+      allOf:
+      - $ref: '#/components/schemas/PageableResponse'
+    EulaTitle:
+      type: string
+      description: 'The title of the EULA.
+
+        '
+      example: EULA_Airbus_Pleiades_Neo_v2
+    EulaId:
+      type: string
+      description: 'The EULA ID.
+
+        '
+      format: uuid
+      example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    EulaDocumentId:
+      type: string
+      description: 'The EULA document ID.
+
+        '
+      format: uuid
+      example: a0d443a2-41e8-4995-8b54-a5cc4c448227
+    EulaDocumentPatchRequest:
+      type: object
+      properties:
+        isAccepted:
+          $ref: '#/components/schemas/EulaDocumentisAccepted'
+    EulaDocumentCurrentId:
+      type:
+      - string
+      - 'null'
+      description: 'The ID of the active document currently associated with the EULA.
+
+        '
+      format: uuid
+      example: a0d443a2-41e8-4995-8b54-a5cc4c448227
+    EulaDocumentSize:
+      type: number
+      description: 'The size of the EULA document, in bytes.
+
+        '
+      format: int64
+    Sort:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          example: false
+        sorted:
+          type: boolean
+          example: true
+        unsorted:
+          type: boolean
+          example: false
+    EulaDocumentisAccepted:
+      type: boolean
+      description: 'Whether the EULA document is accepted.
+
+        '
+    EulaDocumentCreatedAt:
+      type:
+      - string
+      - 'null'
+      description: 'The timestamp indicating the date the EULA document was created.
+
+        '
+      format: date-time
+      example: '2022-12-07T09:19:27.552944Z'
+    EulaDocumentValidFrom:
+      type:
+      - string
+      - 'null'
+      description: 'The timestamp indicating the start date of the EULA document''s validity.
+
+        '
+      format: date-time
+      example: '2022-12-07T09:19:27.552944Z'
+    EulaDocumentFilename:
+      type:
+      - string
+      - 'null'
+      description: 'The name of the EULA document. It is generated based on the title and version of the EULA.
+
+        '
+      example: collection-eula-v2.pdf
+    PageOfEulas:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EulaResponse'
+      description: 'A list of EULAs.
+
+        '
+      allOf:
+      - $ref: '#/components/schemas/PageableResponse'
+    EulaDocumentResponse:
+      required:
+      - filename
+      - id
+      - isAccepted
+      - isCurrent
+      - size
+      - url
+      - version
+      properties:
+        id:
+          $ref: '#/components/schemas/EulaDocumentId'
+        url:
+          $ref: '#/components/schemas/EulaDocumentUrl'
+        filename:
+          $ref: '#/components/schemas/EulaDocumentFilename'
+        size:
+          $ref: '#/components/schemas/EulaDocumentSize'
+        version:
+          $ref: '#/components/schemas/EulaDocumentVersion'
+        isCurrent:
+          $ref: '#/components/schemas/EulaDocumentIsCurrent'
+        validFrom:
+          $ref: '#/components/schemas/EulaDocumentValidFrom'
+        isAccepted:
+          $ref: '#/components/schemas/EulaDocumentisAccepted'
+        acceptedAt:
+          $ref: '#/components/schemas/EulaAcceptanceAcceptedAt'
+        acceptedById:
+          $ref: '#/components/schemas/EulaAcceptanceAcceptedById'
+      description: 'A single EULA document.
+
+        '
+    EulaDocumentVersion:
+      type: number
+      description: 'The version of the EULA document. It is automatically generated based on the count of documents associated with the EULA.
+
+        '
+      example: 2
+    EulaAcceptanceAcceptedById:
+      type:
+      - string
+      - 'null'
+      description: 'The ID of the user who accepted the EULA document.
+
+        '
+      format: uuid
+      example: 55434287-31bc-3ad7-1a63-d61aac11ac55
+    EulaDocumentUrl:
+      type:
+      - string
+      - 'null'
+      description: 'The URL of the EULA document.
+
+        '
+      format: uri
+      example: https://example.com/collection-eula-2.pdf
+    EulaDocumentIsCurrent:
+      type: boolean
+      description: 'Whether this document is the active document currently associated with the EULA.
+
+        '
+      example: true
+    EulaAcceptanceAcceptedAt:
+      type:
+      - string
+      - 'null'
+      description: 'The timestamp indicating the date the EULA document was accepted.
+
+        '
+      format: date-time
+      example: '2022-12-07T09:19:27.552944Z'
+  parameters:
+    EulaDocumentId:
+      name: eula-document-id
+      in: path
+      description: 'The EULA document ID.
+
+        '
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: a0d443a2-41e8-4995-8b54-a5cc4c448227
+    PageableSize:
+      name: size
+      in: query
+      description: 'The number of results on a result page.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 10
+        default: 20
+    PageablePage:
+      name: page
+      in: query
+      description: 'The result page number. To get the first page, set the parameter to `0`.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 1
+        default: 0
+    PageableSorting:
+      name: sort
+      in: query
+      description: 'The results sorting method that arranges elements in ascending or descending order based on a chosen field. The format is `<field name>,<asc or desc>`.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: id,asc
+        default: createdAt,desc
+    EulaId:
+      name: eula-id
+      in: path
+      description: 'The EULA ID.
+
+        '
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2Profiles:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+        authorizationCode:
+          authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+x-provenance:
+  method: searched
+  source: https://developer.up42.com/reference
+  harvested: '2026-10-20'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://developer.up42.com/reference/accepteuladocumentv2.md
+  - https://developer.up42.com/reference/addgeometry.md
+  - https://developer.up42.com/reference/cancelorder.md
+  - https://developer.up42.com/reference/checkorderfeasibility.md
+  - https://developer.up42.com/reference/createextensionrequest.md
+  - https://developer.up42.com/reference/createv2orderunderworkspace.md
+  - https://developer.up42.com/reference/deletegeometry.md
+  - https://developer.up42.com/reference/deletesascollection.md
+  - https://developer.up42.com/reference/estimatev2order.md
+  - https://developer.up42.com/reference/generatedownloadurlexternal.md
+  - https://developer.up42.com/reference/getbudget.md
+  - https://developer.up42.com/reference/getbudgetsettings.md
+  - https://developer.up42.com/reference/getbudgetusage.md
+  - https://developer.up42.com/reference/getcollectionv2.md
+  - https://developer.up42.com/reference/getdataproductv2.md
+  - https://developer.up42.com/reference/geteuladocumentv2.md
+  - https://developer.up42.com/reference/geteulav2.md
+  - https://developer.up42.com/reference/getgeometry.md
+  - https://developer.up42.com/reference/getjsonschema.md
+  - https://developer.up42.com/reference/getorderacquisitiondateextensions.md
+  - https://developer.up42.com/reference/getordercoverage.md
+  - https://developer.up42.com/reference/getorderv2.md
+  - https://developer.up42.com/reference/getproviderv2.md
+  - https://developer.up42.com/reference/getquicklookimage.md
+  - https://developer.up42.com/reference/getsascollection.md
+  - https://developer.up42.com/reference/getsascollections.md
+  - https://developer.up42.com/reference/getsasitem.md
+  - https://developer.up42.com/reference/getsasitems.md
+  - https://developer.up42.com/reference/getsaslandingpage.md
+  - https://developer.up42.com/reference/getsasqueryables.md
+  - https://developer.up42.com/reference/getthumbnailimage.md
+  - https://developer.up42.com/reference/listbudgets.md
+  - https://developer.up42.com/reference/listcollectionsv2.md
+  - https://developer.up42.com/reference/listdataproductsv2.md
+  - https://developer.up42.com/reference/listeuladocumentsv2.md
+  - https://developer.up42.com/reference/listeulasv2.md
+  - https://developer.up42.com/reference/listgeometries.md
+  - https://developer.up42.com/reference/listordersv2.md
+  - https://developer.up42.com/reference/listprovidersv2.md
+  - https://developer.up42.com/reference/listtaskingfeasibilitystudies.md
+  - https://developer.up42.com/reference/listtaskingquotation.md
+  - https://developer.up42.com/reference/listv2taskingorderopportunities.md
+  - https://developer.up42.com/reference/patchgeometry.md
+  - https://developer.up42.com/reference/patchorder.md
+  - https://developer.up42.com/reference/patchsasitem.md
+  - https://developer.up42.com/reference/postsassearch.md
+  - https://developer.up42.com/reference/processingevaluate.md
+  - https://developer.up42.com/reference/processingexecute.md
+  - https://developer.up42.com/reference/processinggetjob.md
+  - https://developer.up42.com/reference/processinggetjobs.md
+  - https://developer.up42.com/reference/processinggetprocess.md
+  - https://developer.up42.com/reference/processinggetprocesses.md
+  - https://developer.up42.com/reference/processingvalidate.md
+  - https://developer.up42.com/reference/searchbyhost.md
+  - https://developer.up42.com/reference/updatetaskingfeasibilitystudy.md
+  - https://developer.up42.com/reference/updatetaskingquotation.md
+  - https://developer.up42.com/reference/validatev2order.md
+  merge:
+    pages: 57
+    deduped: 593
+    conflicts_kept_first: 0

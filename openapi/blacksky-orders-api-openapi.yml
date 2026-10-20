@@ -1,0 +1,1689 @@
+openapi: 3.2.0
+info:
+  title: UP42 Orders API
+  contact:
+    name: Contact support
+    email: support@up42.com
+  license:
+    name: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+    url: http://creativecommons.org/licenses/by-nc-nd/4.0/
+  version: '1.2'
+servers:
+- url: https://api.up42.com
+security:
+- httpBearer: []
+tags:
+- name: Orders
+paths:
+  /orders/schema/{data-product-id}:
+    get:
+      tags:
+      - Orders
+      summary: Get a JSON schema of an order form
+      description: Get detailed information about the parameters needed to create an order for a specific data product.
+      operationId: getJSONSchema
+      parameters:
+      - name: data-product-id
+        in: path
+        description: The data product ID.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          title: Data Product Id
+          type: string
+          description: The data product ID.
+          format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+      responses:
+        '200':
+          description: OK
+          content:
+            application/schema+json:
+              schema:
+                type: string
+              examples:
+                Tasking:
+                  value:
+                    $schema: https://json-schema.org/draft-07/schema
+                    type: object
+                    properties:
+                      geometry:
+                        description: Polygon Model.
+                        properties:
+                          type:
+                            const: Polygon
+                            default: Polygon
+                            title: Type
+                            type: string
+                          coordinates:
+                            items:
+                              items:
+                                items:
+                                  type: number
+                                maxItems: 2
+                                minItems: 2
+                                type: array
+                              minItems: 4
+                              type: array
+                            type: array
+                        required:
+                        - coordinates
+                        title: Geometry
+                        type: object
+                      displayName:
+                        title: Order name
+                        type: string
+                      extraDescription:
+                        title: Description
+                        type: string
+                      acquisitionStart:
+                        format: date-time
+                        title: Start
+                        type: string
+                      acquisitionEnd:
+                        format: date-time
+                        title: End
+                        type: string
+                      acquisitionMode:
+                        anyOf:
+                        - const: spot
+                          title: Spot (standard)
+                        - const: spot_enhanced
+                          title: Spot (enhanced)
+                        - const: spot_ultra
+                          title: Spot (ultra)
+                        - const: strip
+                          title: Strip (standard)
+                        - const: strip_enhanced
+                          title: Strip (enhanced)
+                        - const: scan
+                          title: Scan (standard)
+                        - const: scan_enhanced
+                          title: Scan (enhanced)
+                        title: Acquisition mode
+                        default: spot
+                        description: The operation mode that determines azimuth resolution and swath width.
+                        type: string
+                      maxIncidenceAngle:
+                        default: 25
+                        description: The maximum allowed angle between the ground normal and look direction from the satellite.
+                        maximum: 90
+                        minimum: 0
+                        title: Maximum incidence angle (°)
+                        type: integer
+                      polarization:
+                        anyOf:
+                        - const: hh
+                          title: HH
+                        - const: vv
+                          title: VV
+                        - const: vh
+                          title: VH
+                        - const: hv
+                          title: HV
+                        title: Polarization
+                        default: vv
+                        description: 'The direction of travel of an electromagnetic wave: vertical (V) or horizontal (H). The first letter corresponds to how signals are emitted, and the second letter corresponds to how they are received.'
+                        type: string
+                      looks:
+                        anyOf:
+                        - const: '1'
+                          title: '1'
+                        title: Number of looks
+                        default: '1'
+                        description: The number of times a sensor captures the target. Single-look imagery will have more detail but also more noise. Multi-look imagery will be easier to understand but less detailed.
+                        type: string
+                      priority:
+                        anyOf:
+                        - const: standard
+                          title: Standard
+                        - const: high
+                          title: High
+                        title: Priority
+                        default: standard
+                        description: The urgency of the order. High-priority orders are completed faster, but cost more.
+                        type: string
+                    required:
+                    - geometry
+                    - displayName
+                    - acquisitionStart
+                    - acquisitionEnd
+                    - acquisitionMode
+                    - maxIncidenceAngle
+                    - polarization
+                    - priority
+                    - looks
+                    additionalProperties: false
+                Catalog:
+                  value:
+                    additionalProperties: false
+                    properties:
+                      id:
+                        title: Id
+                        type: string
+                      aoi:
+                        description: Polygon Model.
+                        properties:
+                          type:
+                            const: Polygon
+                            default: Polygon
+                            title: Type
+                            type: string
+                          coordinates:
+                            items:
+                              items:
+                                items:
+                                  type: number
+                                maxItems: 2
+                                minItems: 2
+                                type: array
+                              minItems: 4
+                              type: array
+                            type: array
+                        required:
+                        - coordinates
+                        title: Polygon
+                        type: object
+                      displayName:
+                        title: Order name
+                        type: string
+                    required:
+                    - id
+                    - aoi
+                    title: ParamsWithAOI
+                    type: object
+                    $schema: https://json-schema.org/draft-07/schema
+        '400':
+          description: Not valid data product ID
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: https://docs.up42.com/problems/not-valid-uuid
+                title: Not a valid UUID
+                status: 400
+        '404':
+          description: Resource not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              examples:
+                Schema not found:
+                  value:
+                    type: https://docs.up42.com/problems/schema-not-found
+                    title: Schema not found
+                    status: 404
+                Data product not found:
+                  value:
+                    type: https://docs.up42.com/problems/data-product-not-found
+                    title: Data product not found
+                    status: 404
+      security:
+      - httpBearer: []
+  /v2/orders:
+    get:
+      tags:
+      - Orders
+      summary: Get orders
+      description: Get a list of tasking and catalog orders.
+      operationId: listOrdersV2
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceIdQuery'
+      - $ref: '#/components/parameters/OrderType'
+      - $ref: '#/components/parameters/OrderV2Status'
+      - $ref: '#/components/parameters/OrderSubStatusQuery'
+      - $ref: '#/components/parameters/OrderDisplayNameQuery'
+      - $ref: '#/components/parameters/DataProductIdsQuery'
+      - $ref: '#/components/parameters/OrderIdsQuery'
+      - $ref: '#/components/parameters/BudgetIdsQuery'
+      - $ref: '#/components/parameters/Tags'
+      - $ref: '#/components/parameters/PageablePage'
+      - $ref: '#/components/parameters/PageableSize'
+      - $ref: '#/components/parameters/PageableSorting'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersV2PageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+      security:
+      - httpBearer: []
+    post:
+      tags:
+      - Orders
+      summary: Create an order
+      description: Create a new tasking or catalog order.
+      operationId: createV2OrderUnderWorkspace
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceIdQueryRequired'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateV2OrderRequest'
+        required: true
+      responses:
+        '202':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateV2OrderResponse'
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/OrderingProblem'
+              examples:
+                badOrderRequest:
+                  summary: Order request not valid
+                  value:
+                    type: https://docs.up42.com/problems/bad-order-request
+                    status: 400
+                    title: Order request not valid
+                    detail: One or more query parameter values are not valid.
+                    instance: /v2/orders
+                    errors:
+                    - name: featureCollection
+                      reason: The feature list must not be empty.
+                budgetIdRequired:
+                  $ref: '#/components/examples/BudgetIdRequired'
+                budgetIsNotActive:
+                  $ref: '#/components/examples/BudgetIsNotActive'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/OrderingProblem'
+              examples:
+                budgetNotFound:
+                  $ref: '#/components/examples/BudgetNotFoundOnOrder'
+                accountNotEnterprise:
+                  $ref: '#/components/examples/AccountNotEnterpriseOnOrder'
+  /v2/orders/estimate:
+    post:
+      tags:
+      - Orders
+      summary: Estimate the cost of an order
+      description: 'Get a cost estimation before creating a tasking or a catalog order.
+
+
+        You can receive an overview of the overall credit amount that will be deducted from your credit balance if you decide to proceed with the ordering.'
+      operationId: estimateV2Order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateV2OrderRequest'
+        required: true
+      responses:
+        '200':
+          description: 'Cost estimation returned. Any geometry validation failures will be returned inside the `errors` array
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateV2OrderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+  /v2/orders/validation:
+    post:
+      tags:
+      - Orders
+      summary: Validate input for an order
+      description: Validate input for a tasking or catalog order before creating it.
+      operationId: validateV2Order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateV2OrderRequest'
+        required: true
+      responses:
+        '200':
+          description: 'Order validation results
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderValidationBatchResponse'
+              examples:
+                validationAvailable:
+                  summary: Validation completed
+                  value:
+                    Pléiades Neo over North America 1:
+                      status: INVALID
+                      errors:
+                      - errorReason: The geometry area of 10 km² is below the minimum required size of 25 km².
+                    Pléiades Neo over North America 2:
+                      status: VALID
+                validationUnavailable:
+                  summary: Validation can't be completed
+                  value:
+                    Pléiades Neo over North America 1:
+                      status: UNAVAILABLE
+                      unavailabilityReason: Service unavailable, try again later
+                    Pléiades Neo over North America 2:
+                      status: UNAVAILABLE
+                      unavailabilityReason: Service unavailable, try again later
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+        '404':
+          $ref: '#/components/responses/DataProductNotFound'
+      security:
+      - httpBearer: []
+  /v2/orders/{order-id}:
+    get:
+      tags:
+      - Orders
+      summary: Get an order
+      description: Get information about a specific order.
+      operationId: getOrderV2
+      parameters:
+      - $ref: '#/components/parameters/OrderIdPathKebab'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderV2Response'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - httpBearer: []
+    patch:
+      tags:
+      - Orders
+      summary: Update an order
+      description: Change details of an existing tasking or catalog order.
+      operationId: patchOrder
+      parameters:
+      - $ref: '#/components/parameters/OrderIdPathKebab'
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/OrderPatchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderV2Response'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - httpBearer: []
+  /v2/orders/{order-id}/cancellation:
+    post:
+      tags:
+      - Orders
+      summary: Cancel an order
+      description: Cancel an order currently in the `CREATED` or `PLACEMENT_FAILED` status. Once canceled, the order moves to the `CANCELED` status.
+      operationId: cancelOrder
+      parameters:
+      - $ref: '#/components/parameters/OrderIdPathKebab'
+      responses:
+        '200':
+          description: Order canceled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelOrderResponse'
+        '400':
+          description: Order can't be canceled in its current status
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/OrderingProblem'
+              example:
+                type: https://docs.up42.com/problems/order-cant-be-canceled
+                status: 400
+                title: Order can't be canceled
+                detail: The order with the ID '68567134-27ad-7bd7-4b65-d61adb11fc78' can't be canceled in its current status.
+                instance: /v2/orders/68567134-27ad-7bd7-4b65-d61adb11fc78/cancellation
+                errors:
+                - name: status
+                  reason: You can cancel an order only if its status is 'CREATED' or 'PLACEMENT_FAILED'.
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - httpBearer: []
+components:
+  schemas:
+    PageableResponse:
+      type: object
+      properties:
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        last:
+          type: boolean
+          example: false
+        totalElements:
+          type: integer
+          format: int64
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          example: 20
+        size:
+          type: integer
+          format: int32
+          example: 10
+        number:
+          type: integer
+          format: int32
+          example: 0
+        sort:
+          $ref: '#/components/schemas/Sort'
+        numberOfElements:
+          type: integer
+          format: int32
+          example: 10
+        first:
+          type: boolean
+          example: true
+        empty:
+          type: boolean
+          example: false
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          example: 10
+        sort:
+          $ref: '#/components/schemas/Sort'
+        offset:
+          type: integer
+          format: int64
+          example: 0
+        paged:
+          type: boolean
+          example: true
+        unpaged:
+          type: boolean
+          example: false
+    OrderPatchRequest:
+      type: object
+      properties:
+        tags:
+          maxItems: 30
+          type: array
+          description: 'A list of tags to replace tags already assigned to the order. A tag can consist of letters, numbers, spaces, and special characters (`.`, `-`, `_`, `/`, `:`).
+
+            '
+          items:
+            $ref: '#/components/schemas/Tag'
+        budgetId:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the budget selected for this order. Set to `null` to remove the assigned budget. Once [consumption has been recorded](https://docs.up42.com/developers/api-budgets#consumption-events), this value can no longer be updated.
+
+            '
+          format: uuid
+          example: c3de9ed8-f6e5-4bb5-a157-f6430ba756da
+    ErrorResponseV1:
+      required:
+      - error
+      type: object
+      properties:
+        data:
+          type:
+          - object
+          - 'null'
+        error:
+          $ref: '#/components/schemas/ErrorResponseObject'
+      description: Legacy error wrapper used for authentication failures and some data-adapter schema errors.
+    Problem:
+      required:
+      - status
+      - title
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'A URI reference that uniquely identifies the problem type.
+
+            '
+          format: uri-reference
+        status:
+          type: integer
+          description: 'The HTTP status code generated by the origin server for this occurrence of the problem.
+
+            '
+        title:
+          type: string
+          description: 'A short summary of the problem type.
+
+            '
+        detail:
+          type:
+          - string
+          - 'null'
+          description: 'A human-readable explanation specific to this occurrence of the problem
+
+            '
+      description: RFC 9457 problem details for HTTP APIs
+    EstimateV2OrderResponse:
+      required:
+      - errors
+      - results
+      - summary
+      type: object
+      properties:
+        summary:
+          $ref: '#/components/schemas/EstimationV2Summary'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EstimationV2Result'
+        errors:
+          type: array
+          description: 'Errors associated with individual geometries, including validation failures due to AOI size or vertex-count limits.
+
+            '
+          example: []
+          items:
+            $ref: '#/components/schemas/BatchEndpointErrorDetail'
+      description: 'The cost estimation.
+
+        '
+    ArchiveOrderDetailsV2:
+      type: object
+      description: 'Catalog order details.
+
+        '
+      allOf:
+      - $ref: '#/components/schemas/ArchiveOrderDetailsSharedProperties'
+    TaskingOrderDetailsV2:
+      type: object
+      description: 'Tasking order details.
+
+        '
+      allOf:
+      - $ref: '#/components/schemas/TaskingOrderDetailsSharedProperties'
+    AcquisitionEnd:
+      type: string
+      description: 'The date and time when the sensor finished the acquisition process.
+
+        '
+      format: date-time
+      example: '2024-06-30T00:00:00Z'
+    OrderingFeature:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'The type of geometry. The only allowed value is `Feature`.
+
+            '
+          enum:
+          - Feature
+        geometry:
+          $ref: '#/components/schemas/OrderingGeometry'
+        properties:
+          type: object
+      description: 'A spatially bounded GeoJSON feature.
+
+        '
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7946#section-3.2
+    DataProductId:
+      type:
+      - string
+      - 'null'
+      description: The data product ID.
+      format: uuid
+      example: bcc3d9a3-a632-19c2-c1e1-f762cc3c7a12
+    AccountId:
+      type: string
+      description: The account ID.
+      format: uuid
+      example: 55434287-31bc-3ad7-1a63-d61aac11ac55
+    OrderSubStatus:
+      type:
+      - string
+      - 'null'
+      description: 'An [additional status](https://docs.up42.com/developers/api-tasking#order-substatuses) for the tasking order.
+
+        '
+      enum:
+      - FEASIBILITY_WAITING_UPLOAD
+      - FEASIBILITY_WAITING_RESPONSE
+      - QUOTATION_WAITING_UPLOAD
+      - QUOTATION_WAITING_RESPONSE
+      - QUOTATION_ACCEPTED
+      - QUOTATION_REJECTED
+      - null
+    OrderingProblem:
+      required:
+      - status
+      - title
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'A URI reference that uniquely identifies the problem type.
+
+            '
+          format: uri-reference
+        status:
+          type: integer
+          description: 'The HTTP status code generated by the origin server for this occurrence of the problem.
+
+            '
+        title:
+          type: string
+          description: 'A short summary of the problem type.
+
+            '
+        detail:
+          type:
+          - string
+          - 'null'
+          description: 'A human-readable explanation specific to this occurrence of the problem.
+
+            '
+        instance:
+          type:
+          - string
+          - 'null'
+          description: 'A URI reference that identifies the specific occurrence of the problem.
+
+            '
+          format: uri-reference
+        errors:
+          type:
+          - array
+          - 'null'
+          description: Validation errors for specific parameters.
+          items:
+            $ref: '#/components/schemas/InvalidParam'
+      description: RFC 9457 Problem Details for HTTP APIs
+    CreateV2OrderErrorDetails:
+      required:
+      - details
+      - index
+      - message
+      type: object
+      properties:
+        index:
+          type: number
+          description: 'The failed order index number.
+
+            '
+        message:
+          type: string
+          description: The error message associated with the failed order.
+        details:
+          type: string
+          description: Error message details.
+    WorkspaceId:
+      type: string
+      description: The workspace ID.
+      format: uuid
+    OrderType:
+      type: string
+      description: The order type.
+      enum:
+      - TASKING
+      - ARCHIVE
+    ArchiveOrderDetailsSharedProperties:
+      required:
+      - aoi
+      type: object
+      properties:
+        aoi:
+          $ref: '#/components/schemas/OrderingGeometry'
+        imageId:
+          type: string
+          description: 'The ID of the image scene.
+
+            '
+          format: uuid
+          example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    Sort:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          example: false
+        sorted:
+          type: boolean
+          example: true
+        unsorted:
+          type: boolean
+          example: false
+    CreateV2OrderResponse:
+      required:
+      - errors
+      - results
+      type: object
+      properties:
+        results:
+          type: array
+          description: 'Details of the created orders. If you have defined multiple geometries, each geometry will result in a separate order.
+
+            '
+          items:
+            $ref: '#/components/schemas/V2ResultDetails'
+        errors:
+          type: array
+          description: 'Failed geometries error details.
+
+            '
+          items:
+            $ref: '#/components/schemas/CreateV2OrderErrorDetails'
+      description: 'The created orders data.
+
+        '
+    OrdersV2PageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          description: A list of orders.
+          items:
+            $ref: '#/components/schemas/OrderV2Response'
+      description: Order page
+      allOf:
+      - $ref: '#/components/schemas/PageableResponse'
+    AcquisitionStart:
+      type: string
+      description: 'The date and time when the sensor started the acquisition process.
+
+        '
+      format: date-time
+      example: '2024-05-23T00:00:00Z'
+    EstimateV2OrderPricingUnit:
+      type:
+      - string
+      - 'null'
+      description: 'The unit of measurement used to calculate the size.
+
+        '
+      enum:
+      - SQ_KM
+      - SCENE
+      - null
+    CreateV2OrderRequest:
+      required:
+      - dataProduct
+      - displayName
+      - featureCollection
+      - params
+      type: object
+      properties:
+        dataProduct:
+          type: string
+          description: The data product ID.
+          format: uuid
+          example: 07c33a51-94b9-4509-84df-e9c13ea92b84
+        displayName:
+          $ref: '#/components/schemas/OrderDisplayName'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        budgetId:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the budget selected for this order. Credit consumption is recorded when the order reaches a [consumption event](https://docs.up42.com/developers/api-budgets#consumption-events) associated with a specific status.
+
+            '
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        params:
+          type: object
+          additionalProperties: true
+          description: 'Order parameters, excluding spatial geometry handled in the `featureCollection` object.
+
+            '
+          example:
+            spectralBands: bundle
+            radiometricProcessing: reflectance
+            geometricProcessing: orthorectified
+            pixelCoding: 16bit
+            priority: high
+            maxIncidenceAngle: 20
+            maxCloudCover: 20
+            projection: '4326'
+            acquisitionMode: mono
+            acquisitionStart: '2025-11-20T00:00:00.000Z'
+            acquisitionEnd: '2025-11-27T00:00:00.000Z'
+        featureCollection:
+          $ref: '#/components/schemas/OrderingFeatureCollection'
+    Tags:
+      maxItems: 30
+      type: array
+      description: 'A list of tags that categorize the order. A tag can consist of letters, numbers, spaces, and special characters (`.`, `-`, `_`, `/`, `:`).
+
+        '
+      items:
+        $ref: '#/components/schemas/Tag'
+    OrderingGeometry:
+      required:
+      - coordinates
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of geometry.
+          example: Polygon
+          enum:
+          - Polygon
+          - Point
+        coordinates:
+          description: The coordinates.
+          example:
+          - - - 77.259584
+              - 28.622331
+            - - 77.287879
+              - 28.622632
+            - - 77.287621
+              - 28.594794
+            - - 77.259389
+              - 28.594983
+            - - 77.259584
+              - 28.622331
+          oneOf:
+          - type: array
+            items:
+              type: array
+              items:
+                minItems: 2
+                type: array
+                items:
+                  type: number
+                  format: double
+          - type: array
+            items:
+              type: number
+              format: double
+        crs:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The parameter defining the CRS.
+              example: name
+            properties:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the CRS.
+                  example: EPSG:4326
+          description: The CRS of the order.
+      description: 'The geometry in the GeoJSON format.
+
+        '
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#geometry-objects
+    OrderValidationResponseDto:
+      required:
+      - status
+      type: object
+      properties:
+        status:
+          type: string
+          description: 'The [validation status](https://docs.up42.com/developers/api-tasking#validation-statuses).
+
+            '
+          enum:
+          - VALID
+          - INVALID
+          - UNAVAILABLE
+        errors:
+          type: array
+          description: 'Errors explaining why the request fails validation.
+
+            '
+          items:
+            $ref: '#/components/schemas/ValidationResultInvalid'
+        unavailabilityReason:
+          type: string
+          description: 'Validation failure reason.
+
+            '
+          example: Service unavailable, try again later
+    TaskingOrderDetailsSharedProperties:
+      required:
+      - acquisitionEnd
+      - acquisitionStart
+      - geometry
+      type: object
+      properties:
+        acquisitionStart:
+          $ref: '#/components/schemas/AcquisitionStart'
+        acquisitionEnd:
+          $ref: '#/components/schemas/AcquisitionEnd'
+        geometry:
+          $ref: '#/components/schemas/OrderingGeometry'
+        extraDescription:
+          type: string
+          description: 'An additional order description.
+
+            '
+          example: Rail infrastructure monitoring.
+        subStatus:
+          $ref: '#/components/schemas/OrderSubStatus'
+    OrderResponseSharedProperties:
+      required:
+      - accountId
+      - createdAt
+      - createdBy
+      - id
+      - type
+      - updatedAt
+      - updatedBy
+      - workspaceId
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/OrderId'
+        workspaceId:
+          $ref: '#/components/schemas/WorkspaceId'
+        accountId:
+          $ref: '#/components/schemas/AccountId'
+        type:
+          $ref: '#/components/schemas/OrderType'
+        dataProductId:
+          type:
+          - string
+          - 'null'
+          description: 'The data product ID.
+
+            '
+          format: uuid
+          example: acc3f9a4-b622-49c1-b1e1-c762aa3e7e13
+        createdAt:
+          type: string
+          description: 'The timestamp when the order was created.
+
+            '
+          format: date-time
+        updatedAt:
+          type: string
+          description: 'The timestamp when the order was last updated.
+
+            '
+          format: date-time
+        createdBy:
+          $ref: '#/components/schemas/Auditor'
+        updatedBy:
+          $ref: '#/components/schemas/Auditor'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        budgetId:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the budget assigned to the order, if any.
+
+            '
+          format: uuid
+          example: c3de9ed8-f6e5-4bb5-a157-f6430ba756da
+    ValidationResultInvalid:
+      required:
+      - reason
+      type: object
+      properties:
+        errorReason:
+          type: string
+          description: A human-readable explanation of why the feature failed a constraint.
+          example: The geometry area of 10 km² is below the minimum required size of 25 km².
+    OrderDetailsV2:
+      type: object
+      oneOf:
+      - $ref: '#/components/schemas/TaskingOrderDetailsV2'
+      - $ref: '#/components/schemas/ArchiveOrderDetailsV2'
+    V2ResultDetails:
+      required:
+      - id
+      - index
+      type: object
+      properties:
+        index:
+          type: number
+          description: 'The created order index number. Indexing starts from zero.
+
+            '
+        id:
+          type: string
+          description: The created order ID.
+          format: uuid
+    OrderValidationBatchResponse:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/OrderValidationResponseDto'
+      description: 'Validation results for each feature, keyed by display name.
+
+        '
+    CancelOrderResponse:
+      required:
+      - orderId
+      - status
+      type: object
+      properties:
+        orderId:
+          $ref: '#/components/schemas/OrderId'
+        status:
+          type: string
+          example: CANCELED
+    ErrorResponseObject:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type:
+          - object
+          - 'null'
+    EstimationV2Result:
+      required:
+      - credits
+      - index
+      - size
+      - unit
+      type: object
+      properties:
+        index:
+          type: number
+          description: 'The geometry index number. Indexing starts from zero.
+
+            '
+          format: int32
+        credits:
+          type: number
+          description: 'The estimated cost of the geometry, in credits.
+
+            '
+          format: int32
+          example: 14424
+        size:
+          type: number
+          description: The size of the geometry.
+          example: 8.48
+        unit:
+          $ref: '#/components/schemas/EstimateV2OrderPricingUnit'
+      description: 'Results for each of the specified geometries.
+
+        '
+    BatchEndpointErrorDetail:
+      required:
+      - details
+      - index
+      - message
+      type: object
+      properties:
+        index:
+          type: number
+          description: 'The failed geometry index number.
+
+            '
+        message:
+          type: string
+          description: The error message associated with the failed geometry.
+        details:
+          type: string
+          description: Error message details.
+      description: 'Errors associated with individual geometries returned by batch endpoints, including validation failures due to AOI size or vertex-count limits.
+
+        '
+    OrderDisplayName:
+      maxLength: 200
+      minLength: 1
+      type: string
+      description: A human-readable name that describes the order.
+      example: Pléiades Neo over North America
+    Auditor:
+      type: object
+      properties:
+        id:
+          oneOf:
+          - type: string
+            description: The ID of the user who performed the action.
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          - type: string
+            description: A marker that indicates an action was performed automatically. The only allowed value is `system`.
+            enum:
+            - system
+        type:
+          type: string
+          description: The type of user who performed the action.
+          enum:
+          - INTERNAL
+          - ADMIN
+          - API_KEY
+          - USER
+      description: 'The ID and type of the user who performed the action.
+
+        '
+    InvalidParam:
+      required:
+      - name
+      - reason
+      type: object
+      properties:
+        name:
+          type: string
+          description: The parameter or field name
+        reason:
+          type: string
+          description: A human-readable explanation of the validation failure
+    OrderingFeatureCollection:
+      required:
+      - features
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'The type of GeoJSON object. The only allowed value is `FeatureCollection`.
+
+            '
+          enum:
+          - FeatureCollection
+        features:
+          type: array
+          description: 'GeoJSON features.
+
+            '
+          items:
+            $ref: '#/components/schemas/OrderingFeature'
+      description: 'A GeoJSON feature collection.
+
+        '
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7946#section-3.3
+    Tag:
+      maxLength: 180
+      minLength: 1
+      type: string
+      description: 'A tag that consists of letters, numbers, spaces, and special characters (`.`, `-`, `_`, `/`, `:`).
+
+        '
+      example: project-7
+    OrderId:
+      type: string
+      description: The order ID.
+      format: uuid
+    EstimationV2Summary:
+      required:
+      - totalCredits
+      - totalSize
+      - unit
+      type: object
+      properties:
+        totalCredits:
+          type: number
+          description: 'The estimate of the order cost, in credits.
+
+            '
+          format: int32
+          example: 14424
+          default: 0
+        totalSize:
+          type: number
+          description: The size of the order in square kilometers or the number of scenes needed to cover the requested geometry.
+          example: 8.48
+          default: 0
+        unit:
+          $ref: '#/components/schemas/EstimateV2OrderPricingUnit'
+      description: 'The overview of the estimation.
+
+        '
+    OrderV2Response:
+      required:
+      - displayName
+      type: object
+      properties:
+        displayName:
+          $ref: '#/components/schemas/OrderDisplayName'
+        orderDetails:
+          $ref: '#/components/schemas/OrderDetailsV2'
+        status:
+          $ref: '#/components/schemas/OrderV2Status'
+      allOf:
+      - $ref: '#/components/schemas/OrderResponseSharedProperties'
+    OrderV2Status:
+      type: string
+      description: 'The [order status](https://docs.up42.com/developers/api-tasking#order-statuses).
+
+        '
+      enum:
+      - CREATED
+      - BEING_PLACED
+      - PLACED
+      - PLACEMENT_FAILED
+      - BEING_FULFILLED
+      - FULFILLED
+      - FAILED_PERMANENTLY
+      - CANCELED
+  parameters:
+    WorkspaceIdQueryRequired:
+      name: workspaceId
+      in: query
+      description: 'The workspace ID.
+
+        '
+      required: true
+      style: form
+      explode: true
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    BudgetIdsQuery:
+      name: budgetIds
+      in: query
+      description: 'Budget IDs. Use to search for orders associated with any of the provided budgets. Input must be a comma-separated list.
+
+        '
+      required: false
+      style: form
+      explode: false
+      schema:
+        maxItems: 100
+        type: array
+        example:
+        - c3de9ed8-f6e5-4bb5-a157-f6430ba756da
+        - 9d696797-056b-496f-8913-d1753a2a34bb
+        items:
+          type: string
+          format: uuid
+    PageableSize:
+      name: size
+      in: query
+      description: 'The number of results on a result page.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 10
+        default: 20
+    OrderDisplayNameQuery:
+      name: displayName
+      in: query
+      description: 'Additional search terms. Use to search for orders that contain the provided search query in their name.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    OrderType:
+      name: type
+      in: query
+      description: 'The order type. Use to search for catalog or tasking orders.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/OrderType'
+      examples:
+        Catalog orders:
+          description: Use to get only catalog orders.
+          value: ARCHIVE
+        Tasking orders:
+          description: Use to get only tasking orders.
+          value: TASKING
+        All orders:
+          description: Don't use the parameter to get orders of all types.
+          value: null
+    OrderV2Status:
+      name: status
+      in: query
+      description: '[Order statuses](https://docs.up42.com/developers/api-tasking#order-statuses). Use to search for orders with any of the provided statuses.
+
+        '
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/OrderV2Status'
+    WorkspaceIdQuery:
+      name: workspaceId
+      in: query
+      description: 'The workspace ID.
+
+
+        Use to get objects from a specific workspace. Otherwise, objects from the entire account will be returned.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    PageableSorting:
+      name: sort
+      in: query
+      description: 'The results sorting method that arranges elements in ascending or descending order based on a chosen field. The format is `<field name>,<asc or desc>`.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: id,asc
+        default: createdAt,desc
+    DataProductIdsQuery:
+      name: dataProductIds
+      in: query
+      description: 'Data product IDs. Use to search for orders associated with any of the provided data products. Input must be a comma-separated list.
+
+        '
+      required: false
+      style: form
+      explode: false
+      schema:
+        maxItems: 100
+        type: array
+        example:
+        - c3de9ed8-f6e5-4bb5-a157-f6430ba756da
+        - 9d696797-056b-496f-8913-d1753a2a34bb
+        items:
+          $ref: '#/components/schemas/DataProductId'
+    PageablePage:
+      name: page
+      in: query
+      description: 'The result page number. To get the first page, set the parameter to `0`.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 1
+        default: 0
+    OrderIdPathKebab:
+      name: order-id
+      in: path
+      description: 'The order ID.
+
+        '
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    OrderSubStatusQuery:
+      name: subStatus
+      in: query
+      description: '[Order sub-statuses](https://docs.up42.com/developers/api-tasking#order-substatuses). Use to search for orders with any of the provided sub-statuses.
+
+        '
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - FEASIBILITY_WAITING_UPLOAD
+          - FEASIBILITY_WAITING_RESPONSE
+          - QUOTATION_WAITING_UPLOAD
+          - QUOTATION_WAITING_RESPONSE
+          - QUOTATION_ACCEPTED
+          - QUOTATION_REJECTED
+    OrderIdsQuery:
+      name: orderIds
+      in: query
+      description: 'Order IDs. Use to search for orders matching any of the provided IDs. Input must be a comma-separated list.
+
+        '
+      required: false
+      style: form
+      explode: false
+      schema:
+        maxItems: 100
+        type: array
+        items:
+          $ref: '#/components/schemas/OrderId'
+    Tags:
+      name: tags
+      in: query
+      description: 'Order tags. Use to search for orders with any of the provided tags.
+
+        '
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+  responses:
+    BadRequest:
+      description: Order request not valid
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/OrderingProblem'
+          example:
+            type: https://docs.up42.com/problems/bad-order-request
+            status: 400
+            title: Order request not valid
+            detail: One or more query parameter values are not valid.
+            instance: /v2/orders
+            errors:
+            - name: featureCollection
+              reason: The feature list must not be empty.
+    DataProductNotFound:
+      description: Data product not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/OrderingProblem'
+          example:
+            type: https://docs.up42.com/problems/data-product-not-found
+            status: 404
+            title: Data product not found
+            detail: The data product with the ID '07c33a51-94b9-4509-84df-e9c13ea92b84' can't be found.
+            instance: /v2/orders/validation
+    OrderingUnauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseV1'
+          example:
+            data: null
+            error:
+              code: 401
+              message: 'An error occurred while attempting to decode the Jwt: Jwt expired at 2023-02-15T11:29:44Z'
+              details: null
+    NotFound:
+      description: Resource not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/OrderingProblem'
+          example:
+            type: https://docs.up42.com/problems/order-not-found
+            status: 404
+            title: Order not found
+            detail: The order with the ID '68567134-27ad-7bd7-4b65-d61adb11fc78' can't be found.
+            instance: /v2/orders/68567134-27ad-7bd7-4b65-d61adb11fc78
+  examples:
+    BudgetIsNotActive:
+      summary: Budget is not active
+      value:
+        type: https://docs.up42.com/problems/budget-is-not-active
+        status: 400
+        title: Budget not active
+        detail: The budget with the ID 'a0d443a2-41e8-4995-8b54-a5cc4c448227' can't be selected because it's not active.
+        instance: /v2/tasking/quotation/68567134-27ad-7bd7-4b65-d61adb11fc78
+    AccountNotEnterpriseOnOrder:
+      summary: Account not on enterprise plan
+      value:
+        type: https://docs.up42.com/problems/account-not-enterprise
+        status: 404
+        title: Account not enterprise
+        detail: The account with the ID 'a0d443a2-41e8-4995-8b54-a5cc4c448227' is not on the Enterprise plan.
+        instance: /v2/orders
+    BudgetNotFoundOnOrder:
+      summary: Budget not found
+      value:
+        type: https://docs.up42.com/problems/budget-not-found
+        status: 404
+        title: Budget not found
+        detail: The budget with the ID 'a0d443a2-41e8-4995-8b54-a5cc4c448227' can't be found.
+        instance: /v2/orders
+    BudgetIdRequired:
+      summary: Budget ID required
+      value:
+        type: https://docs.up42.com/problems/budget-id-required
+        status: 400
+        title: Budget ID required
+        detail: Budget enforcement is enabled for your account.
+        instance: /v2/tasking/quotation/68567134-27ad-7bd7-4b65-d61adb11fc78
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2Profiles:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+        authorizationCode:
+          authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+x-provenance:
+  method: searched
+  source: https://developer.up42.com/reference
+  harvested: '2026-10-20'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://developer.up42.com/reference/accepteuladocumentv2.md
+  - https://developer.up42.com/reference/addgeometry.md
+  - https://developer.up42.com/reference/cancelorder.md
+  - https://developer.up42.com/reference/checkorderfeasibility.md
+  - https://developer.up42.com/reference/createextensionrequest.md
+  - https://developer.up42.com/reference/createv2orderunderworkspace.md
+  - https://developer.up42.com/reference/deletegeometry.md
+  - https://developer.up42.com/reference/deletesascollection.md
+  - https://developer.up42.com/reference/estimatev2order.md
+  - https://developer.up42.com/reference/generatedownloadurlexternal.md
+  - https://developer.up42.com/reference/getbudget.md
+  - https://developer.up42.com/reference/getbudgetsettings.md
+  - https://developer.up42.com/reference/getbudgetusage.md
+  - https://developer.up42.com/reference/getcollectionv2.md
+  - https://developer.up42.com/reference/getdataproductv2.md
+  - https://developer.up42.com/reference/geteuladocumentv2.md
+  - https://developer.up42.com/reference/geteulav2.md
+  - https://developer.up42.com/reference/getgeometry.md
+  - https://developer.up42.com/reference/getjsonschema.md
+  - https://developer.up42.com/reference/getorderacquisitiondateextensions.md
+  - https://developer.up42.com/reference/getordercoverage.md
+  - https://developer.up42.com/reference/getorderv2.md
+  - https://developer.up42.com/reference/getproviderv2.md
+  - https://developer.up42.com/reference/getquicklookimage.md
+  - https://developer.up42.com/reference/getsascollection.md
+  - https://developer.up42.com/reference/getsascollections.md
+  - https://developer.up42.com/reference/getsasitem.md
+  - https://developer.up42.com/reference/getsasitems.md
+  - https://developer.up42.com/reference/getsaslandingpage.md
+  - https://developer.up42.com/reference/getsasqueryables.md
+  - https://developer.up42.com/reference/getthumbnailimage.md
+  - https://developer.up42.com/reference/listbudgets.md
+  - https://developer.up42.com/reference/listcollectionsv2.md
+  - https://developer.up42.com/reference/listdataproductsv2.md
+  - https://developer.up42.com/reference/listeuladocumentsv2.md
+  - https://developer.up42.com/reference/listeulasv2.md
+  - https://developer.up42.com/reference/listgeometries.md
+  - https://developer.up42.com/reference/listordersv2.md
+  - https://developer.up42.com/reference/listprovidersv2.md
+  - https://developer.up42.com/reference/listtaskingfeasibilitystudies.md
+  - https://developer.up42.com/reference/listtaskingquotation.md
+  - https://developer.up42.com/reference/listv2taskingorderopportunities.md
+  - https://developer.up42.com/reference/patchgeometry.md
+  - https://developer.up42.com/reference/patchorder.md
+  - https://developer.up42.com/reference/patchsasitem.md
+  - https://developer.up42.com/reference/postsassearch.md
+  - https://developer.up42.com/reference/processingevaluate.md
+  - https://developer.up42.com/reference/processingexecute.md
+  - https://developer.up42.com/reference/processinggetjob.md
+  - https://developer.up42.com/reference/processinggetjobs.md
+  - https://developer.up42.com/reference/processinggetprocess.md
+  - https://developer.up42.com/reference/processinggetprocesses.md
+  - https://developer.up42.com/reference/processingvalidate.md
+  - https://developer.up42.com/reference/searchbyhost.md
+  - https://developer.up42.com/reference/updatetaskingfeasibilitystudy.md
+  - https://developer.up42.com/reference/updatetaskingquotation.md
+  - https://developer.up42.com/reference/validatev2order.md
+  merge:
+    pages: 57
+    deduped: 593
+    conflicts_kept_first: 0

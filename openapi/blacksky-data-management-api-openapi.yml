@@ -1,0 +1,1937 @@
+openapi: 3.2.0
+info:
+  title: UP42 Data management API
+  contact:
+    name: Contact support
+    email: support@up42.com
+  license:
+    name: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+    url: http://creativecommons.org/licenses/by-nc-nd/4.0/
+  version: '1.2'
+servers:
+- url: https://api.up42.com
+security:
+- httpBearer: []
+tags:
+- name: Data management
+paths:
+  /v2/assets/stac:
+    get:
+      tags:
+      - Data management
+      summary: Get the data management landing page
+      description: Get the data management's landing page in the STAC format.
+      operationId: getSASLandingPage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LandingPage'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP401Response'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP404Response'
+        '500':
+          description: Server error. Please contact support
+      security:
+      - httpBearer: []
+  /v2/assets/stac/collections:
+    get:
+      tags:
+      - Data management
+      summary: Get STAC collections
+      description: Get a list of STAC collections in your storage.
+      operationId: getSASCollections
+      parameters:
+      - name: limit
+        in: query
+        description: The number of results per page.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Limit
+          type: integer
+          description: The number of results per page.
+          default: 10
+        example: '3'
+      - name: page
+        in: query
+        description: The page number. To get the first page, set the parameter to `0`.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Page
+          type: integer
+          description: The page number. To get the first page, set the parameter to `0`.
+        example: '0'
+      - name: bbox
+        in: query
+        description: Search for STAC collections that are fully contained within a bounding box in the `[min longitude,min latitude,max longitude,max latitude]` format.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Bbox
+          type: string
+          description: Search for STAC collections that are fully contained within a bounding box in the `[min longitude,min latitude,max longitude,max latitude]` format.
+        example: 160.6,-55.95,170,-25.89
+      - name: workspace_id
+        in: query
+        description: The workspace ID. Use to get STAC collections from a specific workspace. Otherwise, STAC collections from the entire account will be returned.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Workspace Id
+          type: string
+          description: The workspace ID. Use to get STAC collections from a specific workspace. Otherwise, STAC collections from the entire account will be returned.
+        example: a19e9ab6-afad-461f-8043-ce19cfd0985b
+      - name: asset_ids
+        in: query
+        description: Asset IDs. Use to search for STAC collections from any of the provided assets. The input must be a comma-separated list.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Asset Ids
+          type: string
+          description: Asset IDs. Use to search for STAC collections from any of the provided assets. The input must be a comma-separated list.
+        example: bab28a1c-6979-436d-b747-8dd5510fdf77, 9c7811c4-96fd-4b11-b31f-2d2cb1a35189
+      - name: order_ids
+        in: query
+        description: Order IDs. Use to search for STAC collections from any of the provided orders. The input must be a comma-separated list.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Order Ids
+          type: string
+          description: Order IDs. Use to search for STAC collections from any of the provided orders. The input must be a comma-separated list.
+        example: 076ae2d6-bad0-4d35-9028-8e83b28c6a75,9a5e7b13-4ca2-432a-98be-b76fd8947a40
+      - name: product_ids
+        in: query
+        description: Data product IDs. Use to search for STAC collections from any of the provided data products. The input must be a comma-separated list.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Product Ids
+          type: string
+          description: Data product IDs. Use to search for STAC collections from any of the provided data products. The input must be a comma-separated list.
+        example: fadfb6a6-6803-4db9-852e-c59f74cf8db6,1bc252ce-b084-423c-86d0-f31b9d21bb7c
+      - name: tags
+        in: query
+        description: Tags. Use to search for STAC collections with any of the provided tags. A tag can consist of letters, numbers, spaces, and special characters (`.`, `-`, `_`, `/`, `:`). The input must be a comma-separated list.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Tags
+          type: string
+          description: Tags. Use to search for STAC collections with any of the provided tags. A tag can consist of letters, numbers, spaces, and special characters (`.`, `-`, `_`, `/`, `:`). The input must be a comma-separated list.
+        example: optical,US
+      - name: title
+        in: query
+        description: The STAC collection title.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Title
+          type: string
+          description: The STAC collection title.
+        example: 4c3fc67e_DS_PHR1A_202410081629153_FR1_PX_W084N35_1102_01333
+      - name: sources
+        in: query
+        description: Sources. Use to search for STAC collections from any of the provided sources. The input must be a comma-separated list.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Sources
+          type: string
+          description: Sources. Use to search for STAC collections from any of the provided sources. The input must be a comma-separated list.
+        example: ARCHIVE,TASKING,PROCESSING
+      - name: cnam
+        in: query
+        description: 'Whether to search for STAC collections that are or aren''t [CNAM-transformed](https://docs.up42.com/data-management/cnam).
+
+          - `true`: Search for transformed STAC collections.
+
+          - `false`: Search for not transformed STAC collections (non-CNAM deliveries).
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          default: true
+        example: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collections'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP401Response'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP404Response'
+        '422':
+          description: Request error. Check the `detail` property for a specific error message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP422Response'
+        '500':
+          description: Server error. Please contact support
+      security:
+      - httpBearer: []
+  /v2/assets/stac/collections/{collection-id}:
+    get:
+      tags:
+      - Data management
+      summary: Get a STAC collection
+      description: Get information about a specific STAC collection.
+      operationId: getSASCollection
+      parameters:
+      - $ref: '#/components/parameters/STACCollectionID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/STACCollection'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP401Response'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP404Response'
+        '422':
+          description: Request error. Check the `detail` property for a specific error message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP422Response'
+        '500':
+          description: Server error. Please contact support
+      security:
+      - httpBearer: []
+    delete:
+      tags:
+      - Data management
+      summary: Delete a STAC collection
+      description: Delete an existing STAC collection.
+      operationId: deleteSASCollection
+      parameters:
+      - $ref: '#/components/parameters/STACCollectionID'
+      responses:
+        '204':
+          description: Successfully deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP401Response'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP404Response'
+        '500':
+          description: Server error. Please contact support
+      security:
+      - httpBearer: []
+  /v2/assets/stac/collections/{collection-id}/items:
+    get:
+      tags:
+      - Data management
+      summary: Get STAC items
+      description: Get a list of STAC items from a specific STAC collection in your storage.
+      operationId: getSASItems
+      parameters:
+      - $ref: '#/components/parameters/STACCollectionID'
+      - name: limit
+        in: query
+        description: The number of results per page.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Limit
+          type: integer
+          description: The number of results per page.
+          default: 10
+        example: '3'
+      - name: page
+        in: query
+        description: The page number. To get the first page, set the parameter to `0`.
+        required: false
+        style: form
+        explode: true
+        schema:
+          title: Page
+          type: integer
+          description: The page number. To get the first page, set the parameter to `0`.
+        example: '0'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemCollection'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP401Response'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP404Response'
+        '422':
+          description: Request error. Check the `detail` property for a specific error message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP422Response'
+        '500':
+          description: Server error. Please contact support
+      security:
+      - httpBearer: []
+  /v2/assets/stac/collections/{collection-id}/items/{item-id}:
+    get:
+      tags:
+      - Data management
+      summary: Get a STAC item
+      description: Get information about a specific STAC item.
+      operationId: getSASItem
+      parameters:
+      - $ref: '#/components/parameters/STACCollectionID'
+      - name: item-id
+        in: path
+        description: The STAC item ID.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          title: Item Id
+          type: string
+          description: The STAC item ID.
+          format: uuid
+        example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP401Response'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP404Response'
+        '422':
+          description: Request error. Check the `detail` property for a specific error message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP422Response'
+        '500':
+          description: Server error. Please contact support
+      security:
+      - httpBearer: []
+    patch:
+      tags:
+      - Data management
+      summary: Update a STAC item
+      description: Change the title and tags of a STAC item.
+      operationId: patchSASItem
+      parameters:
+      - $ref: '#/components/parameters/STACCollectionID'
+      - name: item-id
+        in: path
+        description: The STAC item ID.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          title: Item Id
+          type: string
+          description: The STAC item ID.
+          format: uuid
+        example: 123e4567-e89b-12d3-a456-426614174000
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP401Response'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP404Response'
+        '422':
+          description: Request error. Check the `detail` property for a specific error message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP422Response'
+        '500':
+          description: Server error. Please contact support
+      security:
+      - httpBearer: []
+  /v2/assets/stac/queryables:
+    get:
+      tags:
+      - Data management
+      summary: Get data management search parameters
+      description: Get queryable fields supported in data management searches.
+      operationId: getSASQueryables
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryablesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP401Response'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP404Response'
+        '500':
+          description: Server error. Please contact support
+      security:
+      - httpBearer: []
+  /v2/assets/stac/search:
+    post:
+      tags:
+      - Data management
+      summary: Get specific STAC items
+      description: Make a detailed search request to find specific STAC items in your storage.
+      operationId: postSASSearch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchPayload'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemCollection'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP401Response'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP404Response'
+        '422':
+          description: Request error. Check the `detail` property for a specific error message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTP422Response'
+        '500':
+          description: Server error. Please contact support
+      security:
+      - httpBearer: []
+  /v2/assets/{asset-id}/download-url:
+    post:
+      tags:
+      - Data management
+      summary: Create a download URL
+      description: Generate a signed URL that can be used to download an asset without authentication. The generated URL is valid for 5 minutes.
+      operationId: generateDownloadUrlExternal
+      parameters:
+      - $ref: '#/components/parameters/AssetId'
+      responses:
+        '201':
+          description: URL created successfully
+          headers:
+            Location:
+              description: A temporary signed URL that can be used to download the asset without authentication.
+              style: simple
+              explode: false
+              schema:
+                $ref: '#/components/schemas/SignedDownloadURL'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadUrlResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorResponse'
+components:
+  schemas:
+    NullableArray:
+      type:
+      - array
+      - 'null'
+    MultiPoint:
+      title: MultiPoint
+      required:
+      - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: MultiPoint
+        coordinates:
+          title: Coordinates
+          minItems: 1
+          type: array
+          items:
+            anyOf:
+            - maxItems: 2
+              minItems: 2
+              type: array
+              items:
+                type: number
+            - maxItems: 3
+              minItems: 3
+              type: array
+              items:
+                type: number
+      description: MultiPoint Model
+    HTTP422Response:
+      title: HTTP422Response
+      required:
+      - detail
+      - status
+      - title
+      type: object
+      properties:
+        status:
+          title: Unprocessable Content Status
+          type: integer
+          example: 422
+        title:
+          title: 422 Error Title
+          type: string
+          example: Unprocessable Content
+        detail:
+          title: Detail
+          type: array
+          example:
+          - loc:
+            - body
+            - links
+            msg: field required
+            type: value_error.missing
+          items:
+            $ref: '#/components/schemas/PydanticErrorDict'
+    STACPolygon:
+      title: Polygon
+      required:
+      - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: Polygon
+        coordinates:
+          title: Coordinates
+          minItems: 1
+          type: array
+          items:
+            minItems: 4
+            type: array
+            items:
+              anyOf:
+              - maxItems: 2
+                minItems: 2
+                type: array
+                items:
+                  type: number
+              - maxItems: 3
+                minItems: 3
+                type: array
+                items:
+                  type: number
+      description: Polygon Model
+    QueryablesResponse:
+      title: QueryablesResponse
+      required:
+      - $id
+      - properties
+      type: object
+      properties:
+        $schema:
+          title: Endpoint schema
+          type: string
+          description: The schema of the response.
+          example: https://json-schema.org/draft/2019-09/schema
+          default: https://json-schema.org/draft/2019-09/schema
+        $id:
+          title: Endpoint ID
+          type: string
+          description: The URL of the endpoint.
+          example: https://api.up42.com/v2/assets/stac/queryables
+        type:
+          title: Endpoint type
+          type: string
+          description: The type of resource.
+          example: object
+          default: object
+        title:
+          title: Endpoint title
+          type: string
+          description: The title of the endpoint.
+          example: STAC Storage Queryables
+          default: STAC Storage Queryables
+        description:
+          title: Endpoint description
+          type: string
+          description: The description of the endpoint.
+          example: Queryable fields for data management search.
+          default: Queryable fields for data management search.
+        properties:
+          title: Properties
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/QueryableResponse'
+          description: Queryable fields for catalog search.
+          example:
+            datetime:
+              title: datetime
+              description: The date and time when the sensor acquired the data.
+              type: timestamp
+            account_id:
+              title: account_id
+              description: The account ID.
+              type: string
+            up42-system:account_id:
+              title: up42-system:account_id
+              description: The account ID.
+              type: string
+            workspace_id:
+              title: workspace_id
+              description: The workspace ID.
+              type: string
+            up42-system:workspace_id:
+              title: up42-system:workspace_id
+              description: The workspace ID.
+              type: string
+            asset_id:
+              title: asset_id
+              description: The asset ID.
+              type: string
+            up42-system:asset_id:
+              title: up42-system:asset_id
+              description: The asset ID.
+              type: string
+            tags:
+              title: tags
+              description: STAC item tags.
+              type: array
+            up42-user:tags:
+              title: up42-user:tags
+              description: STAC item tags.
+              type: array
+            eo:cloud_cover:
+              title: eo:cloud_cover
+              description: The percentage of cloud coverage.
+              type: float
+            constellation:
+              title: constellation
+              description: The platform constellation that acquired the data.
+              type: string
+            gsd:
+              title: gsd
+              description: The ground sampling distance.
+              type: float
+            collection_name:
+              title: collection_name
+              description: The collection name.
+              type: string
+            up42-product:collection_name:
+              title: up42-product:collection_name
+              description: The collection name.
+              type: string
+            order_id:
+              title: order_id
+              description: The order ID.
+              type: string
+            up42-order:id:
+              title: up42-order:id
+              description: The order ID.
+              type: string
+            source:
+              title: source
+              description: The source of the STAC item.
+              type: string
+            up42-system:source:
+              title: up42-system:source
+              description: The source of the STAC item.
+              type: string
+            data_product_id:
+              title: data_product_id
+              description: The data product ID.
+              type: string
+            up42-product:product_id:
+              title: up42-product:product_id
+              description: The data product ID.
+              type: string
+            created:
+              title: created
+              description: The date and time when the STAC item was added to your storage.
+              type: timestamp
+            title:
+              title: title
+              description: The filename of the STAC item.
+              type: string
+            user_title:
+              title: user_title
+              description: A custom title of the STAC item.
+              type: string
+            up42-user:title:
+              title: up42-user:title
+              description: A custom title of the STAC item.
+              type: string
+            job_id:
+              title: job_id
+              description: The processing job ID.
+              type: string
+            up42-system:job_id:
+              title: up42-system:job_id
+              description: The processing job ID.
+              type: string
+    ItemCollection:
+      title: ItemCollection
+      required:
+      - context
+      - features
+      - links
+      type: object
+      properties:
+        links:
+          title: Links
+          type: array
+          description: 'Links related to the current endpoint. Use to navigate through objects.
+
+            '
+          items:
+            $ref: '#/components/schemas/Link'
+        type:
+          title: Type
+          type: string
+          description: 'The type of object.
+
+            '
+          default: FeatureCollection
+          enum:
+          - FeatureCollection
+        features:
+          title: Features
+          type: array
+          description: 'Data items returned by search.
+
+            '
+          items:
+            $ref: '#/components/schemas/Item'
+        context:
+          title: Context
+          description: 'The context of the response.
+
+            '
+          allOf:
+          - $ref: '#/components/schemas/Context'
+    PatchItem:
+      type: object
+      properties:
+        up42-user:title:
+          maxLength: 250
+          minLength: 1
+          type:
+          - string
+          - 'null'
+          description: An updated STAC item title.
+          example: SPOT 6/7 NY Central Park
+        up42-user:tags:
+          type: array
+          description: A list of tags that categorize the STAC item. A tag can consist of letters, numbers, spaces, and special characters (`.`, `-`, `_`, `/`, `:`).
+          example:
+          - optical
+          - US
+          items:
+            maxLength: 180
+            minLength: 1
+            type: string
+    UnauthorizedErrorResponse:
+      type: object
+      example:
+        data: null
+        error:
+          code: 401
+          message: Full authentication is required to access this resource
+          details: null
+    NullableObject:
+      type:
+      - object
+      - 'null'
+    MultiPolygon:
+      title: MultiPolygon
+      required:
+      - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: MultiPolygon
+        coordinates:
+          title: Coordinates
+          minItems: 1
+          type: array
+          items:
+            minItems: 1
+            type: array
+            items:
+              minItems: 4
+              type: array
+              items:
+                anyOf:
+                - maxItems: 2
+                  minItems: 2
+                  type: array
+                  items:
+                    type: number
+                - maxItems: 3
+                  minItems: 3
+                  type: array
+                  items:
+                    type: number
+      description: MultiPolygon Model
+    SignedDownloadURL:
+      type: string
+      description: A temporary signed URL that can be used to download an asset without authentication.
+      format: uri
+    SpatialExtent:
+      title: SpatialExtent
+      required:
+      - bbox
+      type: object
+      properties:
+        bbox:
+          title: Bounding box
+          type: array
+          description: The bounding box that encloses all STAC items of the STAC collection.
+          example:
+          - - 160.6
+            - -55.95
+            - 170
+            - -25.89
+          items:
+            anyOf:
+            - maxItems: 4
+              minItems: 4
+              type: array
+              items:
+                type: number
+            - maxItems: 6
+              minItems: 6
+              type: array
+              items:
+                type: number
+    LandingPage:
+      title: LandingPage
+      required:
+      - conformsTo
+      - description
+      - id
+      - links
+      - stac_extensions
+      - stac_version
+      type: object
+      properties:
+        conformsTo:
+          title: STAC API standards
+          type: array
+          description: 'Links to the standards that the resource conforms to.
+
+            '
+          example:
+          - http://www.opengis.net/spec/ogcapi-features-4/1.0/conf/simpletx
+          - https://api.stacspec.org/v1.0.0-rc.1/item-search#fields
+          - https://api.stacspec.org/v1.0.0-rc.1/item-search#filter:basic-cql
+          - https://api.stacspec.org/v1.0.0-rc.1/collections
+          - http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30
+          - https://api.stacspec.org/v1.0.0-rc.1/core
+          - http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/features-filter
+          - https://api.stacspec.org/v1.0.0-rc.1/item-search#context
+          - http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core
+          - http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/filter
+          - https://api.stacspec.org/v1.0.0-rc.1/item-search#filter
+          - https://api.stacspec.org/v1.0.0-rc.1/item-search
+          - https://api.stacspec.org/v1.0.0-rc.1/item-search#query
+          - http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson
+          - https://api.stacspec.org/v1.0.0-rc.1/item-search#sort
+          - https://api.stacspec.org/v1.0.0-rc.1/ogcapi-features
+          - https://api.stacspec.org/v1.0.0-rc.1/item-search#filter:cql-text
+          items:
+            type: string
+        links:
+          title: Links
+          type: array
+          description: 'Links related to the current endpoint. Use to navigate through objects.
+
+            '
+          items:
+            $ref: '#/components/schemas/Link'
+        stac_extensions:
+          title: STAC extensions
+          type: array
+          description: 'STAC extensions activated for the resource.
+
+            '
+          example:
+          - https://api.up42.com/stac-extensions/up42-order/v1.0.0/schema.json
+          items:
+            type: string
+        title:
+          title: Title
+          type:
+          - string
+          - 'null'
+          description: 'The title of the resource.
+
+            '
+          example: ORT_SPOT7_20190922_094920500_000
+        description:
+          title: Description
+          type: string
+          description: 'The description of the resource.
+
+            '
+          example: High-resolution 1.5m SPOT images acquired daily on a global basis. The datasets are available starting from 2012.
+        stac_version:
+          title: STAC API version
+          type: string
+          description: 'The STAC API version.
+
+            '
+          example: 1.0.0
+        type:
+          title: STAC object type
+          type: string
+          description: 'The type of resource.
+
+            '
+          default: Catalog
+          enum:
+          - Catalog
+        id:
+          title: Identifier
+          type: string
+          description: The resource ID.
+          example: 033b4a5a-c492-4eba-915e-2000a0a84049
+      description: 'The landing page schema.
+
+        '
+      example:
+        conformsTo:
+        - https://api.stacspec.org/v1.0.0-rc.1/ogcapi-features
+        - https://api.stacspec.org/v1.0.0-rc.1/item-search#filter:cql-text
+        - https://api.stacspec.org/v1.0.0-rc.1/item-search#filter:basic-cql
+        - http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core
+        - http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30
+        - http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/filter
+        - https://api.stacspec.org/v1.0.0-rc.1/ogcapi-features/extensions/transaction
+        - https://api.stacspec.org/v1.0.0-rc.1/item-search#filter
+        - http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/features-filter
+        - https://api.stacspec.org/v1.0.0-rc.1/item-search
+        - http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson
+        - http://www.opengis.net/spec/ogcapi-features-4/1.0/conf/simpletx
+        - https://api.stacspec.org/v1.0.0-rc.1/core
+        - https://api.stacspec.org/v1.0.0-rc.1/item-search#sort
+        - https://api.stacspec.org/v1.0.0-rc.1/collections
+        links:
+        - href: https://api.up42.com/v2/assets/stac/
+          rel: self
+          type: application/json
+        - href: https://api.up42.com/v2/assets/stac/
+          rel: root
+          type: application/json
+        - href: https://api.up42.com/v2/assets/stac/collections
+          rel: data
+          type: application/json
+        - href: https://api.up42.com/v2/assets/stac/search
+          rel: search
+          type: application/json
+          method: POST
+        stac_extensions: []
+        title: UP42 Storage
+        description: UP42 Storage STAC API
+        stac_version: 1.0.0
+        id: up42-storage
+        type: Catalog
+    LineString:
+      title: LineString
+      required:
+      - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: LineString
+        coordinates:
+          title: Coordinates
+          minItems: 2
+          type: array
+          items:
+            anyOf:
+            - maxItems: 2
+              minItems: 2
+              type: array
+              items:
+                type: number
+            - maxItems: 3
+              minItems: 3
+              type: array
+              items:
+                type: number
+      description: LineString Model
+    SearchPayload:
+      title: SearchPayload
+      type: object
+      not:
+        required:
+        - bbox
+        - intersects
+        type: object
+      properties:
+        collections:
+          title: Collections
+          type: array
+          description: Search for STAC items in the specified STAC collections.
+          example:
+          - 123e4567-e89b-12d3-a456-426614174000
+          items:
+            type: string
+            format: uuid4
+        ids:
+          title: IDs
+          type: array
+          description: Search for specific STAC items by their IDs.
+          example:
+          - 123e4567-e89b-12d3-a456-426614174000
+          items:
+            type: string
+            format: uuid4
+        datetime:
+          title: Datetime
+          type: string
+          description: 'Search for data that has a temporal property that intersects the datetime value in the RFC 3339 format. You can search for a specific date and time, or for a closed or an open date interval. Express open intervals using double-dots.
+
+            - An example of a timestamp: `"2025-02-12T23:20:50Z"`.
+
+            - An example of a closed interval: `"2025-02-12T00:00:00Z/2018-03-18T12:31:12Z"`.
+
+            - Examples of open intervals: `"2025-02-12T00:00:00Z/.."` or `"../2025-03-18T12:31:12Z"`.''
+
+            '
+          example: '2025-02-12T23:20:50Z'
+        sortby:
+          title: Response sorting
+          type: array
+          description: A results sorting method that arranges elements in ascending or descending order based on a chosen field.
+          example:
+          - field: datetime
+            direction: desc
+          items:
+            $ref: '#/components/schemas/ItemSortClause'
+        limit:
+          title: Response record limit
+          maximum: 10000
+          minimum: 1
+          type: integer
+          description: 'The maximum number of data items on a results page.
+
+            '
+          example: 10
+          default: 10
+        page:
+          title: page
+          type: integer
+          description: The number of the page to return. To get the first page, set the parameter to `0`.
+          example: 0
+        filter:
+          title: CQL2-json filter
+          type: object
+          description: 'A [CQL2 filter](https://docs.up42.com/developers/api-stac#detailed-search) that consists of arguments (`filter.args`) and operators (`filter.op`).
+
+            '
+          example:
+            op: and
+            args:
+            - op: <=
+              args:
+              - property: gsd
+              - 0.7
+            - op: <=
+              args:
+              - property: eo:cloud_cover
+              - 20
+        filter-lang:
+          title: Filter language
+          type: string
+          description: The CQL filter that encodes the value used in `filter`. The only supported value is `cql2-json`.
+          default: cql2-json
+          enum:
+          - cql2-json
+        bbox:
+          title: Intersecting bbox
+          maxItems: 4
+          minItems: 4
+          type: array
+          description: 'Search for data that intersects a bounding box in the `[min longitude, min latitude, max longitude, max latitude]` format. Use only if `intersects` isn''t specified.
+
+            '
+          example:
+          - 13.269714059978213
+          - 52.41984626981997
+          - 13.497594907423945
+          - 52.63788503383728
+          items:
+            type: number
+            format: double
+        intersects:
+          title: Intersecting geometry
+          description: 'Search for data that intersects the provided geometry. Use only if `bbox` isn''t specified.
+
+            '
+          example:
+            coordinates:
+            - - - -0.12723744012390625
+                - 51.50159191029297
+              - - -0.12723744012390625
+                - 51.5003265262352
+              - - -0.12475743729621058
+                - 51.5003265262352
+              - - -0.12475743729621058
+                - 51.50159191029297
+              - - -0.12723744012390625
+                - 51.50159191029297
+            type: Polygon
+          anyOf:
+          - $ref: '#/components/schemas/Point'
+          - $ref: '#/components/schemas/MultiPoint'
+          - $ref: '#/components/schemas/LineString'
+          - $ref: '#/components/schemas/MultiLineString'
+          - $ref: '#/components/schemas/STACPolygon'
+          - $ref: '#/components/schemas/MultiPolygon'
+    STACProvider:
+      title: Provider
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          title: Provider name
+          type: string
+          description: The name of the provider.
+          example: Airbus
+        roles:
+          title: Provider role
+          type:
+          - array
+          - 'null'
+          description: The role of the provider.
+          example:
+          - producer
+          items:
+            type: string
+        url:
+          title: Provider website
+          type:
+          - string
+          - 'null'
+          description: The link to the provider's website.
+          example: https://www.airbus.com
+    Item:
+      title: Item
+      required:
+      - collection
+      - id
+      - links
+      - properties
+      - stac_extensions
+      - stac_version
+      type: object
+      properties:
+        assets:
+          title: Assets
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Asset'
+          description: A list of STAC assets.
+          example:
+            6072a0ee-0fff-4755-9cc7-660711de9b35:
+              href: https://api.up42.com/v2/assets/6072a0ee-0fff-4755-9cc7-660711de9b35
+              title: Original Delivery
+              roles:
+              - data
+              - original
+              type: application/zip
+          default: {}
+        links:
+          title: Links
+          type: array
+          description: 'Links associated with the resource that can be used to navigate through objects.
+
+            '
+          items:
+            $ref: '#/components/schemas/Link'
+        stac_extensions:
+          title: STAC extensions
+          type: array
+          description: 'STAC extensions activated for the resource.
+
+            '
+          example:
+          - https://api.up42.com/stac-extensions/up42-order/v1.0.0/schema.json
+          items:
+            type: string
+        geometry:
+          title: Item geometry
+          type:
+          - object
+          - 'null'
+          description: 'The data item''s geometry.
+
+            '
+          example:
+            coordinates:
+            - - - -0.12723744012390625
+                - 51.50159191029297
+              - - -0.12723744012390625
+                - 51.5003265262352
+              - - -0.12475743729621058
+                - 51.5003265262352
+              - - -0.12475743729621058
+                - 51.50159191029297
+              - - -0.12723744012390625
+                - 51.50159191029297
+            type: Polygon
+          anyOf:
+          - $ref: '#/components/schemas/Point'
+          - $ref: '#/components/schemas/MultiPoint'
+          - $ref: '#/components/schemas/LineString'
+          - $ref: '#/components/schemas/MultiLineString'
+          - $ref: '#/components/schemas/STACPolygon'
+          - $ref: '#/components/schemas/MultiPolygon'
+          - $ref: '#/components/schemas/NullableObject'
+        bbox:
+          title: Bounding box
+          type:
+          - array
+          - 'null'
+          description: 'The bounding box that encloses the data item''s geometry.
+
+            '
+          example:
+          - 160.6
+          - -55.95
+          - 170
+          - -25.89
+          anyOf:
+          - maxItems: 4
+            minItems: 4
+            type: array
+            items:
+              type: number
+          - maxItems: 6
+            minItems: 6
+            type: array
+            items:
+              type: number
+          - $ref: '#/components/schemas/NullableArray'
+        properties:
+          title: Item properties
+          type: object
+          description: A list of additional STAC item metadata.
+          example:
+            gsd: 2.421570738932087
+            title: NewImage123
+            datetime: '2022-12-23T15:08:45.900000+00:00'
+            platform: SPOT-6
+            end_datetime: '2022-12-23T15:08:45.900000+00:00'
+            start_datetime: '2022-12-23T15:08:45.900000+00:00'
+            constellation: SPOT
+            eo:cloud_cover: 0
+        type:
+          title: Type
+          type: string
+          description: 'The type of object.
+
+            '
+          default: Feature
+          enum:
+          - Feature
+        stac_version:
+          title: STAC API version
+          type: string
+          description: 'The STAC API version.
+
+            '
+          example: 1.0.0
+        id:
+          title: Identifier
+          type: string
+          description: The data item ID.
+          format: uuid
+          example: 033b4a5a-c492-4eba-915e-2000a0a84049
+        collection:
+          title: Collection
+          type: string
+          description: 'The ID of the STAC collection the data item belongs to.
+
+            '
+          format: uuid
+          example: 033b4a5a-c492-4eba-915e-2000a0a84049
+    ItemSortClause:
+      title: SortUnit
+      required:
+      - field
+      type: object
+      properties:
+        field:
+          title: Field
+          type: string
+          description: A field to use for sorting.
+          example: eo:cloud_cover
+          enum:
+          - asset_id
+          - collection
+          - collection_name
+          - constellation
+          - created
+          - data_product_id
+          - datetime
+          - eo:cloud_cover
+          - gsd
+          - id
+          - job_id
+          - order_id
+          - source
+          - tags
+          - title
+          - workspace_id
+        direction:
+          title: Direction
+          type: string
+          description: An order of sorting.
+          example: desc
+          default: asc
+          enum:
+          - asc
+          - desc
+    STACCollection:
+      title: Collection
+      required:
+      - description
+      - extent
+      - id
+      - license
+      - links
+      - stac_extensions
+      - stac_version
+      type: object
+      properties:
+        assets:
+          title: Assets
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Asset'
+          description: 'Geospatial assets.
+
+            '
+          example:
+            6072a0ee-0fff-4755-9cc7-660711de9b35:
+              href: https://api.up42.com/v2/assets/6072a0ee-0fff-4755-9cc7-660711de9b35
+              title: Original Delivery
+              roles:
+              - data
+              - original
+              type: application/zip
+          default: {}
+        links:
+          title: Links
+          type: array
+          description: 'Links related to the item. Use to navigate through objects.
+
+            '
+          items:
+            $ref: '#/components/schemas/Link'
+        stac_extensions:
+          title: STAC extensions
+          type: array
+          description: 'STAC extensions activated for the resource.
+
+            '
+          example:
+          - https://api.up42.com/stac-extensions/up42-order/v1.0.0/schema.json
+          items:
+            type: string
+        title:
+          title: Title
+          type:
+          - string
+          - 'null'
+          description: 'The title of the resource.
+
+            '
+          example: ORT_SPOT7_20190922_094920500_000
+        description:
+          title: Description
+          type: string
+          description: 'The description of the resource.
+
+            '
+          example: High-resolution 1.5m SPOT images acquired daily on a global basis. The datasets are available starting from 2012.
+        keywords:
+          title: Keywords
+          type: array
+          description: The keywords for the STAC collection.
+          example:
+          - berlin
+          - optical
+          items:
+            type: string
+        license:
+          title: License
+          type: string
+          description: The STAC collection data license type.
+          example: proprietary
+        providers:
+          title: Providers
+          type: array
+          description: A list of providers associated with the STAC collection.
+          items:
+            $ref: '#/components/schemas/STACProvider'
+        extent:
+          title: Collection extent
+          description: The spatiotemporal extent of the STAC collection.
+          example:
+            spatial:
+              bbox:
+              - - -86.07022916666666
+                - 11.900145833333333
+                - -86.05072916666667
+                - 11.942270833333334
+            temporal:
+              interval:
+              - - '2017-01-01T00:00:00Z'
+                - '2021-12-31T00:00:00Z'
+          allOf:
+          - $ref: '#/components/schemas/Extent'
+        stac_version:
+          title: STAC API version
+          type: string
+          description: The UP42 STAC API version.
+          example: 1.0.0
+        type:
+          title: STAC object type
+          type: string
+          description: 'The type of resource.
+
+            '
+          default: Collection
+          enum:
+          - Collection
+        id:
+          title: Identifier
+          type: string
+          description: The resource ID.
+          format: uuid
+          example: 033b4a5a-c492-4eba-915e-2000a0a84049
+    HTTP404Response:
+      title: HTTP404Response
+      required:
+      - detail
+      - status
+      - title
+      type: object
+      properties:
+        title:
+          title: 404 Not Found Error
+          type: string
+          example: Not Found
+        status:
+          title: Not Found Status
+          type: integer
+          example: 404
+        detail:
+          title: 404 Detailed Message
+          type: string
+          example: The resource isn't available
+    DownloadUrlResponse:
+      required:
+      - url
+      type: object
+      properties:
+        url:
+          $ref: '#/components/schemas/SignedDownloadURL'
+      description: A generated download URL.
+    MultiLineString:
+      title: MultiLineString
+      required:
+      - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: MultiLineString
+        coordinates:
+          title: Coordinates
+          minItems: 1
+          type: array
+          items:
+            minItems: 2
+            type: array
+            items:
+              anyOf:
+              - maxItems: 2
+                minItems: 2
+                type: array
+                items:
+                  type: number
+              - maxItems: 3
+                minItems: 3
+                type: array
+                items:
+                  type: number
+      description: MultiLineString Model
+    PydanticErrorDict:
+      title: PydanticErrorDict
+      required:
+      - loc
+      - msg
+      - type
+      type: object
+      properties:
+        loc:
+          title: Loc
+          type: array
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+        msg:
+          title: Msg
+          type: string
+        type:
+          title: Type
+          type: string
+    AssetId:
+      type: string
+      description: The asset ID.
+      format: uuid
+      example: 8fbccd60-c828-4d8c-a4ef-3c2730d9d6bc
+    Collections:
+      title: Collections
+      required:
+      - collections
+      - context
+      - links
+      type: object
+      properties:
+        links:
+          title: Links
+          type: array
+          description: 'Links associated with the resource that can be used to navigate through objects.
+
+            '
+          items:
+            $ref: '#/components/schemas/Link'
+        collections:
+          title: Collections
+          type: array
+          description: A list of STAC collections in your storage.
+          items:
+            $ref: '#/components/schemas/STACCollection'
+        context:
+          title: Context
+          description: The context of the response.
+          allOf:
+          - $ref: '#/components/schemas/Context'
+    Context:
+      title: Context
+      type: object
+      properties:
+        limit:
+          title: Response record limit
+          type: integer
+          description: 'The maximum number of data items on a results page.
+
+            '
+          example: 10
+        returned:
+          title: Response returned items
+          type: integer
+          description: 'The number of data items returned on the results page.
+
+            '
+          example: 5
+        matched:
+          title: matched
+          type: integer
+          description: 'The total number of data items that match the search query.
+
+            '
+          example: 20
+        page:
+          title: page
+          type: integer
+          description: 'The current page number of the response.
+
+            '
+          example: 0
+        pages:
+          title: pages
+          type: integer
+          description: 'The total number of pages in the response.
+
+            '
+          example: 10
+    Link:
+      type: object
+      properties:
+        rel:
+          type: string
+          example: self
+        href:
+          type: string
+          example: https://api.up42.dev/catalog/hosts/oneatlas/stac/search
+    Point:
+      title: Point
+      required:
+      - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: Point
+        coordinates:
+          title: Coordinates
+          anyOf:
+          - maxItems: 2
+            minItems: 2
+            type: array
+            items:
+              type: number
+          - maxItems: 3
+            minItems: 3
+            type: array
+            items:
+              type: number
+      description: Point Model
+    Asset:
+      title: Asset
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          title: Data URL
+          type: string
+          description: The URL of a downloadable or a streamable file related to the STAC asset.
+          example: https://api.up42.com/v2/assets/asset-id
+        title:
+          title: Data title
+          type:
+          - string
+          - 'null'
+          description: The STAC asset title.
+          example: Red band
+        description:
+          title: Data description
+          type:
+          - string
+          - 'null'
+          description: The STAC asset description.
+          example: Red band covers spectral range x to z nanometer
+        type:
+          title: Data media type
+          type: string
+          description: The STAC asset data type.
+          example: image/tiff
+        roles:
+          title: Data role
+          type:
+          - array
+          - 'null'
+          description: The purpose of the STAC asset.
+          example:
+          - data
+          items:
+            type: string
+    TemporalExtent:
+      title: TemporalExtent
+      required:
+      - interval
+      type: object
+      properties:
+        interval:
+          title: Datetime interval
+          type: array
+          description: The datetime interval that spans all STAC items of the STAC collection.
+          example:
+          - - '2015-06-23T00:00:00Z'
+            - '2019-07-10T13:44:56Z'
+          items:
+            type: array
+            items:
+              type:
+              - string
+              - 'null'
+    Extent:
+      title: Extent
+      required:
+      - spatial
+      - temporal
+      type: object
+      properties:
+        spatial:
+          title: Spatial extent
+          description: Spatial characteristics.
+          allOf:
+          - $ref: '#/components/schemas/SpatialExtent'
+        temporal:
+          title: Temporal extent
+          description: Temporal characteristics.
+          allOf:
+          - $ref: '#/components/schemas/TemporalExtent'
+    QueryableResponse:
+      title: QueryableResponse
+      required:
+      - description
+      - title
+      - type
+      type: object
+      properties:
+        title:
+          title: The title of the queryable field.
+          type: string
+          example: gsd
+        description:
+          title: The description of the queryable field.
+          type: string
+          example: The ground sampling distance.
+        type:
+          title: The data type of the queryable field.
+          type: string
+          example: float
+    HTTP401Response:
+      title: HTTP401Response
+      required:
+      - detail
+      - status
+      - title
+      type: object
+      properties:
+        title:
+          title: 401 Unauthorized Error
+          type: string
+          example: Unauthorized
+        status:
+          title: Unauthorized Status
+          type: integer
+          example: 401
+        detail:
+          title: 401 Detailed Message
+          type: string
+          example: Couldn't validate credentials
+  parameters:
+    AssetId:
+      name: asset-id
+      in: path
+      description: The asset ID.
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/AssetId'
+    STACCollectionID:
+      name: collection-id
+      in: path
+      description: The STAC collection ID.
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: 123e4567-e89b-12d3-a456-426614174000
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2Profiles:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+        authorizationCode:
+          authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+x-provenance:
+  method: searched
+  source: https://developer.up42.com/reference
+  harvested: '2026-10-20'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://developer.up42.com/reference/accepteuladocumentv2.md
+  - https://developer.up42.com/reference/addgeometry.md
+  - https://developer.up42.com/reference/cancelorder.md
+  - https://developer.up42.com/reference/checkorderfeasibility.md
+  - https://developer.up42.com/reference/createextensionrequest.md
+  - https://developer.up42.com/reference/createv2orderunderworkspace.md
+  - https://developer.up42.com/reference/deletegeometry.md
+  - https://developer.up42.com/reference/deletesascollection.md
+  - https://developer.up42.com/reference/estimatev2order.md
+  - https://developer.up42.com/reference/generatedownloadurlexternal.md
+  - https://developer.up42.com/reference/getbudget.md
+  - https://developer.up42.com/reference/getbudgetsettings.md
+  - https://developer.up42.com/reference/getbudgetusage.md
+  - https://developer.up42.com/reference/getcollectionv2.md
+  - https://developer.up42.com/reference/getdataproductv2.md
+  - https://developer.up42.com/reference/geteuladocumentv2.md
+  - https://developer.up42.com/reference/geteulav2.md
+  - https://developer.up42.com/reference/getgeometry.md
+  - https://developer.up42.com/reference/getjsonschema.md
+  - https://developer.up42.com/reference/getorderacquisitiondateextensions.md
+  - https://developer.up42.com/reference/getordercoverage.md
+  - https://developer.up42.com/reference/getorderv2.md
+  - https://developer.up42.com/reference/getproviderv2.md
+  - https://developer.up42.com/reference/getquicklookimage.md
+  - https://developer.up42.com/reference/getsascollection.md
+  - https://developer.up42.com/reference/getsascollections.md
+  - https://developer.up42.com/reference/getsasitem.md
+  - https://developer.up42.com/reference/getsasitems.md
+  - https://developer.up42.com/reference/getsaslandingpage.md
+  - https://developer.up42.com/reference/getsasqueryables.md
+  - https://developer.up42.com/reference/getthumbnailimage.md
+  - https://developer.up42.com/reference/listbudgets.md
+  - https://developer.up42.com/reference/listcollectionsv2.md
+  - https://developer.up42.com/reference/listdataproductsv2.md
+  - https://developer.up42.com/reference/listeuladocumentsv2.md
+  - https://developer.up42.com/reference/listeulasv2.md
+  - https://developer.up42.com/reference/listgeometries.md
+  - https://developer.up42.com/reference/listordersv2.md
+  - https://developer.up42.com/reference/listprovidersv2.md
+  - https://developer.up42.com/reference/listtaskingfeasibilitystudies.md
+  - https://developer.up42.com/reference/listtaskingquotation.md
+  - https://developer.up42.com/reference/listv2taskingorderopportunities.md
+  - https://developer.up42.com/reference/patchgeometry.md
+  - https://developer.up42.com/reference/patchorder.md
+  - https://developer.up42.com/reference/patchsasitem.md
+  - https://developer.up42.com/reference/postsassearch.md
+  - https://developer.up42.com/reference/processingevaluate.md
+  - https://developer.up42.com/reference/processingexecute.md
+  - https://developer.up42.com/reference/processinggetjob.md
+  - https://developer.up42.com/reference/processinggetjobs.md
+  - https://developer.up42.com/reference/processinggetprocess.md
+  - https://developer.up42.com/reference/processinggetprocesses.md
+  - https://developer.up42.com/reference/processingvalidate.md
+  - https://developer.up42.com/reference/searchbyhost.md
+  - https://developer.up42.com/reference/updatetaskingfeasibilitystudy.md
+  - https://developer.up42.com/reference/updatetaskingquotation.md
+  - https://developer.up42.com/reference/validatev2order.md
+  merge:
+    pages: 57
+    deduped: 593
+    conflicts_kept_first: 0

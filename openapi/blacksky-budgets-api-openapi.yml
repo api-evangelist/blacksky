@@ -1,0 +1,642 @@
+openapi: 3.2.0
+info:
+  title: UP42 Budgets API
+  contact:
+    name: Contact support
+    email: support@up42.com
+  license:
+    name: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+    url: http://creativecommons.org/licenses/by-nc-nd/4.0/
+  version: '1.2'
+servers:
+- url: https://api.up42.com
+security:
+- httpBearer: []
+tags:
+- name: Budgets
+paths:
+  /v2/budgets:
+    get:
+      tags:
+      - Budgets
+      summary: Get budgets
+      description: 'Fetch all budgets. A budget lets you allocate and track credits across orders and processing jobs in your UP42 account.
+
+
+        > 🏢 Budgets are available to Enterprise plan accounts only.
+
+
+        > ⓘ This action can''t be done with the Viewer role.'
+      operationId: listBudgets
+      parameters:
+      - name: status
+        in: query
+        description: '[Budget statuses](https://docs.up42.com/developers/api-budgets#budget-statuses). Use to search for budgets with any of the provided statuses.
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetStatus'
+      - name: includeUsage
+        in: query
+        description: 'Whether to include budget usage information in the response: consumed credits, remaining credits, and the percentage of the spend limit consumed.
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          default: false
+      - $ref: '#/components/parameters/PageablePage'
+      - $ref: '#/components/parameters/PageableSize'
+      - $ref: '#/components/parameters/PageableSorting'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfBudgets'
+      security:
+      - oauth2Profiles:
+        - account
+        - budget.r
+  /v2/budgets/settings:
+    get:
+      tags:
+      - Budgets
+      summary: Get budget enforcement settings
+      description: 'Fetch the budget enforcement configuration for your account:
+
+
+        - **Budget validation enforced**: Orders and processing jobs can''t be created without a valid `budgetId`.
+
+        - **Budget validation not enforced**: Orders and processing jobs can be created with or without a `budgetId`.
+
+
+        > 🏢 Budgets are available to Enterprise plan accounts only.
+
+
+        > ⓘ This action can''t be done with the Viewer role.'
+      operationId: getBudgetSettings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetSettingsResponse'
+              example:
+                budgetSettingId: a0d443a2-41e8-4995-8b54-a5cc4c448227
+                enforcementEnabled: false
+      security:
+      - oauth2Profiles:
+        - account
+        - budget.r
+  /v2/budgets/{budget-id}:
+    get:
+      tags:
+      - Budgets
+      summary: Get a budget
+      description: 'Fetch a specific budget. A budget lets you allocate and track credits across orders and processing jobs in your UP42 account.
+
+
+        > 🏢 Budgets are available to Enterprise plan accounts only.
+
+
+        > ⓘ This action can''t be done with the Viewer role.'
+      operationId: getBudget
+      parameters:
+      - name: budget-id
+        in: path
+        description: The budget ID.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+          example: a0d443a2-41e8-4995-8b54-a5cc4c448227
+      - name: includeUsage
+        in: query
+        description: 'Whether to include budget usage information in the response: consumed credits, remaining credits, and the percentage of the spend limit consumed.
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetResponse'
+        '404':
+          description: Budget not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/BudgetNotFoundError'
+      security:
+      - oauth2Profiles:
+        - account
+        - budget.r
+  /v2/budgets/{budget-id}/usage:
+    get:
+      tags:
+      - Budgets
+      summary: Get budget usage
+      description: 'Fetch the number of credits consumed by a specific budget.
+
+
+        Credit consumption is recorded when orders or processing jobs reach a specific status or substatus.
+
+
+        > 🏢 Budgets are available to Enterprise plan accounts only.
+
+
+        > ⓘ This action can''t be done with the Viewer role.'
+      operationId: getBudgetUsage
+      parameters:
+      - name: budget-id
+        in: path
+        description: The budget ID.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+          example: a0d443a2-41e8-4995-8b54-a5cc4c448227
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetUsageResponse'
+        '404':
+          description: Budget not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/BudgetNotFoundError'
+      security:
+      - oauth2Profiles:
+        - account
+        - budget.r
+components:
+  schemas:
+    BudgetStatus:
+      type: string
+      description: 'The [budget status](https://docs.up42.com/developers/api-budgets#budget-statuses).
+
+        '
+      example: ACTIVE
+      enum:
+      - ACTIVE
+      - INACTIVE
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          example: 10
+        sort:
+          $ref: '#/components/schemas/Sort'
+        offset:
+          type: integer
+          format: int64
+          example: 0
+        paged:
+          type: boolean
+          example: true
+        unpaged:
+          type: boolean
+          example: false
+    PageableResponse:
+      type: object
+      properties:
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        last:
+          type: boolean
+          example: false
+        totalElements:
+          type: integer
+          format: int64
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          example: 20
+        size:
+          type: integer
+          format: int32
+          example: 10
+        number:
+          type: integer
+          format: int32
+          example: 0
+        sort:
+          $ref: '#/components/schemas/Sort'
+        numberOfElements:
+          type: integer
+          format: int32
+          example: 10
+        first:
+          type: boolean
+          example: true
+        empty:
+          type: boolean
+          example: false
+    Sort:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          example: false
+        sorted:
+          type: boolean
+          example: true
+        unsorted:
+          type: boolean
+          example: false
+    BudgetSettingsResponse:
+      required:
+      - enforcementEnabled
+      type: object
+      properties:
+        budgetSettingId:
+          type:
+          - string
+          - 'null'
+          description: The unique identifier for the budget settings
+          format: uuid
+          example: a0d443a2-41e8-4995-8b54-a5cc4c448227
+        enforcementEnabled:
+          type: boolean
+          description: 'Whether a budget ID is mandatory for creation of orders and processing jobs.
+
+            '
+          example: false
+      description: 'Budget enforcement settings for an account.
+
+        '
+    BudgetNotFoundError:
+      description: Budget with the specified ID was not found.
+      example:
+        type: https://docs.up42.com/problems/budget-not-found
+        status: 404
+        title: Budget not found
+        detail: The budget with the ID 'a0d443a2-41e8-4995-8b54-a5cc4c448227' can't be found.
+        instance: /v2/budgets/a0d443a2-41e8-4995-8b54-a5cc4c448227
+      allOf:
+      - $ref: '#/components/schemas/ProblemResponse'
+    BudgetUsageResponse:
+      required:
+      - budgetId
+      - consumedCredits
+      type: object
+      properties:
+        budgetId:
+          type: string
+          description: 'The budget ID.
+
+            '
+          format: uuid
+          example: a0d443a2-41e8-4995-8b54-a5cc4c448227
+        consumedCredits:
+          type: integer
+          description: 'The number of credits consumed under this budget, after offsetting applicable refunds. Expressed as a negative value.
+
+            '
+          format: int64
+          example: 15000
+      description: 'The credit usage information for a budget.
+
+        '
+    BudgetResponse:
+      required:
+      - createdAt
+      - createdBy
+      - id
+      - name
+      - status
+      - updatedAt
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The budget ID.
+
+            '
+          format: uuid
+          example: a0d443a2-41e8-4995-8b54-a5cc4c448227
+        name:
+          maxLength: 255
+          minLength: 1
+          type: string
+          description: 'The name of the budget.
+
+            '
+          example: Q1 Project Alpha
+        description:
+          maxLength: 1024
+          type:
+          - string
+          - 'null'
+          description: 'The description of the budget.
+
+            '
+          example: Budget allocated for geospatial analysis in North America.
+        externalId:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the external project associated with the budget.
+
+            '
+          example: EXT-99812
+        status:
+          $ref: '#/components/schemas/BudgetStatus'
+        createdBy:
+          type: string
+          description: 'The ID of the user who created the budget.
+
+            '
+          format: uuid
+          example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+        createdAt:
+          type: string
+          description: 'The timestamp when the budget was created.
+
+            '
+          format: date-time
+          example: '2026-04-15T10:30:00Z'
+        updatedAt:
+          type: string
+          description: 'The timestamp when the budget was last updated.
+
+            '
+          format: date-time
+          example: '2026-04-15T10:30:00Z'
+        validityPeriod:
+          $ref: '#/components/schemas/ValidityPeriod'
+        spendLimit:
+          type:
+          - integer
+          - 'null'
+          description: 'The spend limit for this budget. Any consumption that would cause total credit consumption to exceed the limit fails. The total credit consumption aggregates all consumptions and refunds under this budget.
+
+
+            If the spend limit is set below the current budget usage, further consumption fails.
+
+            '
+          format: int64
+          example: 4200000
+        consumedCredits:
+          type:
+          - integer
+          - 'null'
+          description: 'The number of credits consumed under this budget, after offsetting applicable refunds. Expressed as a negative value. Returned only if `includeUsage` is enabled.
+
+            '
+          format: int64
+          example: -150000
+        remainingCredits:
+          type:
+          - integer
+          - 'null'
+          description: 'The number of credits remaining to spend under this budget. Can be negative if the credits consumed exceed the spend limit. If the budget doesn’t have a spend limit, the value is `null`. Returned only if `includeUsage` is enabled.
+
+            '
+          format: int64
+          example: 270000
+        usagePercentage:
+          type:
+          - number
+          - 'null'
+          description: 'The percentage of the spend limit consumed, rounded up to two decimals. Can be greater than 100% if the spend limit is set below current budget usage. If the budget doesn’t have a spend limit, the value is `null`. Returned only if `includeUsage` is enabled.
+
+            '
+          format: float
+          example: 35.71
+    ValidityPeriod:
+      type: object
+      properties:
+        startDate:
+          type:
+          - string
+          - 'null'
+          description: 'The start date of the budget''s validity period, in UTC. Before this date, the budget can''t be used.
+
+            '
+          format: date
+          example: '2026-07-22'
+        endDate:
+          type:
+          - string
+          - 'null'
+          description: 'The end date of the budget''s validity period, in UTC. After this date, the budget can''t be used. If the start date is set, the end date must be on or after it.
+
+            '
+          format: date
+          example: '2026-07-22'
+      description: 'The period during which the budget can be used for orders and processing jobs. The budget is valid from the start date through the end date, inclusive.
+
+        '
+    ProblemResponse:
+      required:
+      - status
+      - title
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'A URI reference that uniquely identifies the problem type.
+
+            '
+          format: uri-reference
+          example: https://docs.up42.com/problems/budget-request-not-valid
+        status:
+          type: integer
+          description: 'The HTTP status code generated by the origin server for this occurrence of the problem.
+
+            '
+          example: 400
+        title:
+          type: string
+          description: 'A short summary of the problem type.
+
+            '
+          example: Invalid Budget Request
+        detail:
+          type: string
+          description: 'A human-readable explanation specific to this occurrence of the problem.
+
+            '
+          example: The budget request contains invalid or missing parameters.
+        instance:
+          type: string
+          description: 'A URI reference that identifies the specific occurrence of the problem.
+
+            '
+          format: uri-reference
+          example: /v2/budgets
+      description: Error response following RFC 9457 Problem JSON format.
+    PageOfBudgets:
+      type: object
+      description: A page of budgets.
+      allOf:
+      - type: object
+        properties:
+          content:
+            type: array
+            description: A list of budgets.
+            items:
+              $ref: '#/components/schemas/BudgetResponse'
+      - $ref: '#/components/schemas/PageableResponse'
+  parameters:
+    PageablePage:
+      name: page
+      in: query
+      description: 'The result page number. To get the first page, set the parameter to `0`.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 1
+        default: 0
+    PageableSorting:
+      name: sort
+      in: query
+      description: 'The results sorting method that arranges elements in ascending or descending order based on a chosen field. The format is `<field name>,<asc or desc>`.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: id,asc
+        default: createdAt,desc
+    PageableSize:
+      name: size
+      in: query
+      description: 'The number of results on a result page.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 10
+        default: 20
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2Profiles:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+        authorizationCode:
+          authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+x-provenance:
+  method: searched
+  source: https://developer.up42.com/reference
+  harvested: '2026-10-20'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://developer.up42.com/reference/accepteuladocumentv2.md
+  - https://developer.up42.com/reference/addgeometry.md
+  - https://developer.up42.com/reference/cancelorder.md
+  - https://developer.up42.com/reference/checkorderfeasibility.md
+  - https://developer.up42.com/reference/createextensionrequest.md
+  - https://developer.up42.com/reference/createv2orderunderworkspace.md
+  - https://developer.up42.com/reference/deletegeometry.md
+  - https://developer.up42.com/reference/deletesascollection.md
+  - https://developer.up42.com/reference/estimatev2order.md
+  - https://developer.up42.com/reference/generatedownloadurlexternal.md
+  - https://developer.up42.com/reference/getbudget.md
+  - https://developer.up42.com/reference/getbudgetsettings.md
+  - https://developer.up42.com/reference/getbudgetusage.md
+  - https://developer.up42.com/reference/getcollectionv2.md
+  - https://developer.up42.com/reference/getdataproductv2.md
+  - https://developer.up42.com/reference/geteuladocumentv2.md
+  - https://developer.up42.com/reference/geteulav2.md
+  - https://developer.up42.com/reference/getgeometry.md
+  - https://developer.up42.com/reference/getjsonschema.md
+  - https://developer.up42.com/reference/getorderacquisitiondateextensions.md
+  - https://developer.up42.com/reference/getordercoverage.md
+  - https://developer.up42.com/reference/getorderv2.md
+  - https://developer.up42.com/reference/getproviderv2.md
+  - https://developer.up42.com/reference/getquicklookimage.md
+  - https://developer.up42.com/reference/getsascollection.md
+  - https://developer.up42.com/reference/getsascollections.md
+  - https://developer.up42.com/reference/getsasitem.md
+  - https://developer.up42.com/reference/getsasitems.md
+  - https://developer.up42.com/reference/getsaslandingpage.md
+  - https://developer.up42.com/reference/getsasqueryables.md
+  - https://developer.up42.com/reference/getthumbnailimage.md
+  - https://developer.up42.com/reference/listbudgets.md
+  - https://developer.up42.com/reference/listcollectionsv2.md
+  - https://developer.up42.com/reference/listdataproductsv2.md
+  - https://developer.up42.com/reference/listeuladocumentsv2.md
+  - https://developer.up42.com/reference/listeulasv2.md
+  - https://developer.up42.com/reference/listgeometries.md
+  - https://developer.up42.com/reference/listordersv2.md
+  - https://developer.up42.com/reference/listprovidersv2.md
+  - https://developer.up42.com/reference/listtaskingfeasibilitystudies.md
+  - https://developer.up42.com/reference/listtaskingquotation.md
+  - https://developer.up42.com/reference/listv2taskingorderopportunities.md
+  - https://developer.up42.com/reference/patchgeometry.md
+  - https://developer.up42.com/reference/patchorder.md
+  - https://developer.up42.com/reference/patchsasitem.md
+  - https://developer.up42.com/reference/postsassearch.md
+  - https://developer.up42.com/reference/processingevaluate.md
+  - https://developer.up42.com/reference/processingexecute.md
+  - https://developer.up42.com/reference/processinggetjob.md
+  - https://developer.up42.com/reference/processinggetjobs.md
+  - https://developer.up42.com/reference/processinggetprocess.md
+  - https://developer.up42.com/reference/processinggetprocesses.md
+  - https://developer.up42.com/reference/processingvalidate.md
+  - https://developer.up42.com/reference/searchbyhost.md
+  - https://developer.up42.com/reference/updatetaskingfeasibilitystudy.md
+  - https://developer.up42.com/reference/updatetaskingquotation.md
+  - https://developer.up42.com/reference/validatev2order.md
+  merge:
+    pages: 57
+    deduped: 593
+    conflicts_kept_first: 0

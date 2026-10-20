@@ -1,0 +1,29 @@
+generated: '2026-10-20'
+method: derived
+source: openapi/blacksky-up42-api-openapi.yml
+summary:
+  types:
+  - http
+  - oauth2
+  oauth2_flows:
+  - authorizationCode
+  - clientCredentials
+schemes:
+- name: httpBearer
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/blacksky-up42-api-openapi.yml
+- name: oauth2Profiles
+  type: oauth2
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+    scopes: 2
+  - flow: authorizationCode
+    authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+    tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+    scopes: 2
+  sources:
+  - openapi/blacksky-up42-api-openapi.yml

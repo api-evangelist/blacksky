@@ -1,0 +1,1775 @@
+openapi: 3.2.0
+info:
+  title: UP42 Tasking API
+  contact:
+    name: Contact support
+    email: support@up42.com
+  license:
+    name: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+    url: http://creativecommons.org/licenses/by-nc-nd/4.0/
+  version: '1.2'
+servers:
+- url: https://api.up42.com
+security:
+- httpBearer: []
+tags:
+- name: Tasking
+paths:
+  /v2/coverage/orders/{order-id}:
+    get:
+      tags:
+      - Tasking
+      summary: Get coverage of order assets
+      description: 'Get coverage information for a tasking order:
+
+        - The total covered geometry, its area, and its percentage relative to the ordered geometry
+
+        - The total remainder geometry, its area, and its percentage relative to the ordered geometry
+
+
+        This endpoint works with tasking orders that have the following statuses, if any assets have been delivered: `BEING_FULFILLED`, `FULFILLED`, `FAILED_PERMANENTLY`.'
+      operationId: getOrderCoverage
+      parameters:
+      - $ref: '#/components/parameters/OrderIdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDeliveryMetrics'
+        '401':
+          $ref: '#/components/responses/CoverageUnauthorized'
+      security:
+      - httpBearer: []
+  /v2/tasking/feasibility-studies:
+    get:
+      tags:
+      - Tasking
+      summary: Get feasibility studies for tasking orders
+      description: Get a list of feasibility studies for tasking orders.
+      operationId: listTaskingFeasibilityStudies
+      parameters:
+      - name: id
+        in: query
+        description: 'The feasibility study ID.
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: uuid
+          example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+      - $ref: '#/components/parameters/WorkspaceIdQuery'
+      - $ref: '#/components/parameters/OrderIdQuery'
+      - name: decision
+        in: query
+        description: 'The status of feasibility studies.
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FeasibilityStudyDecision'
+      - $ref: '#/components/parameters/PageableSize'
+      - $ref: '#/components/parameters/PageablePage'
+      - $ref: '#/components/parameters/PageableSorting'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeasibilityStudyListResponse'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+      security:
+      - httpBearer: []
+  /v2/tasking/feasibility-studies/{feasibility-study-id}:
+    patch:
+      tags:
+      - Tasking
+      summary: Choose a feasibility study option
+      description: 'Accept one of the proposed feasibility study options.
+
+
+        You can only perform actions with feasibility studies with the `NOT_DECIDED` status.'
+      operationId: updateTaskingFeasibilityStudy
+      parameters:
+      - name: feasibility-study-id
+        in: path
+        description: The feasibility study ID.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+          example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/FeasibilityStudyPatchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeasibilityStudyPatchResponse'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - httpBearer: []
+  /v2/tasking/orders/feasibility:
+    post:
+      tags:
+      - Tasking
+      summary: Check feasibility study requirements
+      description: Check whether a feasibility study will be required for a tasking order with specific parameters.
+      operationId: checkOrderFeasibility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateV2OrderRequest'
+        required: true
+      responses:
+        '207':
+          description: 'Feasibility study requirements returned. Any geometry validation failures will be returned inside the `errors` array
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeasibilityRequirementsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+  /v2/tasking/orders/opportunities:
+    post:
+      tags:
+      - Tasking
+      summary: Get tasking order opportunities
+      description: Get opportunities for a potential tasking order. An opportunity is a time interval when a sensor's pass over your AOI aligns with the specified order parameters.
+      operationId: listV2TaskingOrderOpportunities
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateV2OrderRequest'
+        required: true
+      responses:
+        '207':
+          description: Opportunities successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTaskingOrderOpportunitiesV2Response'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '501':
+          $ref: '#/components/responses/NotImplemented'
+  /v2/tasking/quotation:
+    get:
+      tags:
+      - Tasking
+      summary: Get quotations for tasking orders
+      description: Get a list of all quotations for tasking orders.
+      operationId: listTaskingQuotation
+      parameters:
+      - name: id
+        in: query
+        description: 'The quotation ID.
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: uuid
+          example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+      - $ref: '#/components/parameters/WorkspaceIdQuery'
+      - $ref: '#/components/parameters/OrderIdQuery'
+      - name: decision
+        in: query
+        description: 'The status of quotations.
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/TaskingQuotationDecision'
+      - $ref: '#/components/parameters/PageableSize'
+      - $ref: '#/components/parameters/PageablePage'
+      - $ref: '#/components/parameters/PageableSorting'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskingQuotationListResponse'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+      security:
+      - httpBearer: []
+  /v2/tasking/quotation/{quotation-id}:
+    patch:
+      tags:
+      - Tasking
+      summary: Decide on a quotation
+      description: 'Accept or reject a quotation for a tasking order.
+
+
+        This operation is only allowed on quotations with the `NOT_DECIDED` status.'
+      operationId: updateTaskingQuotation
+      parameters:
+      - name: quotation-id
+        in: path
+        description: The quotation ID.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+          example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/TaskingQuotationPatchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskingQuotation'
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/OrderingProblem'
+              examples:
+                budgetIdRequired:
+                  $ref: '#/components/examples/BudgetIdRequired'
+                budgetIsNotActive:
+                  $ref: '#/components/examples/BudgetIsNotActive'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+        '402':
+          $ref: '#/components/responses/PaymentRequired'
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/OrderingProblem'
+              examples:
+                orderNotFound:
+                  summary: Order not found
+                  value:
+                    type: https://docs.up42.com/problems/order-not-found
+                    status: 404
+                    title: Order not found
+                    detail: The order with the ID '68567134-27ad-7bd7-4b65-d61adb11fc78' can't be found.
+                    instance: /v2/orders/68567134-27ad-7bd7-4b65-d61adb11fc78
+                budgetNotFound:
+                  $ref: '#/components/examples/BudgetNotFoundOnQuotation'
+                accountNotEnterprise:
+                  $ref: '#/components/examples/AccountNotEnterpriseOnQuotation'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - httpBearer: []
+  /v2/tasking/{order-id}/extensions:
+    get:
+      tags:
+      - Tasking
+      summary: Get acquisition date extensions
+      description: Fetch acquisition date extensions for a tasking order.
+      operationId: getOrderAcquisitionDateExtensions
+      parameters:
+      - $ref: '#/components/parameters/OrderIdPathKebab'
+      - $ref: '#/components/parameters/PageableSize'
+      - $ref: '#/components/parameters/PageablePage'
+      - $ref: '#/components/parameters/PageableSorting'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcquisitionDateExtensionsListResponse'
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - httpBearer: []
+    post:
+      tags:
+      - Tasking
+      summary: Request an acquisition date extension
+      description: Request an extension of the acquisition window for a tasking order. The request is created with the `AWAITING` status and will be approved or rejected after the review.
+      operationId: createExtensionRequest
+      parameters:
+      - $ref: '#/components/parameters/OrderIdPathKebab'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcquisitionDateExtensionRequest'
+        required: true
+      responses:
+        '200':
+          description: The acquisition date extension request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcquisitionDateExtensionResponse'
+        '400':
+          description: Extension request not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/OrderingProblem'
+              examples:
+                invalid_date:
+                  value:
+                    type: https://docs.up42.com/problems/not-valid-extension
+                    status: 400
+                    title: Invalid extension date
+                    detail: extendedTo must be at least 3 days after current acquisition end
+                    instance: /v2/tasking/68567134-27ad-7bd7-4b65-d61adb11fc78/extensions
+                active_exists:
+                  value:
+                    type: https://docs.up42.com/problems/extension-exists
+                    status: 400
+                    title: Active extension request exists
+                    detail: An acquisition extension request is already active for this order. Please wait for it to be approved or rejected before creating a new request.
+                    instance: /v2/tasking/68567134-27ad-7bd7-4b65-d61adb11fc78/extensions
+        '401':
+          $ref: '#/components/responses/OrderingUnauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - httpBearer: []
+components:
+  schemas:
+    PageableResponse:
+      type: object
+      properties:
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        last:
+          type: boolean
+          example: false
+        totalElements:
+          type: integer
+          format: int64
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          example: 20
+        size:
+          type: integer
+          format: int32
+          example: 10
+        number:
+          type: integer
+          format: int32
+          example: 0
+        sort:
+          $ref: '#/components/schemas/Sort'
+        numberOfElements:
+          type: integer
+          format: int32
+          example: 10
+        first:
+          type: boolean
+          example: true
+        empty:
+          type: boolean
+          example: false
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          example: 10
+        sort:
+          $ref: '#/components/schemas/Sort'
+        offset:
+          type: integer
+          format: int64
+          example: 0
+        paged:
+          type: boolean
+          example: true
+        unpaged:
+          type: boolean
+          example: false
+    AreaCoverageMetrics:
+      required:
+      - covered
+      - remainder
+      type: object
+      properties:
+        covered:
+          description: 'Information about the ordered geometry covered by assets.
+
+            '
+          allOf:
+          - $ref: '#/components/schemas/GeometryMetrics'
+        remainder:
+          description: 'Information about the ordered geometry not yet covered by assets.
+
+            '
+          allOf:
+          - $ref: '#/components/schemas/GeometryMetrics'
+    TaskingQuotationListResponse:
+      required:
+      - content
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskingQuotation'
+      description: A list of quotations.
+      allOf:
+      - $ref: '#/components/schemas/PageableResponse'
+    ErrorResponseV1:
+      required:
+      - error
+      type: object
+      properties:
+        data:
+          type:
+          - object
+          - 'null'
+        error:
+          $ref: '#/components/schemas/ErrorResponseObject'
+      description: Legacy error wrapper used for authentication failures and some data-adapter schema errors.
+    FeasibilityDifficulty:
+      type:
+      - string
+      - 'null'
+      description: 'The acquisition difficulty determined by order parameters.
+
+        '
+      example: LOW
+      enum:
+      - LOW
+      - HIGH
+      - null
+    CoverageFeature:
+      required:
+      - geometry
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'The type of geometry. The only allowed value is `Feature`.
+
+            '
+          enum:
+          - Feature
+        geometry:
+          $ref: '#/components/schemas/CoverageGeometry'
+        properties:
+          type: object
+          description: 'Properties of the geometry.
+
+            '
+      description: 'A spatially bounded GeoJSON feature.
+
+        '
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7946#section-3.2
+    FeasibilityRequirementsResponse:
+      required:
+      - errors
+      - results
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeasibilityRequirementsResult'
+        errors:
+          type: array
+          description: 'Errors associated with individual geometries, including validation failures due to AOI size or vertex-count limits.
+
+            '
+          example: []
+          items:
+            $ref: '#/components/schemas/BatchEndpointErrorDetail'
+      description: 'The feasibility requirements for the specified order parameters.
+
+        '
+    FeasibilityStudyPreSave:
+      required:
+      - accountId
+      - orderId
+      - type
+      - workspaceId
+      type: object
+      properties:
+        accountId:
+          $ref: '#/components/schemas/AccountId'
+        workspaceId:
+          $ref: '#/components/schemas/WorkspaceId'
+        orderId:
+          $ref: '#/components/schemas/OrderId'
+        type:
+          type: string
+          description: The feasibility study type.
+          enum:
+          - AUTO
+          - MANUAL
+        difficulty:
+          $ref: '#/components/schemas/FeasibilityDifficulty'
+      description: feasibility study DTO before creation
+    FeasibilityStudyWithoutOption:
+      required:
+      - createdAt
+      - createdBy
+      - decision
+      - id
+      - updatedAt
+      - updatedBy
+      type: object
+      properties:
+        id:
+          type: string
+          description: The feasibility study ID.
+          format: uuid
+        createdAt:
+          type: string
+          description: The time the feasibility study was created.
+          format: date-time
+        createdBy:
+          $ref: '#/components/schemas/Auditor'
+        updatedAt:
+          type: string
+          description: The last time the feasibility study was changed.
+          format: date-time
+        updatedBy:
+          $ref: '#/components/schemas/Auditor'
+        decision:
+          $ref: '#/components/schemas/FeasibilityStudyDecision'
+        decisionById:
+          type:
+          - string
+          - 'null'
+          description: The ID of the user that made a decision on this feasibility study.
+          format: uuid
+        decisionByType:
+          type:
+          - string
+          - 'null'
+          description: The type of user that made a decision on this feasibility study.
+          enum:
+          - USER
+          - ADMIN
+          - API
+          - SYSTEM
+          - null
+        decisionAt:
+          type:
+          - string
+          - 'null'
+          description: The time the decision was made on this feasibility study.
+          format: date-time
+        comment:
+          type:
+          - string
+          - 'null'
+          description: 'Additional information related to the feasibility study. When the feasibility type is `AUTO`, a comment might be provided to give context regarding the assessment.
+
+            '
+          example: 'Only one tasking opportunity available. Might require schedule adjustment.
+
+            '
+        difficulty:
+          $ref: '#/components/schemas/FeasibilityDifficulty'
+      description: feasibility study DTO
+      allOf:
+      - $ref: '#/components/schemas/FeasibilityStudyPreSave'
+    TaskingQuotationDecision:
+      type: string
+      description: The decision for this quotation.
+      default: NOT_DECIDED
+      enum:
+      - NOT_DECIDED
+      - ACCEPTED
+      - REJECTED
+    OrderingFeature:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'The type of geometry. The only allowed value is `Feature`.
+
+            '
+          enum:
+          - Feature
+        geometry:
+          $ref: '#/components/schemas/OrderingGeometry'
+        properties:
+          type: object
+      description: 'A spatially bounded GeoJSON feature.
+
+        '
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7946#section-3.2
+    AccountId:
+      type: string
+      description: The account ID.
+      format: uuid
+      example: 55434287-31bc-3ad7-1a63-d61aac11ac55
+    OrderingProblem:
+      required:
+      - status
+      - title
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'A URI reference that uniquely identifies the problem type.
+
+            '
+          format: uri-reference
+        status:
+          type: integer
+          description: 'The HTTP status code generated by the origin server for this occurrence of the problem.
+
+            '
+        title:
+          type: string
+          description: 'A short summary of the problem type.
+
+            '
+        detail:
+          type:
+          - string
+          - 'null'
+          description: 'A human-readable explanation specific to this occurrence of the problem.
+
+            '
+        instance:
+          type:
+          - string
+          - 'null'
+          description: 'A URI reference that identifies the specific occurrence of the problem.
+
+            '
+          format: uri-reference
+        errors:
+          type:
+          - array
+          - 'null'
+          description: Validation errors for specific parameters.
+          items:
+            $ref: '#/components/schemas/InvalidParam'
+      description: RFC 9457 Problem Details for HTTP APIs
+    AcquisitionDateExtensionResponse:
+      required:
+      - createdAt
+      - extendedFrom
+      - extendedTo
+      - id
+      - orderId
+      - status
+      type: object
+      properties:
+        id:
+          type: string
+          description: The acquisition date extension ID.
+          format: uuid
+          example: a0d443a2-41e8-4995-8b54-a5cc4c448227
+        orderId:
+          $ref: '#/components/schemas/OrderId'
+        extendedFrom:
+          type: string
+          description: The old acquisition end date before the extension.
+          format: date-time
+          example: '2025-05-30T00:00:00Z'
+        extendedTo:
+          type: string
+          description: The new acquisition end date resulting from this extension.
+          format: date-time
+          example: '2025-08-30T00:00:00Z'
+        createdAt:
+          type: string
+          description: The timestamp when the extension was created.
+          format: date-time
+          example: '2025-05-22T00:00:00Z'
+        status:
+          type: string
+          description: The [status](https://docs.up42.com/developers/api-tasking#extension-statuses) of the acquisition date extension request.
+          example: AWAITING
+          enum:
+          - AWAITING
+          - APPROVED
+          - REJECTED
+        reason:
+          type:
+          - string
+          - 'null'
+          description: Supporting context for why the acquisition end date is being extended.
+          example: Unforeseen weather conditions affecting the original acquisition schedule.
+    WorkspaceId:
+      type: string
+      description: The workspace ID.
+      format: uuid
+    Sort:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          example: false
+        sorted:
+          type: boolean
+          example: true
+        unsorted:
+          type: boolean
+          example: false
+    ListTaskingOrderOpportunitiesV2Response:
+      required:
+      - errors
+      - results
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: number
+                description: 'The geometry index number. Indexing starts from zero.
+
+                  '
+                format: int32
+                example: 0
+              opportunities:
+                type: object
+                properties:
+                  features:
+                    type: array
+                    description: 'GeoJSON features.
+
+                      '
+                    items:
+                      $ref: '#/components/schemas/OpportunitiesV2ResponseFeature'
+                  status:
+                    type: string
+                    description: The status of the tasking opportunities search.
+                    example: Done
+                  type:
+                    type: string
+                    description: 'The type of GeoJSON object. The only allowed value is `FeatureCollection`.
+
+                      '
+                    enum:
+                    - FeatureCollection
+            description: 'Results for each of the specified geometries.
+
+              '
+        errors:
+          type: array
+          example: []
+          items:
+            $ref: '#/components/schemas/BatchEndpointErrorDetail'
+      description: 'The cost estimation.
+
+        '
+    FeasibilityStudyDecision:
+      type: string
+      description: The decision for this feasibility study.
+      default: NOT_DECIDED
+      enum:
+      - NOT_DECIDED
+      - ACCEPTED
+    CreateV2OrderRequest:
+      required:
+      - dataProduct
+      - displayName
+      - featureCollection
+      - params
+      type: object
+      properties:
+        dataProduct:
+          type: string
+          description: The data product ID.
+          format: uuid
+          example: 07c33a51-94b9-4509-84df-e9c13ea92b84
+        displayName:
+          $ref: '#/components/schemas/OrderDisplayName'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        budgetId:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the budget selected for this order. Credit consumption is recorded when the order reaches a [consumption event](https://docs.up42.com/developers/api-budgets#consumption-events) associated with a specific status.
+
+            '
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        params:
+          type: object
+          additionalProperties: true
+          description: 'Order parameters, excluding spatial geometry handled in the `featureCollection` object.
+
+            '
+          example:
+            spectralBands: bundle
+            radiometricProcessing: reflectance
+            geometricProcessing: orthorectified
+            pixelCoding: 16bit
+            priority: high
+            maxIncidenceAngle: 20
+            maxCloudCover: 20
+            projection: '4326'
+            acquisitionMode: mono
+            acquisitionStart: '2025-11-20T00:00:00.000Z'
+            acquisitionEnd: '2025-11-27T00:00:00.000Z'
+        featureCollection:
+          $ref: '#/components/schemas/OrderingFeatureCollection'
+    FeasibilityStudyPatchRequest:
+      type: object
+      properties:
+        acceptedOptionId:
+          type: string
+          description: The ID of the option to accept.
+          format: uuid
+      description: Feasibility Study Update Request
+    Tags:
+      maxItems: 30
+      type: array
+      description: 'A list of tags that categorize the order. A tag can consist of letters, numbers, spaces, and special characters (`.`, `-`, `_`, `/`, `:`).
+
+        '
+      items:
+        $ref: '#/components/schemas/Tag'
+    OrderingGeometry:
+      required:
+      - coordinates
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of geometry.
+          example: Polygon
+          enum:
+          - Polygon
+          - Point
+        coordinates:
+          description: The coordinates.
+          example:
+          - - - 77.259584
+              - 28.622331
+            - - 77.287879
+              - 28.622632
+            - - 77.287621
+              - 28.594794
+            - - 77.259389
+              - 28.594983
+            - - 77.259584
+              - 28.622331
+          oneOf:
+          - type: array
+            items:
+              type: array
+              items:
+                minItems: 2
+                type: array
+                items:
+                  type: number
+                  format: double
+          - type: array
+            items:
+              type: number
+              format: double
+        crs:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The parameter defining the CRS.
+              example: name
+            properties:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the CRS.
+                  example: EPSG:4326
+          description: The CRS of the order.
+      description: 'The geometry in the GeoJSON format.
+
+        '
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#geometry-objects
+    TaskingQuotation:
+      required:
+      - createdAt
+      - createdBy
+      - decision
+      - decisionAt
+      - decisionById
+      - decisionByType
+      - id
+      - updatedAt
+      - updatedBy
+      type: object
+      properties:
+        id:
+          type: string
+          description: The quotation ID.
+          format: uuid
+        createdAt:
+          type: string
+          description: The time the quotation was created.
+          format: date-time
+        createdBy:
+          $ref: '#/components/schemas/Auditor'
+        updatedAt:
+          type: string
+          description: The last time the quotation data was changed.
+          format: date-time
+        updatedBy:
+          $ref: '#/components/schemas/Auditor'
+        decision:
+          $ref: '#/components/schemas/TaskingQuotationDecision'
+        decisionById:
+          type:
+          - string
+          - 'null'
+          description: The ID of the user that made a decision on this quotation.
+          format: uuid
+        decisionByType:
+          type:
+          - string
+          - 'null'
+          description: The type of user that made a decision on this quotation.
+          enum:
+          - USER
+          - ADMIN
+          - API
+          - SYSTEM
+          - null
+        decisionAt:
+          type:
+          - string
+          - 'null'
+          description: The time the decision was made on this quotation.
+          format: date-time
+      description: A response for a decided tasking quotation.
+      allOf:
+      - $ref: '#/components/schemas/TaskingQuotationPreSave'
+    TaskingQuotationPatchRequest:
+      type: object
+      properties:
+        decision:
+          $ref: '#/components/schemas/TaskingQuotationDecisionFinal'
+      description: Tasking Quotation Patch Request
+    Tag:
+      maxLength: 180
+      minLength: 1
+      type: string
+      description: 'A tag that consists of letters, numbers, spaces, and special characters (`.`, `-`, `_`, `/`, `:`).
+
+        '
+      example: project-7
+    FeasibilityOption:
+      required:
+      - createdAt
+      - id
+      - updatedAt
+      type: object
+      properties:
+        id:
+          type: string
+          description: The feasibility study option ID.
+          format: uuid
+          example: aa183717-1491-427b-8534-4077f0f86a62
+        createdAt:
+          type: string
+          description: The time the feasibility study option was created.
+          format: date-time
+          example: '2025-12-13T11:02:44.051539Z'
+        updatedAt:
+          type: string
+          description: The last time the feasibility study option was changed.
+          format: date-time
+          example: '2025-12-13T11:02:44.051539Z'
+        studyId:
+          type: string
+          description: The feasibility study ID.
+          format: uuid
+          example: 77dece60-1964-4e7b-a318-4f0afc04a232
+      allOf:
+      - $ref: '#/components/schemas/FeasibilityOptionPreSave'
+    FeatureCollection:
+      required:
+      - features
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'The type of geometry. The only allowed value is `FeatureCollection`.
+
+            '
+          enum:
+          - FeatureCollection
+        features:
+          type: array
+          description: 'GeoJSON features.
+
+            '
+          items:
+            $ref: '#/components/schemas/CoverageFeature'
+      description: 'A GeoJSON feature collection.
+
+        '
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7946#section-3.3
+    FeasibilityStudyPatchResponse:
+      type: object
+      description: Feasibility Study Update Response
+      allOf:
+      - $ref: '#/components/schemas/FeasibilityStudy'
+    OpportunitiesV2ResponseFeature:
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'The type of GeoJSON object. The only allowed value is `Feature`.
+
+            '
+          enum:
+          - Feature
+        geometry:
+          allOf:
+          - type: object
+            description: The geometry of the tasking opportunity.
+          - $ref: '#/components/schemas/OrderingGeometry'
+        properties:
+          type: object
+          additionalProperties: true
+          description: The metadata properties of the tasking opportunity.
+          example:
+            collectionName: PNEO-tasking
+            start_datetime: '2025-05-31T11:10:44.099Z'
+            end_datetime: '2025-05-31T11:10:45.552Z'
+            view:incidence_angle: 26.3
+            view:off_nadir: 63.7
+        id:
+          type: string
+          description: The ID of the tasking opportunity.
+          example: PNEO1
+      description: A tasking opportunity.
+    AcquisitionDateExtensionsListResponse:
+      required:
+      - content
+      type: object
+      properties:
+        content:
+          type: array
+          description: A list of acquisition date extensions.
+          items:
+            $ref: '#/components/schemas/AcquisitionDateExtensionResponse'
+      description: Acquisition date extension page
+      allOf:
+      - $ref: '#/components/schemas/PageableResponse'
+    FeasibilityRequirementsResult:
+      required:
+      - difficulty
+      - feasibilityStudyRequired
+      - index
+      type: object
+      properties:
+        index:
+          type: number
+          description: 'The geometry index number. Indexing starts from zero.
+
+            '
+          format: int32
+          example: 0
+        feasibilityStudyRequired:
+          type: boolean
+          description: 'Whether a feasibility study will be required for this geometry.
+
+            '
+          example: false
+        difficulty:
+          $ref: '#/components/schemas/FeasibilityDifficulty'
+        feasibilityOutcome:
+          $ref: '#/components/schemas/FeasibilityOutcome'
+        comment:
+          type:
+          - string
+          - 'null'
+          description: 'Additional information from the provider about the automatic feasibility assessment, such as suggested alternate dates or estimated coverage. Returned only when feasibility study isn''t required.
+
+            '
+          example: 'Alternate acquisition dates: 2026-08-15 to 2026-08-20'
+      description: 'Results for each of the specified geometries.
+
+        '
+    TaskingQuotationDecisionFinal:
+      type: string
+      description: The decision made for this quotation.
+      enum:
+      - ACCEPTED
+      - REJECTED
+    ErrorResponseObject:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type:
+          - object
+          - 'null'
+    OrderDeliveryMetrics:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/AreaCoverageMetrics'
+    GeometryMetrics:
+      required:
+      - geometry
+      - percentage
+      - sqKmArea
+      type: object
+      properties:
+        sqKmArea:
+          type: number
+          description: The area of the geometry, in km<sup>2</sup>.
+          example: 78.5
+        percentage:
+          type: number
+          description: 'The percentage of the geometry relative to the requested geometry.
+
+            '
+          example: 50
+        geometry:
+          type: object
+          description: The geometry in the GeoJSON format.
+          allOf:
+          - $ref: '#/components/schemas/FeatureCollection'
+    CoverageGeometry:
+      required:
+      - coordinates
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of geometry. Only AOIs are supported.
+          example: Polygon
+          enum:
+          - Polygon
+        coordinates:
+          type: array
+          description: The coordinates.
+          example:
+          - - - 77.259584
+              - 28.622331
+            - - 77.287879
+              - 28.622632
+            - - 77.287621
+              - 28.594794
+            - - 77.259389
+              - 28.594983
+            - - 77.259584
+              - 28.622331
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+      description: 'The geometry in the GeoJSON format.
+
+        '
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#geometry-objects
+    FeasibilityOutcome:
+      type:
+      - string
+      - 'null'
+      description: 'The automatic feasibility outcome for this order. Returned only when feasibility study isn''t required.
+
+        '
+      example: FEASIBLE
+      enum:
+      - FEASIBLE
+      - NOT_FEASIBLE
+      - null
+    BatchEndpointErrorDetail:
+      required:
+      - details
+      - index
+      - message
+      type: object
+      properties:
+        index:
+          type: number
+          description: 'The failed geometry index number.
+
+            '
+        message:
+          type: string
+          description: The error message associated with the failed geometry.
+        details:
+          type: string
+          description: Error message details.
+      description: 'Errors associated with individual geometries returned by batch endpoints, including validation failures due to AOI size or vertex-count limits.
+
+        '
+    FeasibilityOptionPreSave:
+      required:
+      - description
+      - paramType
+      type: object
+      properties:
+        description:
+          minLength: 1
+          type: string
+          description: A description of the feasibility study option.
+          example: Option 1 with 30% cloud coverage
+        paramType:
+          type: string
+          description: 'The parameter type for this feasibility option, indicating whether the original order parameters or an alternate set of parameters were used to evaluate this option.
+
+            '
+          example: ORIGINAL_PARAMS
+          enum:
+          - ORIGINAL_PARAMS
+          - ALTERNATE_PARAMS
+      description: Tasking feasibility study option DTO before creation
+    OrderDisplayName:
+      maxLength: 200
+      minLength: 1
+      type: string
+      description: A human-readable name that describes the order.
+      example: Pléiades Neo over North America
+    AcquisitionDateExtensionRequest:
+      required:
+      - extendedTo
+      type: object
+      properties:
+        extendedTo:
+          type: string
+          description: 'The new acquisition end date to extend the order to. Must be at least 3 days after the current acquisition end date.
+
+            '
+          format: date-time
+          example: '2025-08-30T00:00:00Z'
+      description: Acquisition date extension request
+    Auditor:
+      type: object
+      properties:
+        id:
+          oneOf:
+          - type: string
+            description: The ID of the user who performed the action.
+            format: uuid
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          - type: string
+            description: A marker that indicates an action was performed automatically. The only allowed value is `system`.
+            enum:
+            - system
+        type:
+          type: string
+          description: The type of user who performed the action.
+          enum:
+          - INTERNAL
+          - ADMIN
+          - API_KEY
+          - USER
+      description: 'The ID and type of the user who performed the action.
+
+        '
+    InvalidParam:
+      required:
+      - name
+      - reason
+      type: object
+      properties:
+        name:
+          type: string
+          description: The parameter or field name
+        reason:
+          type: string
+          description: A human-readable explanation of the validation failure
+    FeasibilityStudyListResponse:
+      required:
+      - content
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeasibilityStudy'
+      description: Feasibility Study Page
+      allOf:
+      - $ref: '#/components/schemas/PageableResponse'
+    OrderingFeatureCollection:
+      required:
+      - features
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'The type of GeoJSON object. The only allowed value is `FeatureCollection`.
+
+            '
+          enum:
+          - FeatureCollection
+        features:
+          type: array
+          description: 'GeoJSON features.
+
+            '
+          items:
+            $ref: '#/components/schemas/OrderingFeature'
+      description: 'A GeoJSON feature collection.
+
+        '
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7946#section-3.3
+    OrderId:
+      type: string
+      description: The order ID.
+      format: uuid
+    TaskingQuotationPreSave:
+      required:
+      - accountId
+      - creditsPrice
+      - orderId
+      - workspaceId
+      type: object
+      properties:
+        accountId:
+          $ref: '#/components/schemas/AccountId'
+        workspaceId:
+          $ref: '#/components/schemas/WorkspaceId'
+        orderId:
+          $ref: '#/components/schemas/OrderId'
+        creditsPrice:
+          type: integer
+          description: The amount of credits that will be charged.
+          format: int32
+          example: 1
+      description: Tasking Quotation DTO before creation
+    FeasibilityStudy:
+      required:
+      - options
+      type: object
+      properties:
+        options:
+          minItems: 0
+          type: array
+          description: Options available for the feasibility study.
+          items:
+            $ref: '#/components/schemas/FeasibilityOption'
+        decisionOption:
+          type:
+          - object
+          - 'null'
+          description: The option of the feasibility study that was accepted.
+          anyOf:
+          - $ref: '#/components/schemas/FeasibilityOption'
+          - type:
+            - object
+            - 'null'
+        difficulty:
+          $ref: '#/components/schemas/FeasibilityDifficulty'
+      description: feasibility study DTO
+      allOf:
+      - $ref: '#/components/schemas/FeasibilityStudyWithoutOption'
+  responses:
+    Forbidden:
+      description: Forbidden
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/OrderingProblem'
+          example:
+            type: https://docs.up42.com/problems/forbidden
+            title: Forbidden
+            status: 403
+            detail: You do not have permission to perform this action.
+    BadRequest:
+      description: Order request not valid
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/OrderingProblem'
+          example:
+            type: https://docs.up42.com/problems/bad-order-request
+            status: 400
+            title: Order request not valid
+            detail: One or more query parameter values are not valid.
+            instance: /v2/orders
+            errors:
+            - name: featureCollection
+              reason: The feature list must not be empty.
+    PaymentRequired:
+      description: Not enough credits
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/OrderingProblem'
+          example:
+            type: https://docs.up42.com/problems/insufficient-balance
+            status: 402
+            title: Insufficient balance
+            detail: 'The order can''t be created due to an insufficient account balance. Credits required to place the order: 14424.'
+            instance: /v2/tasking/quotation/68567134-27ad-7bd7-4b65-d61adb11fc78
+    OrderingUnauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseV1'
+          example:
+            data: null
+            error:
+              code: 401
+              message: 'An error occurred while attempting to decode the Jwt: Jwt expired at 2023-02-15T11:29:44Z'
+              details: null
+    NotImplemented:
+      description: Not supported
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/OrderingProblem'
+          example:
+            type: https://docs.up42.com/problems/not-supported-for-collection
+            status: 501
+            title: Not supported for collection
+            detail: This operation isn't supported for the specified collection.
+            instance: /v2/tasking/orders/opportunities
+    ServiceUnavailable:
+      description: Service unavailable, please try again later
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/ResponseHeaderRetryAfter'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/OrderingProblem'
+          example:
+            type: https://docs.up42.com/problems/internal-error
+            status: 503
+            title: Temporary internal error
+            detail: There's a service disruption on our side. Try again in 300 seconds.
+            instance: /v2/tasking/quotation/68567134-27ad-7bd7-4b65-d61adb11fc78
+    NotFound:
+      description: Resource not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/OrderingProblem'
+          example:
+            type: https://docs.up42.com/problems/order-not-found
+            status: 404
+            title: Order not found
+            detail: The order with the ID '68567134-27ad-7bd7-4b65-d61adb11fc78' can't be found.
+            instance: /v2/orders/68567134-27ad-7bd7-4b65-d61adb11fc78
+    CoverageUnauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 401
+              title:
+                type: string
+                example: 'An error occurred while attempting to decode the Jwt: Jwt expired at 2023-02-15T11:29:44Z
+
+                  '
+              detail:
+                type:
+                - object
+                - 'null'
+  headers:
+    ResponseHeaderRetryAfter:
+      description: The time you should wait before making a follow-up request.
+      style: simple
+      explode: false
+      schema:
+        anyOf:
+        - minimum: 0
+          type: integer
+          description: 'delay-seconds: A non-negative decimal integer indicating the seconds to delay after the response is received.'
+        - type: string
+          description: 'http-date: A date after which to retry.'
+          format: date-time
+  parameters:
+    PageableSize:
+      name: size
+      in: query
+      description: 'The number of results on a result page.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 10
+        default: 20
+    OrderIdPath:
+      name: order-id
+      in: path
+      description: The order ID.
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    WorkspaceIdQuery:
+      name: workspaceId
+      in: query
+      description: 'The workspace ID.
+
+
+        Use to get objects from a specific workspace. Otherwise, objects from the entire account will be returned.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    PageableSorting:
+      name: sort
+      in: query
+      description: 'The results sorting method that arranges elements in ascending or descending order based on a chosen field. The format is `<field name>,<asc or desc>`.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: id,asc
+        default: createdAt,desc
+    PageablePage:
+      name: page
+      in: query
+      description: 'The result page number. To get the first page, set the parameter to `0`.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        example: 1
+        default: 0
+    OrderIdPathKebab:
+      name: order-id
+      in: path
+      description: 'The order ID.
+
+        '
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+    OrderIdQuery:
+      name: orderId
+      in: query
+      description: 'The order ID.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+        format: uuid
+        example: 68567134-27ad-7bd7-4b65-d61adb11fc78
+  examples:
+    BudgetNotFoundOnQuotation:
+      summary: Budget not found
+      value:
+        type: https://docs.up42.com/problems/budget-not-found
+        status: 404
+        title: Budget not found
+        detail: The budget with the ID 'a0d443a2-41e8-4995-8b54-a5cc4c448227' can't be found.
+        instance: /v2/tasking/quotation/68567134-27ad-7bd7-4b65-d61adb11fc78
+    BudgetIsNotActive:
+      summary: Budget is not active
+      value:
+        type: https://docs.up42.com/problems/budget-is-not-active
+        status: 400
+        title: Budget not active
+        detail: The budget with the ID 'a0d443a2-41e8-4995-8b54-a5cc4c448227' can't be selected because it's not active.
+        instance: /v2/tasking/quotation/68567134-27ad-7bd7-4b65-d61adb11fc78
+    AccountNotEnterpriseOnQuotation:
+      summary: Account not on enterprise plan
+      value:
+        type: https://docs.up42.com/problems/account-not-enterprise
+        status: 404
+        title: Account not enterprise
+        detail: The account with the ID 'a0d443a2-41e8-4995-8b54-a5cc4c448227' is not on the Enterprise plan.
+        instance: /v2/tasking/quotation/68567134-27ad-7bd7-4b65-d61adb11fc78
+    BudgetIdRequired:
+      summary: Budget ID required
+      value:
+        type: https://docs.up42.com/problems/budget-id-required
+        status: 400
+        title: Budget ID required
+        detail: Budget enforcement is enabled for your account.
+        instance: /v2/tasking/quotation/68567134-27ad-7bd7-4b65-d61adb11fc78
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2Profiles:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+        authorizationCode:
+          authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+x-provenance:
+  method: searched
+  source: https://developer.up42.com/reference
+  harvested: '2026-10-20'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://developer.up42.com/reference/accepteuladocumentv2.md
+  - https://developer.up42.com/reference/addgeometry.md
+  - https://developer.up42.com/reference/cancelorder.md
+  - https://developer.up42.com/reference/checkorderfeasibility.md
+  - https://developer.up42.com/reference/createextensionrequest.md
+  - https://developer.up42.com/reference/createv2orderunderworkspace.md
+  - https://developer.up42.com/reference/deletegeometry.md
+  - https://developer.up42.com/reference/deletesascollection.md
+  - https://developer.up42.com/reference/estimatev2order.md
+  - https://developer.up42.com/reference/generatedownloadurlexternal.md
+  - https://developer.up42.com/reference/getbudget.md
+  - https://developer.up42.com/reference/getbudgetsettings.md
+  - https://developer.up42.com/reference/getbudgetusage.md
+  - https://developer.up42.com/reference/getcollectionv2.md
+  - https://developer.up42.com/reference/getdataproductv2.md
+  - https://developer.up42.com/reference/geteuladocumentv2.md
+  - https://developer.up42.com/reference/geteulav2.md
+  - https://developer.up42.com/reference/getgeometry.md
+  - https://developer.up42.com/reference/getjsonschema.md
+  - https://developer.up42.com/reference/getorderacquisitiondateextensions.md
+  - https://developer.up42.com/reference/getordercoverage.md
+  - https://developer.up42.com/reference/getorderv2.md
+  - https://developer.up42.com/reference/getproviderv2.md
+  - https://developer.up42.com/reference/getquicklookimage.md
+  - https://developer.up42.com/reference/getsascollection.md
+  - https://developer.up42.com/reference/getsascollections.md
+  - https://developer.up42.com/reference/getsasitem.md
+  - https://developer.up42.com/reference/getsasitems.md
+  - https://developer.up42.com/reference/getsaslandingpage.md
+  - https://developer.up42.com/reference/getsasqueryables.md
+  - https://developer.up42.com/reference/getthumbnailimage.md
+  - https://developer.up42.com/reference/listbudgets.md
+  - https://developer.up42.com/reference/listcollectionsv2.md
+  - https://developer.up42.com/reference/listdataproductsv2.md
+  - https://developer.up42.com/reference/listeuladocumentsv2.md
+  - https://developer.up42.com/reference/listeulasv2.md
+  - https://developer.up42.com/reference/listgeometries.md
+  - https://developer.up42.com/reference/listordersv2.md
+  - https://developer.up42.com/reference/listprovidersv2.md
+  - https://developer.up42.com/reference/listtaskingfeasibilitystudies.md
+  - https://developer.up42.com/reference/listtaskingquotation.md
+  - https://developer.up42.com/reference/listv2taskingorderopportunities.md
+  - https://developer.up42.com/reference/patchgeometry.md
+  - https://developer.up42.com/reference/patchorder.md
+  - https://developer.up42.com/reference/patchsasitem.md
+  - https://developer.up42.com/reference/postsassearch.md
+  - https://developer.up42.com/reference/processingevaluate.md
+  - https://developer.up42.com/reference/processingexecute.md
+  - https://developer.up42.com/reference/processinggetjob.md
+  - https://developer.up42.com/reference/processinggetjobs.md
+  - https://developer.up42.com/reference/processinggetprocess.md
+  - https://developer.up42.com/reference/processinggetprocesses.md
+  - https://developer.up42.com/reference/processingvalidate.md
+  - https://developer.up42.com/reference/searchbyhost.md
+  - https://developer.up42.com/reference/updatetaskingfeasibilitystudy.md
+  - https://developer.up42.com/reference/updatetaskingquotation.md
+  - https://developer.up42.com/reference/validatev2order.md
+  merge:
+    pages: 57
+    deduped: 593
+    conflicts_kept_first: 0

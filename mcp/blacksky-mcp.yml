@@ -1,0 +1,214 @@
+generated: '2026-10-20'
+method: derived
+generator: derive-mcp-candidate.py
+source:
+- openapi/blacksky-up42-api-openapi.yml
+status: candidate
+deployment:
+  mode: none
+  auth: unknown
+  verified: probed
+note: 'No MCP server was found. The pre-flight posted tools/list to /mcp on api.up42.com, api.blacksky.com, api.esri.com, blacksky.com; verdict
+  gated (https://api.up42.com/mcp answered 401: the edge authenticates before it routes, which proves nothing either way). Candidate tools below
+  are derived from the 57 operation(s) in the provider''s own OpenAPI (40 listed); they describe what a server WOULD expose, not one that exists.'
+tools:
+- name: search_by_host
+  operationId: searchByHost
+  method: POST
+  path: /catalog/hosts/{host-name}/stac/search
+  description: Search the catalog by host name
+- name: get_quicklook_image
+  operationId: getQuicklookImage
+  method: GET
+  path: /catalog/{host-name}/image/{image-id}/quicklook
+  description: Get a quicklook
+- name: get_thumbnail_image
+  operationId: getThumbnailImage
+  method: GET
+  path: /catalog/{host-name}/image/{image-id}/thumbnail
+  description: Get a thumbnail
+- name: get_jsonschema
+  operationId: getJSONSchema
+  method: GET
+  path: /orders/schema/{data-product-id}
+  description: Get a JSON schema of an order form
+- name: get_saslanding_page
+  operationId: getSASLandingPage
+  method: GET
+  path: /v2/assets/stac
+  description: Get the data management landing page
+- name: get_sascollections
+  operationId: getSASCollections
+  method: GET
+  path: /v2/assets/stac/collections
+  description: Get STAC collections
+- name: get_sascollection
+  operationId: getSASCollection
+  method: GET
+  path: /v2/assets/stac/collections/{collection-id}
+  description: Get a STAC collection
+- name: delete_sascollection
+  operationId: deleteSASCollection
+  method: DELETE
+  path: /v2/assets/stac/collections/{collection-id}
+  description: Delete a STAC collection
+- name: get_sasitems
+  operationId: getSASItems
+  method: GET
+  path: /v2/assets/stac/collections/{collection-id}/items
+  description: Get STAC items
+- name: get_sasitem
+  operationId: getSASItem
+  method: GET
+  path: /v2/assets/stac/collections/{collection-id}/items/{item-id}
+  description: Get a STAC item
+- name: patch_sasitem
+  operationId: patchSASItem
+  method: PATCH
+  path: /v2/assets/stac/collections/{collection-id}/items/{item-id}
+  description: Update a STAC item
+- name: get_sasqueryables
+  operationId: getSASQueryables
+  method: GET
+  path: /v2/assets/stac/queryables
+  description: Get data management search parameters
+- name: post_sassearch
+  operationId: postSASSearch
+  method: POST
+  path: /v2/assets/stac/search
+  description: Get specific STAC items
+- name: generate_download_url_external
+  operationId: generateDownloadUrlExternal
+  method: POST
+  path: /v2/assets/{asset-id}/download-url
+  description: Create a download URL
+- name: list_budgets
+  operationId: listBudgets
+  method: GET
+  path: /v2/budgets
+  description: Get budgets
+- name: get_budget_settings
+  operationId: getBudgetSettings
+  method: GET
+  path: /v2/budgets/settings
+  description: Get budget enforcement settings
+- name: get_budget
+  operationId: getBudget
+  method: GET
+  path: /v2/budgets/{budget-id}
+  description: Get a budget
+- name: get_budget_usage
+  operationId: getBudgetUsage
+  method: GET
+  path: /v2/budgets/{budget-id}/usage
+  description: Get budget usage
+- name: list_collections_v2
+  operationId: listCollectionsV2
+  method: GET
+  path: /v2/collections
+  description: Get geospatial collections
+- name: get_collection_v2
+  operationId: getCollectionV2
+  method: GET
+  path: /v2/collections/{collection-name}
+  description: Get a geospatial collection
+- name: get_order_coverage
+  operationId: getOrderCoverage
+  method: GET
+  path: /v2/coverage/orders/{order-id}
+  description: Get coverage of order assets
+- name: list_data_products_v2
+  operationId: listDataProductsV2
+  method: GET
+  path: /v2/data-products
+  description: Get data products
+- name: get_data_product_v2
+  operationId: getDataProductV2
+  method: GET
+  path: /v2/data-products/{data-product-name}
+  description: Get a data product
+- name: list_eulas_v2
+  operationId: listEulasV2
+  method: GET
+  path: /v2/eulas
+  description: Get EULAs
+- name: get_eula_v2
+  operationId: getEulaV2
+  method: GET
+  path: /v2/eulas/{eula-id}
+  description: Get a EULA
+- name: list_eula_documents_v2
+  operationId: listEulaDocumentsV2
+  method: GET
+  path: /v2/eulas/{eula-id}/documents
+  description: Get EULA documents
+- name: get_eula_document_v2
+  operationId: getEulaDocumentV2
+  method: GET
+  path: /v2/eulas/{eula-id}/documents/{eula-document-id}
+  description: Get a EULA document
+- name: accept_eula_document_v2
+  operationId: acceptEulaDocumentV2
+  method: PATCH
+  path: /v2/eulas/{eula-id}/documents/{eula-document-id}
+  description: Accept a EULA document
+- name: list_orders_v2
+  operationId: listOrdersV2
+  method: GET
+  path: /v2/orders
+  description: Get orders
+- name: create_v2_order_under_workspace
+  operationId: createV2OrderUnderWorkspace
+  method: POST
+  path: /v2/orders
+  description: Create an order
+- name: estimate_v2_order
+  operationId: estimateV2Order
+  method: POST
+  path: /v2/orders/estimate
+  description: Estimate the cost of an order
+- name: validate_v2_order
+  operationId: validateV2Order
+  method: POST
+  path: /v2/orders/validation
+  description: Validate input for an order
+- name: get_order_v2
+  operationId: getOrderV2
+  method: GET
+  path: /v2/orders/{order-id}
+  description: Get an order
+- name: patch_order
+  operationId: patchOrder
+  method: PATCH
+  path: /v2/orders/{order-id}
+  description: Update an order
+- name: cancel_order
+  operationId: cancelOrder
+  method: POST
+  path: /v2/orders/{order-id}/cancellation
+  description: Cancel an order
+- name: processing_get_jobs
+  operationId: processing.getJobs
+  method: GET
+  path: /v2/processing/jobs
+  description: Get processing jobs
+- name: processing_get_job
+  operationId: processing.getJob
+  method: GET
+  path: /v2/processing/jobs/{job-id}
+  description: Get a processing job
+- name: processing_get_processes
+  operationId: processing.getProcesses
+  method: GET
+  path: /v2/processing/processes
+  description: Get processes
+- name: processing_get_process
+  operationId: processing.getProcess
+  method: GET
+  path: /v2/processing/processes/{process-id}
+  description: Get a process
+- name: processing_evaluate
+  operationId: processing.evaluate
+  method: POST
+  path: /v2/processing/processes/{process-id}/cost
+  description: Determine the cost of a process

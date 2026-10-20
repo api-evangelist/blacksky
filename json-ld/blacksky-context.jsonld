@@ -1,0 +1,773 @@
+{
+  "@context": {
+    "@vocab": "https://blacksky.com/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "blacksky": "https://blacksky.com/schema#",
+    "Sort": "blacksky:Sort",
+    "empty": {
+      "@id": "blacksky:empty",
+      "@type": "xsd:boolean"
+    },
+    "sorted": {
+      "@id": "blacksky:sorted",
+      "@type": "xsd:boolean"
+    },
+    "unsorted": {
+      "@id": "blacksky:unsorted",
+      "@type": "xsd:boolean"
+    },
+    "PageableObject": "blacksky:PageableObject",
+    "pageNumber": {
+      "@id": "blacksky:pageNumber",
+      "@type": "xsd:integer"
+    },
+    "pageSize": {
+      "@id": "blacksky:pageSize",
+      "@type": "xsd:integer"
+    },
+    "sort": {
+      "@id": "blacksky:sort",
+      "@type": "@id"
+    },
+    "offset": {
+      "@id": "blacksky:offset",
+      "@type": "xsd:integer"
+    },
+    "paged": {
+      "@id": "blacksky:paged",
+      "@type": "xsd:boolean"
+    },
+    "unpaged": {
+      "@id": "blacksky:unpaged",
+      "@type": "xsd:boolean"
+    },
+    "CollectionType": "blacksky:CollectionType",
+    "Collection": "blacksky:Collection",
+    "name": {
+      "@id": "blacksky:name",
+      "@type": "xsd:string"
+    },
+    "title": {
+      "@id": "blacksky:title",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "blacksky:description",
+      "@type": "xsd:string"
+    },
+    "type": {
+      "@id": "blacksky:type",
+      "@type": "@id"
+    },
+    "Provider": "blacksky:Provider",
+    "PageableResponse": "blacksky:PageableResponse",
+    "pageable": {
+      "@id": "blacksky:pageable",
+      "@type": "@id"
+    },
+    "last": {
+      "@id": "blacksky:last",
+      "@type": "xsd:boolean"
+    },
+    "totalElements": {
+      "@id": "blacksky:totalElements",
+      "@type": "xsd:integer"
+    },
+    "totalPages": {
+      "@id": "blacksky:totalPages",
+      "@type": "xsd:integer"
+    },
+    "size": {
+      "@id": "blacksky:size",
+      "@type": "xsd:integer"
+    },
+    "number": {
+      "@id": "blacksky:number",
+      "@type": "xsd:integer"
+    },
+    "numberOfElements": {
+      "@id": "blacksky:numberOfElements",
+      "@type": "xsd:integer"
+    },
+    "first": {
+      "@id": "blacksky:first",
+      "@type": "xsd:boolean"
+    },
+    "ResolutionValue": "blacksky:ResolutionValue",
+    "minimum": {
+      "@id": "blacksky:minimum",
+      "@type": "xsd:decimal"
+    },
+    "maximum": {
+      "@id": "blacksky:maximum",
+      "@type": "xsd:decimal"
+    },
+    "ProductType": "blacksky:ProductType",
+    "ProviderRolesArray": "blacksky:ProviderRolesArray",
+    "roles": {
+      "@id": "blacksky:roles",
+      "@container": "@list"
+    },
+    "ProviderRole": "blacksky:ProviderRole",
+    "CollectionInfoExtension": "blacksky:CollectionInfoExtension",
+    "metadata": {
+      "@id": "blacksky:metadata",
+      "@type": "@id"
+    },
+    "integrations": {
+      "@id": "blacksky:integrations",
+      "@type": "@id"
+    },
+    "CollectionIntegration": "blacksky:CollectionIntegration",
+    "CollectionMetadata": "blacksky:CollectionMetadata",
+    "productType": {
+      "@id": "blacksky:productType",
+      "@type": "@id"
+    },
+    "resolutionClass": {
+      "@id": "blacksky:resolutionClass",
+      "@type": "@id"
+    },
+    "resolutionValue": {
+      "@id": "blacksky:resolutionValue",
+      "@type": "@id"
+    },
+    "priority": {
+      "@id": "blacksky:priority",
+      "@type": "@id"
+    },
+    "acquisitionMode": {
+      "@id": "blacksky:acquisitionMode",
+      "@type": "@id"
+    },
+    "ResolutionClass": "blacksky:ResolutionClass",
+    "DataProduct": "blacksky:DataProduct",
+    "id": {
+      "@id": "blacksky:id",
+      "@type": "xsd:string"
+    },
+    "eulaId": {
+      "@id": "blacksky:eulaId",
+      "@type": "xsd:string"
+    },
+    "Priority": "blacksky:Priority",
+    "AcquisitionMode": "blacksky:AcquisitionMode",
+    "BasicErrorResponse": "blacksky:BasicErrorResponse",
+    "detail": {
+      "@id": "blacksky:detail",
+      "@type": "xsd:string"
+    },
+    "status": {
+      "@id": "blacksky:status",
+      "@type": "xsd:string"
+    },
+    "Auditor": "blacksky:Auditor",
+    "TaskingQuotationListResponse": "blacksky:TaskingQuotationListResponse",
+    "content": {
+      "@id": "blacksky:content",
+      "@container": "@list"
+    },
+    "TaskingQuotation": "blacksky:TaskingQuotation",
+    "createdAt": {
+      "@id": "blacksky:createdAt",
+      "@type": "xsd:dateTime"
+    },
+    "createdBy": {
+      "@id": "blacksky:createdBy",
+      "@type": "@id"
+    },
+    "updatedAt": {
+      "@id": "blacksky:updatedAt",
+      "@type": "xsd:dateTime"
+    },
+    "updatedBy": {
+      "@id": "blacksky:updatedBy",
+      "@type": "@id"
+    },
+    "decision": {
+      "@id": "blacksky:decision",
+      "@type": "@id"
+    },
+    "decisionById": {
+      "@id": "blacksky:decisionById",
+      "@type": "xsd:string"
+    },
+    "decisionByType": {
+      "@id": "blacksky:decisionByType",
+      "@type": "xsd:string"
+    },
+    "decisionAt": {
+      "@id": "blacksky:decisionAt",
+      "@type": "xsd:dateTime"
+    },
+    "TaskingQuotationPreSave": "blacksky:TaskingQuotationPreSave",
+    "accountId": {
+      "@id": "blacksky:accountId",
+      "@type": "@id"
+    },
+    "workspaceId": {
+      "@id": "blacksky:workspaceId",
+      "@type": "@id"
+    },
+    "orderId": {
+      "@id": "blacksky:orderId",
+      "@type": "@id"
+    },
+    "creditsPrice": {
+      "@id": "blacksky:creditsPrice",
+      "@type": "xsd:integer"
+    },
+    "TaskingQuotationDecision": "blacksky:TaskingQuotationDecision",
+    "ErrorResponseV1": "blacksky:ErrorResponseV1",
+    "data": {
+      "@id": "blacksky:data"
+    },
+    "error": {
+      "@id": "blacksky:error",
+      "@type": "@id"
+    },
+    "ErrorResponseObject": "blacksky:ErrorResponseObject",
+    "code": {
+      "@id": "blacksky:code",
+      "@type": "xsd:integer"
+    },
+    "message": {
+      "@id": "blacksky:message",
+      "@type": "xsd:string"
+    },
+    "details": {
+      "@id": "blacksky:details"
+    },
+    "TaskingQuotationPatchRequest": "blacksky:TaskingQuotationPatchRequest",
+    "TaskingQuotationDecisionFinal": "blacksky:TaskingQuotationDecisionFinal",
+    "InvalidParam": "blacksky:InvalidParam",
+    "reason": {
+      "@id": "blacksky:reason",
+      "@type": "xsd:string"
+    },
+    "OrderingProblem": "blacksky:OrderingProblem",
+    "instance": {
+      "@id": "blacksky:instance",
+      "@type": "xsd:string"
+    },
+    "errors": {
+      "@id": "blacksky:errors",
+      "@container": "@list"
+    },
+    "FeatureCollection": "blacksky:FeatureCollection",
+    "features": {
+      "@id": "blacksky:features",
+      "@container": "@list"
+    },
+    "AreaCoverageMetrics": "blacksky:AreaCoverageMetrics",
+    "covered": {
+      "@id": "blacksky:covered"
+    },
+    "remainder": {
+      "@id": "blacksky:remainder"
+    },
+    "GeometryMetrics": "blacksky:GeometryMetrics",
+    "sqKmArea": {
+      "@id": "blacksky:sqKmArea",
+      "@type": "xsd:decimal"
+    },
+    "percentage": {
+      "@id": "blacksky:percentage",
+      "@type": "xsd:decimal"
+    },
+    "geometry": {
+      "@id": "blacksky:geometry"
+    },
+    "CoverageFeature": "blacksky:CoverageFeature",
+    "properties": {
+      "@id": "blacksky:properties"
+    },
+    "CoverageGeometry": "blacksky:CoverageGeometry",
+    "coordinates": {
+      "@id": "blacksky:coordinates",
+      "@container": "@list"
+    },
+    "FeasibilityStudyListResponse": "blacksky:FeasibilityStudyListResponse",
+    "FeasibilityStudy": "blacksky:FeasibilityStudy",
+    "options": {
+      "@id": "blacksky:options",
+      "@container": "@list"
+    },
+    "decisionOption": {
+      "@id": "blacksky:decisionOption"
+    },
+    "difficulty": {
+      "@id": "blacksky:difficulty",
+      "@type": "@id"
+    },
+    "FeasibilityStudyWithoutOption": "blacksky:FeasibilityStudyWithoutOption",
+    "comment": {
+      "@id": "blacksky:comment",
+      "@type": "xsd:string"
+    },
+    "FeasibilityStudyPreSave": "blacksky:FeasibilityStudyPreSave",
+    "FeasibilityStudyDecision": "blacksky:FeasibilityStudyDecision",
+    "FeasibilityOption": "blacksky:FeasibilityOption",
+    "studyId": {
+      "@id": "blacksky:studyId",
+      "@type": "xsd:string"
+    },
+    "FeasibilityOptionPreSave": "blacksky:FeasibilityOptionPreSave",
+    "paramType": {
+      "@id": "blacksky:paramType",
+      "@type": "xsd:string"
+    },
+    "FeasibilityDifficulty": "blacksky:FeasibilityDifficulty",
+    "FeasibilityStudyPatchRequest": "blacksky:FeasibilityStudyPatchRequest",
+    "acceptedOptionId": {
+      "@id": "blacksky:acceptedOptionId",
+      "@type": "xsd:string"
+    },
+    "CreateV2OrderRequest": "blacksky:CreateV2OrderRequest",
+    "dataProduct": {
+      "@id": "blacksky:dataProduct",
+      "@type": "xsd:string"
+    },
+    "displayName": {
+      "@id": "blacksky:displayName",
+      "@type": "@id"
+    },
+    "tags": {
+      "@id": "blacksky:tags",
+      "@type": "@id"
+    },
+    "budgetId": {
+      "@id": "blacksky:budgetId",
+      "@type": "xsd:string"
+    },
+    "params": {
+      "@id": "blacksky:params"
+    },
+    "featureCollection": {
+      "@id": "blacksky:featureCollection",
+      "@type": "@id"
+    },
+    "OrderingFeature": "blacksky:OrderingFeature",
+    "OrderingFeatureCollection": "blacksky:OrderingFeatureCollection",
+    "BatchEndpointErrorDetail": "blacksky:BatchEndpointErrorDetail",
+    "index": {
+      "@id": "blacksky:index",
+      "@type": "xsd:decimal"
+    },
+    "OrderingGeometry": "blacksky:OrderingGeometry",
+    "crs": {
+      "@id": "blacksky:crs"
+    },
+    "FeasibilityRequirementsResponse": "blacksky:FeasibilityRequirementsResponse",
+    "results": {
+      "@id": "blacksky:results",
+      "@container": "@list"
+    },
+    "FeasibilityRequirementsResult": "blacksky:FeasibilityRequirementsResult",
+    "feasibilityStudyRequired": {
+      "@id": "blacksky:feasibilityStudyRequired",
+      "@type": "xsd:boolean"
+    },
+    "feasibilityOutcome": {
+      "@id": "blacksky:feasibilityOutcome",
+      "@type": "@id"
+    },
+    "FeasibilityOutcome": "blacksky:FeasibilityOutcome",
+    "ListTaskingOrderOpportunitiesV2Response": "blacksky:ListTaskingOrderOpportunitiesV2Response",
+    "OpportunitiesV2ResponseFeature": "blacksky:OpportunitiesV2ResponseFeature",
+    "AcquisitionDateExtensionsListResponse": "blacksky:AcquisitionDateExtensionsListResponse",
+    "AcquisitionDateExtensionResponse": "blacksky:AcquisitionDateExtensionResponse",
+    "extendedFrom": {
+      "@id": "blacksky:extendedFrom",
+      "@type": "xsd:dateTime"
+    },
+    "extendedTo": {
+      "@id": "blacksky:extendedTo",
+      "@type": "xsd:dateTime"
+    },
+    "AcquisitionDateExtensionRequest": "blacksky:AcquisitionDateExtensionRequest",
+    "Link": "blacksky:Link",
+    "rel": {
+      "@id": "blacksky:rel",
+      "@type": "xsd:string"
+    },
+    "href": {
+      "@id": "blacksky:href",
+      "@type": "xsd:string"
+    },
+    "SearchRequestDto": "blacksky:SearchRequestDto",
+    "collections": {
+      "@id": "blacksky:collections",
+      "@container": "@list"
+    },
+    "ids": {
+      "@id": "blacksky:ids",
+      "@container": "@list"
+    },
+    "datetime": {
+      "@id": "blacksky:datetime",
+      "@type": "xsd:string"
+    },
+    "limit": {
+      "@id": "blacksky:limit",
+      "@type": "xsd:integer"
+    },
+    "query": {
+      "@id": "blacksky:query",
+      "@type": "@id"
+    },
+    "bbox": {
+      "@id": "blacksky:bbox",
+      "@container": "@list"
+    },
+    "intersects": {
+      "@id": "blacksky:intersects",
+      "@type": "@id"
+    },
+    "Properties": "blacksky:Properties",
+    "acquisitionDate": {
+      "@id": "blacksky:acquisitionDate",
+      "@type": "xsd:dateTime"
+    },
+    "start_datetime": {
+      "@id": "blacksky:start_datetime",
+      "@type": "xsd:dateTime"
+    },
+    "end_datetime": {
+      "@id": "blacksky:end_datetime",
+      "@type": "xsd:dateTime"
+    },
+    "constellation": {
+      "@id": "blacksky:constellation",
+      "@type": "xsd:string"
+    },
+    "collection": {
+      "@id": "blacksky:collection",
+      "@type": "xsd:string"
+    },
+    "providerName": {
+      "@id": "blacksky:providerName",
+      "@type": "xsd:string"
+    },
+    "cloudCoverage": {
+      "@id": "blacksky:cloudCoverage",
+      "@type": "xsd:decimal"
+    },
+    "providerProperties": {
+      "@id": "blacksky:providerProperties"
+    },
+    "sceneId": {
+      "@id": "blacksky:sceneId",
+      "@type": "xsd:string"
+    },
+    "resolution": {
+      "@id": "blacksky:resolution",
+      "@type": "xsd:decimal"
+    },
+    "deliveryTime": {
+      "@id": "blacksky:deliveryTime",
+      "@type": "xsd:string"
+    },
+    "producer": {
+      "@id": "blacksky:producer",
+      "@type": "xsd:string"
+    },
+    "StacResponse": "blacksky:StacResponse",
+    "links": {
+      "@id": "blacksky:links",
+      "@container": "@list"
+    },
+    "Polygon": "blacksky:Polygon",
+    "CatalogFeature": "blacksky:CatalogFeature",
+    "CatalogStacQuery": "blacksky:CatalogStacQuery",
+    "CatalogGeometry": "blacksky:CatalogGeometry",
+    "OrderSubStatus": "blacksky:OrderSubStatus",
+    "OrderResponseSharedProperties": "blacksky:OrderResponseSharedProperties",
+    "dataProductId": {
+      "@id": "blacksky:dataProductId",
+      "@type": "xsd:string"
+    },
+    "TaskingOrderDetailsSharedProperties": "blacksky:TaskingOrderDetailsSharedProperties",
+    "acquisitionStart": {
+      "@id": "blacksky:acquisitionStart",
+      "@type": "@id"
+    },
+    "acquisitionEnd": {
+      "@id": "blacksky:acquisitionEnd",
+      "@type": "@id"
+    },
+    "extraDescription": {
+      "@id": "blacksky:extraDescription",
+      "@type": "xsd:string"
+    },
+    "subStatus": {
+      "@id": "blacksky:subStatus",
+      "@type": "@id"
+    },
+    "OrderType": "blacksky:OrderType",
+    "OrderV2Status": "blacksky:OrderV2Status",
+    "OrderV2Response": "blacksky:OrderV2Response",
+    "orderDetails": {
+      "@id": "blacksky:orderDetails",
+      "@type": "@id"
+    },
+    "OrdersV2PageResponse": "blacksky:OrdersV2PageResponse",
+    "ArchiveOrderDetailsSharedProperties": "blacksky:ArchiveOrderDetailsSharedProperties",
+    "aoi": {
+      "@id": "blacksky:aoi",
+      "@type": "@id"
+    },
+    "imageId": {
+      "@id": "blacksky:imageId",
+      "@type": "xsd:string"
+    },
+    "CreateV2OrderResponse": "blacksky:CreateV2OrderResponse",
+    "V2ResultDetails": "blacksky:V2ResultDetails",
+    "CreateV2OrderErrorDetails": "blacksky:CreateV2OrderErrorDetails",
+    "OrderPatchRequest": "blacksky:OrderPatchRequest",
+    "Problem": "blacksky:Problem",
+    "OrderValidationResponseDto": "blacksky:OrderValidationResponseDto",
+    "unavailabilityReason": {
+      "@id": "blacksky:unavailabilityReason",
+      "@type": "xsd:string"
+    },
+    "ValidationResultInvalid": "blacksky:ValidationResultInvalid",
+    "errorReason": {
+      "@id": "blacksky:errorReason",
+      "@type": "xsd:string"
+    },
+    "EstimateV2OrderResponse": "blacksky:EstimateV2OrderResponse",
+    "summary": {
+      "@id": "blacksky:summary",
+      "@type": "@id"
+    },
+    "EstimationV2Summary": "blacksky:EstimationV2Summary",
+    "totalCredits": {
+      "@id": "blacksky:totalCredits",
+      "@type": "xsd:decimal"
+    },
+    "totalSize": {
+      "@id": "blacksky:totalSize",
+      "@type": "xsd:decimal"
+    },
+    "unit": {
+      "@id": "blacksky:unit",
+      "@type": "@id"
+    },
+    "EstimationV2Result": "blacksky:EstimationV2Result",
+    "credits": {
+      "@id": "blacksky:credits",
+      "@type": "xsd:decimal"
+    },
+    "EstimateV2OrderPricingUnit": "blacksky:EstimateV2OrderPricingUnit",
+    "CancelOrderResponse": "blacksky:CancelOrderResponse",
+    "GeometryResponse": "blacksky:GeometryResponse",
+    "PagableGeometryResponse": "blacksky:PagableGeometryResponse",
+    "CreateGeometryRequest": "blacksky:CreateGeometryRequest",
+    "PatchGeometryRequest": "blacksky:PatchGeometryRequest",
+    "processList": "blacksky:processList",
+    "processes": {
+      "@id": "blacksky:processes",
+      "@container": "@list"
+    },
+    "descriptionType": "blacksky:descriptionType",
+    "additionalParameters": {
+      "@id": "blacksky:additionalParameters"
+    },
+    "additionalParameter": "blacksky:additionalParameter",
+    "value": {
+      "@id": "blacksky:value",
+      "@container": "@list"
+    },
+    "reference": "blacksky:reference",
+    "itemsSchema": "blacksky:itemsSchema",
+    "required": {
+      "@id": "blacksky:required",
+      "@container": "@list"
+    },
+    "enum": {
+      "@id": "blacksky:enum",
+      "@container": "@list"
+    },
+    "format": {
+      "@id": "blacksky:format",
+      "@type": "xsd:string"
+    },
+    "propertiesSchema": "blacksky:propertiesSchema",
+    "execute": "blacksky:execute",
+    "inputs": {
+      "@id": "blacksky:inputs"
+    },
+    "outputs": {
+      "@id": "blacksky:outputs"
+    },
+    "response": {
+      "@id": "blacksky:response",
+      "@type": "xsd:string"
+    },
+    "output": "blacksky:output",
+    "transmissionMode": {
+      "@id": "blacksky:transmissionMode",
+      "@type": "@id"
+    },
+    "statusInfo": "blacksky:statusInfo",
+    "processID": {
+      "@id": "blacksky:processID",
+      "@type": "@id"
+    },
+    "jobID": {
+      "@id": "blacksky:jobID",
+      "@type": "xsd:string"
+    },
+    "accountID": {
+      "@id": "blacksky:accountID",
+      "@type": "xsd:string"
+    },
+    "workspaceID": {
+      "@id": "blacksky:workspaceID",
+      "@type": "xsd:string"
+    },
+    "definition": {
+      "@id": "blacksky:definition",
+      "@type": "@id"
+    },
+    "created": {
+      "@id": "blacksky:created",
+      "@type": "xsd:dateTime"
+    },
+    "updated": {
+      "@id": "blacksky:updated",
+      "@type": "xsd:dateTime"
+    },
+    "started": {
+      "@id": "blacksky:started",
+      "@type": "xsd:dateTime"
+    },
+    "finished": {
+      "@id": "blacksky:finished",
+      "@type": "xsd:dateTime"
+    },
+    "creditConsumption": {
+      "@id": "blacksky:creditConsumption"
+    },
+    "link": "blacksky:link",
+    "hreflang": {
+      "@id": "blacksky:hreflang",
+      "@type": "xsd:string"
+    },
+    "statusCode": "blacksky:statusCode",
+    "jobList": "blacksky:jobList",
+    "jobs": {
+      "@id": "blacksky:jobs",
+      "@container": "@list"
+    },
+    "jobType": "blacksky:jobType",
+    "validationError": "blacksky:validationError",
+    "validationErrors": "blacksky:validationErrors",
+    "Validationlink": "blacksky:Validationlink",
+    "schemaError": "blacksky:schemaError",
+    "schema-error": {
+      "@id": "blacksky:schema-error",
+      "@type": "xsd:string"
+    },
+    "jobPrice": "blacksky:jobPrice",
+    "pricingStrategy": {
+      "@id": "blacksky:pricingStrategy",
+      "@type": "xsd:string"
+    },
+    "JobPricinginputs": "blacksky:JobPricinginputs",
+    "HTTP401Response": "blacksky:HTTP401Response",
+    "HTTP404Response": "blacksky:HTTP404Response",
+    "LandingPage": "blacksky:LandingPage",
+    "conformsTo": {
+      "@id": "blacksky:conformsTo",
+      "@container": "@list"
+    },
+    "stac_extensions": {
+      "@id": "blacksky:stac_extensions",
+      "@container": "@list"
+    },
+    "stac_version": {
+      "@id": "blacksky:stac_version",
+      "@type": "xsd:string"
+    },
+    "Asset": "blacksky:Asset",
+    "Collections": "blacksky:Collections",
+    "context": {
+      "@id": "blacksky:context"
+    },
+    "Extent": "blacksky:Extent",
+    "spatial": {
+      "@id": "blacksky:spatial"
+    },
+    "temporal": {
+      "@id": "blacksky:temporal"
+    },
+    "HTTP422Response": "blacksky:HTTP422Response",
+    "PydanticErrorDict": "blacksky:PydanticErrorDict",
+    "loc": {
+      "@id": "blacksky:loc",
+      "@container": "@list"
+    },
+    "msg": {
+      "@id": "blacksky:msg",
+      "@type": "xsd:string"
+    },
+    "SpatialExtent": "blacksky:SpatialExtent",
+    "TemporalExtent": "blacksky:TemporalExtent",
+    "interval": {
+      "@id": "blacksky:interval",
+      "@container": "@list"
+    },
+    "Context": "blacksky:Context",
+    "returned": {
+      "@id": "blacksky:returned",
+      "@type": "xsd:integer"
+    },
+    "matched": {
+      "@id": "blacksky:matched",
+      "@type": "xsd:integer"
+    },
+    "page": {
+      "@id": "blacksky:page",
+      "@type": "xsd:integer"
+    },
+    "pages": {
+      "@id": "blacksky:pages",
+      "@type": "xsd:integer"
+    },
+    "STACCollection": "blacksky:STACCollection",
+    "assets": {
+      "@id": "blacksky:assets"
+    },
+    "keywords": {
+      "@id": "blacksky:keywords",
+      "@container": "@list"
+    },
+    "license": {
+      "@id": "blacksky:license",
+      "@type": "xsd:string"
+    },
+    "providers": {
+      "@id": "blacksky:providers",
+      "@container": "@list"
+    },
+    "extent": {
+      "@id": "blacksky:extent"
+    },
+    "STACProvider": "blacksky:STACProvider",
+    "url": {
+      "@id": "blacksky:url",
+      "@type": "xsd:string"
+    }
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "BlackSky API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects BlackSky's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-10-20) from openapi/blacksky-up42-api-openapi.yml.",
+  "dcterms:created": "2026-10-20",
+  "dcterms:source": [
+    "openapi/blacksky-up42-api-openapi.yml"
+  ]
+}

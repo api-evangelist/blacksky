@@ -1,0 +1,30 @@
+generated: '2026-10-20'
+method: derived
+source: openapi/blacksky-up42-api-openapi.yml
+schemes:
+- name: oauth2Profiles
+  source: openapi/blacksky-up42-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+  - flow: authorizationCode
+    authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+    tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+scopes:
+- scope: account
+  description: Access to resources of the authenticated user's account
+  flows:
+  - authorizationCode
+  - clientCredentials
+  sources:
+  - openapi/blacksky-up42-api-openapi.yml
+- scope: budget.r
+  sources:
+  - openapi/blacksky-up42-api-openapi.yml
+- scope: eula.w
+  description: Create/Update/Delete a EULA document
+  flows:
+  - authorizationCode
+  - clientCredentials
+  sources:
+  - openapi/blacksky-up42-api-openapi.yml

@@ -1,0 +1,728 @@
+openapi: 3.2.0
+info:
+  title: UP42 Catalog API
+  contact:
+    name: Contact support
+    email: support@up42.com
+  license:
+    name: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+    url: http://creativecommons.org/licenses/by-nc-nd/4.0/
+  version: '1.2'
+servers:
+- url: https://api.up42.com
+security:
+- httpBearer: []
+tags:
+- name: Catalog
+paths:
+  /catalog/hosts/{host-name}/stac/search:
+    post:
+      tags:
+      - Catalog
+      summary: Search the catalog by host name
+      description: Get a list of available full scenes from the catalog.
+      operationId: searchByHost
+      parameters:
+      - $ref: '#/components/parameters/HostNamePath'
+      - name: next
+        in: query
+        description: 'Search for previous (`prev:{ID}`) or next (`next:{ID}`) full scenes from the results page.
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: next:1b4d92d4-dd58-484a-9ebb-11c668d58776
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StacResponse'
+        '401':
+          $ref: '#/components/responses/CatalogUnauthorized'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '422':
+          $ref: '#/components/responses/GeometryError'
+        '542':
+          $ref: '#/components/responses/HostError'
+  /catalog/{host-name}/image/{image-id}/quicklook:
+    get:
+      tags:
+      - Catalog
+      summary: Get a quicklook
+      description: 'Get a quicklook of a full scene from the catalog. Not all data hosts provide quicklooks.
+
+
+        Quicklooks are low-resolution previews of full scenes on a basemap.'
+      operationId: getQuicklookImage
+      parameters:
+      - $ref: '#/components/parameters/HostNamePath'
+      - $ref: '#/components/parameters/ImageIDPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            image/png:
+              schema:
+                $ref: '#/components/schemas/PreviewResource'
+            image/jpeg:
+              schema:
+                $ref: '#/components/schemas/PreviewResource'
+        '401':
+          $ref: '#/components/responses/CatalogUnauthorized'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '542':
+          $ref: '#/components/responses/HostError'
+  /catalog/{host-name}/image/{image-id}/thumbnail:
+    get:
+      tags:
+      - Catalog
+      summary: Get a thumbnail
+      description: 'Get a thumbnail of a full scene from the catalog. Not all data hosts provide thumbnails.
+
+
+        Thumbnails are small, low-resolution, light-weighted previews of full scenes. For some data hosts, thumbnails can be cropped and rotated compared to quicklooks.'
+      operationId: getThumbnailImage
+      parameters:
+      - $ref: '#/components/parameters/HostNamePath'
+      - $ref: '#/components/parameters/ImageIDPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            image/png:
+              schema:
+                $ref: '#/components/schemas/PreviewResource'
+            image/jpeg:
+              schema:
+                $ref: '#/components/schemas/PreviewResource'
+        '401':
+          $ref: '#/components/responses/CatalogUnauthorized'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '542':
+          $ref: '#/components/responses/HostError'
+components:
+  schemas:
+    Polygon:
+      required:
+      - coordinates
+      - type
+      type:
+      - object
+      - 'null'
+      properties:
+        type:
+          type: string
+          description: The type of geometry. The only allowed value is `Polygon`.
+          example: Polygon
+          enum:
+          - Polygon
+        coordinates:
+          type: array
+          description: The coordinates.
+          example:
+          - - - 13.37684864751185
+              - 52.526224085531766
+            - - 13.37684864751185
+              - 52.497575021739664
+            - - 13.423387693820644
+              - 52.497575021739664
+            - - 13.423387693820644
+              - 52.526224085531766
+            - - 13.37684864751185
+              - 52.526224085531766
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+                format: double
+      description: 'A polygon in the GeoJSON format.
+
+        '
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#polygon
+    CatalogGeometry:
+      required:
+      - coordinates
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of geometry. Only AOIs are supported.
+          example: Polygon
+          enum:
+          - Polygon
+        coordinates:
+          type: array
+          description: The coordinates.
+          example:
+          - - - 77.259584
+              - 28.622331
+            - - 77.287879
+              - 28.622632
+            - - 77.287621
+              - 28.594794
+            - - 77.259389
+              - 28.594983
+            - - 77.259584
+              - 28.622331
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+      description: 'The geometry in the GeoJSON format.
+
+        '
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#geometry-objects
+    SearchRequestDto:
+      type: object
+      properties:
+        collections:
+          uniqueItems: true
+          type:
+          - array
+          - 'null'
+          description: 'The names of the collections whose full scenes you want to include in search results.
+
+            '
+          example:
+          - pneo
+          - phr
+          items:
+            type: string
+        ids:
+          uniqueItems: true
+          type:
+          - array
+          - 'null'
+          description: 'The IDs of specific full scenes you want to include in search results.
+
+            '
+          example:
+          - f6b86de1-a9ea-4322-99fe-23126d2784b6
+          items:
+            type: string
+        datetime:
+          type:
+          - string
+          - 'null'
+          description: 'Search for full scenes that have a temporal property that intersects the datetime value in the RFC 3339 format. You can search for a specific date and time, or for a closed or an open date interval. Express open intervals using double-dots.
+
+
+            - A timestamp: `2025-02-12T23:20:50Z`
+
+            - A closed interval: `2025-02-12T00:00:00Z/2025-03-18T12:31:12Z`
+
+            - An interval without end date: `2025-02-12T00:00:00Z/..`
+
+            - An interval without start date: `../2025-03-18T12:31:12Z`
+
+            '
+          example: 2025-01-01T00:00:00Z/2025-01-15T23:59:59Z
+        limit:
+          maximum: 500
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+          description: 'The number of full scenes on a results page.
+
+            '
+          format: int32
+          example: 100
+        query:
+          $ref: '#/components/schemas/CatalogStacQuery'
+        bbox:
+          maxItems: 4
+          minItems: 4
+          type:
+          - array
+          - 'null'
+          description: 'A search geometry in the GeoJSON format. Returns images that intersect with the defined rectangle and may not fully cover it. Use only if `intersects` isn''t specified.
+
+            '
+          example:
+          - 6.553674
+          - 62.191632
+          - 6.560222
+          - 62.195116
+          items:
+            type: number
+            format: double
+        intersects:
+          $ref: '#/components/schemas/Polygon'
+    PreviewResource:
+      type: string
+      format: byte
+    CatalogFeature:
+      required:
+      - geometry
+      - properties
+      - type
+      type: object
+      properties:
+        geometry:
+          $ref: '#/components/schemas/CatalogGeometry'
+        properties:
+          $ref: '#/components/schemas/Properties'
+        bbox:
+          type: array
+          example:
+          - 6.553674
+          - 62.191632
+          - 6.560222
+          - 62.195116
+          items:
+            type: number
+        type:
+          type: string
+          default: Feature
+      description: 'A list of full scenes with the defined parameters from the chosen host.
+
+        '
+    Properties:
+      required:
+      - collection
+      - constellation
+      - id
+      - producer
+      - providerName
+      - providerProperties
+      - sceneId
+      - up42:usageType
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The full scene ID. Use for data ordering.
+
+            '
+          example: 5ad07b37-f6a1-4829-bc74-0fe50528b0ed
+        acquisitionDate:
+          type:
+          - string
+          - 'null'
+          description: 'The date and time when the sensor acquired the data.
+
+            '
+          format: date-time
+          example: '2019-03-23T10:24:03.556Z'
+          deprecated: true
+        datetime:
+          type:
+          - string
+          - 'null'
+          description: 'The date and time when the sensor acquired the data.
+
+            '
+          format: date-time
+          example: '2019-03-24T12:12:00.556Z'
+        start_datetime:
+          type:
+          - string
+          - 'null'
+          description: 'The date and time when the sensor started the acquisition process.
+
+            '
+          format: date-time
+          example: '2019-03-23T10:24:03.556Z'
+        end_datetime:
+          type:
+          - string
+          - 'null'
+          description: 'The date and time when the sensor finished the acquisition process.
+
+            '
+          format: date-time
+          example: '2019-03-25T11:11:00.556Z'
+        constellation:
+          type: string
+          description: 'The name of the sensor.
+
+            '
+          example: pneo
+        collection:
+          type: string
+          description: 'The name of the collection.
+
+            '
+          example: pneo
+        providerName:
+          type: string
+          example: oneatlas
+          deprecated: true
+        cloudCoverage:
+          type:
+          - number
+          - 'null'
+          description: 'The percentage of cloud coverage.
+
+            '
+          format: double
+          example: 0
+        up42:usageType:
+          uniqueItems: true
+          type: array
+          description: 'The type of usage.
+
+            '
+          deprecated: true
+          items:
+            type: string
+            enum:
+            - DATA
+            - ANALYTICS
+        providerProperties:
+          type: object
+          additionalProperties: true
+          deprecated: true
+        sceneId:
+          type: string
+          description: 'The additional full scene ID. Don''t use for data ordering.
+
+            '
+          example: DS_PHR1B_201903231024035_FR1_PX_E013N52_0915_02862
+        resolution:
+          type: number
+          description: 'The spatial resolution, in meters.
+
+            '
+          format: double
+          example: 0.5
+        deliveryTime:
+          type: string
+          description: 'The unit of data delivery time.
+
+            '
+          example: MINUTES
+          enum:
+          - MINUTES
+          - HOURS
+          - DAYS
+        producer:
+          type: string
+          description: 'The name of the producer.
+
+
+            Data producers are companies that initially acquired and processed the source data. Data acquired by a producer can be distributed to various hosts.
+
+            '
+          example: Airbus
+    StacResponse:
+      required:
+      - features
+      - links
+      - type
+      type: object
+      properties:
+        features:
+          type: array
+          description: 'A list of full scenes with the defined parameters from the chosen host.
+
+            '
+          items:
+            $ref: '#/components/schemas/CatalogFeature'
+        links:
+          type: array
+          description: 'A list of links related to the current endpoint. Use to navigate through objects.
+
+            '
+          items:
+            $ref: '#/components/schemas/Link'
+        type:
+          type: string
+          description: 'The type of GeoJSON object.
+
+            '
+          example: FeatureCollection
+          default: FeatureCollection
+    Link:
+      type: object
+      properties:
+        rel:
+          type: string
+          example: self
+        href:
+          type: string
+          example: https://api.up42.dev/catalog/hosts/oneatlas/stac/search
+    CatalogStacQuery:
+      type:
+      - object
+      - 'null'
+      properties:
+        cloudCoverage:
+          maxProperties: 1
+          minProperties: 1
+          type: object
+          properties:
+            GT:
+              type: integer
+              description: Greater than
+            GTE:
+              type: integer
+              description: Greater than or equal to
+            LT:
+              type: integer
+              description: Less than
+            LTE:
+              type: integer
+              description: Less than or equal to
+          additionalProperties: false
+          description: 'Search by the percentage of cloud coverage. The format is `<operator>: <integer>`. Replace `<operator>` with a comparison operator:
+
+
+            - `GT`: greater than
+
+            - `GTE`: greater than or equal to
+
+            - `LT`: less than
+
+            - `LTE`: less than or equal to
+
+            '
+          example:
+            LT: 10
+      description: 'A STAC query object.
+
+        '
+  responses:
+    ResourceNotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                format: nullable
+              error:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 404
+                  message:
+                    type: string
+                    example: Could not find host 'pleiades'.
+                  details:
+                    type: string
+                    format: nullable
+    CatalogUnauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type:
+                - object
+                - 'null'
+                example: null
+              error:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: 'An error occurred while attempting to decode the Jwt: Jwt expired at 2023-02-15T11:29:44Z
+
+                      '
+                  details:
+                    type:
+                    - object
+                    - 'null'
+                    example: null
+    HostError:
+      description: Request failed due to an outage on the host side
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type:
+                - object
+                - 'null'
+                example: null
+              error:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 542
+                  message:
+                    type: string
+                    example: Operation failed.
+                  details:
+                    type:
+                    - object
+                    - 'null'
+                    example: null
+    GeometryError:
+      description: Request not valid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type:
+                - object
+                - 'null'
+                example: null
+              error:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 422
+                  message:
+                    type: string
+                    example: '1 validation error for Request
+
+                      body -> intersects -> coordinates
+
+                      Geometry should not have more than 999 vertices. (type=value_error)
+
+                      '
+                  details:
+                    type:
+                    - object
+                    - 'null'
+                    example: null
+  parameters:
+    HostNamePath:
+      name: host-name
+      in: path
+      description: 'The name of the data host.
+
+        '
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        example: oneatlas
+    ImageIDPath:
+      name: image-id
+      in: path
+      description: The full scene ID.
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        example: TRIPLESAT_3_PMS_20230208011027_0042C9VI_002
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2Profiles:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+        authorizationCode:
+          authorizationUrl: https://auth.up42.com/realms/public/protocol/openid-connect/auth
+          tokenUrl: https://auth.up42.com/realms/public/protocol/openid-connect/token
+          scopes:
+            account: Access to resources of the authenticated user's account
+            eula.w: Create/Update/Delete a EULA document
+x-provenance:
+  method: searched
+  source: https://developer.up42.com/reference
+  harvested: '2026-10-20'
+  tool: harvest-readme-openapi.py
+  note: Assembled verbatim from the OpenAPI definition ReadMe embeds in each operation page of the provider's developer portal; paths and components merged by API title, nothing authored.
+  assembled_from:
+  - https://developer.up42.com/reference/accepteuladocumentv2.md
+  - https://developer.up42.com/reference/addgeometry.md
+  - https://developer.up42.com/reference/cancelorder.md
+  - https://developer.up42.com/reference/checkorderfeasibility.md
+  - https://developer.up42.com/reference/createextensionrequest.md
+  - https://developer.up42.com/reference/createv2orderunderworkspace.md
+  - https://developer.up42.com/reference/deletegeometry.md
+  - https://developer.up42.com/reference/deletesascollection.md
+  - https://developer.up42.com/reference/estimatev2order.md
+  - https://developer.up42.com/reference/generatedownloadurlexternal.md
+  - https://developer.up42.com/reference/getbudget.md
+  - https://developer.up42.com/reference/getbudgetsettings.md
+  - https://developer.up42.com/reference/getbudgetusage.md
+  - https://developer.up42.com/reference/getcollectionv2.md
+  - https://developer.up42.com/reference/getdataproductv2.md
+  - https://developer.up42.com/reference/geteuladocumentv2.md
+  - https://developer.up42.com/reference/geteulav2.md
+  - https://developer.up42.com/reference/getgeometry.md
+  - https://developer.up42.com/reference/getjsonschema.md
+  - https://developer.up42.com/reference/getorderacquisitiondateextensions.md
+  - https://developer.up42.com/reference/getordercoverage.md
+  - https://developer.up42.com/reference/getorderv2.md
+  - https://developer.up42.com/reference/getproviderv2.md
+  - https://developer.up42.com/reference/getquicklookimage.md
+  - https://developer.up42.com/reference/getsascollection.md
+  - https://developer.up42.com/reference/getsascollections.md
+  - https://developer.up42.com/reference/getsasitem.md
+  - https://developer.up42.com/reference/getsasitems.md
+  - https://developer.up42.com/reference/getsaslandingpage.md
+  - https://developer.up42.com/reference/getsasqueryables.md
+  - https://developer.up42.com/reference/getthumbnailimage.md
+  - https://developer.up42.com/reference/listbudgets.md
+  - https://developer.up42.com/reference/listcollectionsv2.md
+  - https://developer.up42.com/reference/listdataproductsv2.md
+  - https://developer.up42.com/reference/listeuladocumentsv2.md
+  - https://developer.up42.com/reference/listeulasv2.md
+  - https://developer.up42.com/reference/listgeometries.md
+  - https://developer.up42.com/reference/listordersv2.md
+  - https://developer.up42.com/reference/listprovidersv2.md
+  - https://developer.up42.com/reference/listtaskingfeasibilitystudies.md
+  - https://developer.up42.com/reference/listtaskingquotation.md
+  - https://developer.up42.com/reference/listv2taskingorderopportunities.md
+  - https://developer.up42.com/reference/patchgeometry.md
+  - https://developer.up42.com/reference/patchorder.md
+  - https://developer.up42.com/reference/patchsasitem.md
+  - https://developer.up42.com/reference/postsassearch.md
+  - https://developer.up42.com/reference/processingevaluate.md
+  - https://developer.up42.com/reference/processingexecute.md
+  - https://developer.up42.com/reference/processinggetjob.md
+  - https://developer.up42.com/reference/processinggetjobs.md
+  - https://developer.up42.com/reference/processinggetprocess.md
+  - https://developer.up42.com/reference/processinggetprocesses.md
+  - https://developer.up42.com/reference/processingvalidate.md
+  - https://developer.up42.com/reference/searchbyhost.md
+  - https://developer.up42.com/reference/updatetaskingfeasibilitystudy.md
+  - https://developer.up42.com/reference/updatetaskingquotation.md
+  - https://developer.up42.com/reference/validatev2order.md
+  merge:
+    pages: 57
+    deduped: 593
+    conflicts_kept_first: 0

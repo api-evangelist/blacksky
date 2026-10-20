@@ -1,5 +1,7 @@
 aid: blacksky
+
 name: BlackSky
+
 description: >-
   BlackSky Technology (NYSE: BKSY) is a Herndon, Virginia headquartered
   real-time space-based intelligence company that operates a high-revisit
@@ -25,7 +27,9 @@ description: >-
   time of this entry. The customer revenue model is subscription-based
   Spectra ON-DEMAND and ASSURED contracts, Mission Solutions custom
   engagements, and through marketplace partners.
+
 type: Index
+
 deliveryModel:
   model: unknown
   open_source: false
@@ -37,6 +41,7 @@ deliveryModel:
   - none
   generated: '2026-08-28'
   method: derived
+
 accessModel:
   pricing: unknown
   onboarding: unknown
@@ -48,9 +53,13 @@ accessModel:
   source: []
   generated: '2026-07-22'
   method: derived
+
 position: Producing
+
 access: 3rd-Party
+
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/blacksky.png
+
 tags:
   - Earth Observation
   - Satellite Imagery
@@ -67,12 +76,50 @@ tags:
   - Spectra
   - Gen-3
   - NYSE BKSY
+
 url: https://raw.githubusercontent.com/api-evangelist/blacksky/refs/heads/main/apis.yml
+
 created: '2026-05-24'
+
 modified: '2026-05-24'
+
 specificationVersion: '0.23'
-apis: []
+
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
+
 common:
+  - type: AgenticAccess
+    url: agentic-access/blacksky-agentic-access.yml
+  - type: Spectral
+    url: rules/blacksky-rules.yml
+  - type: JSONLD
+    url: json-ld/blacksky-context.jsonld
+  - type: Vocabulary
+    url: vocabulary/blacksky-vocabulary.yml
+  - type: DataModel
+    url: data-model/blacksky-data-model.yml
+  - type: Authentication
+    url: authentication/blacksky-authentication.yml
+  - type: OAuthScopes
+    url: scopes/blacksky-scopes.yml
+  - type: ErrorCatalog
+    url: errors/blacksky-problem-types.yml
+  - type: Conformance
+    url: conformance/blacksky-conformance.yml
+  - type: GettingStarted
+    url: https://docs.sa.up42.com/getting-started/account-management
+  - type: Documentation
+    url: https://docs.sa.up42.com/
+  - type: APIReference
+    url: https://developer.up42.com/reference/overview
+  - type: WellKnown
+    url: well-known/blacksky-well-known.yml
+  - type: Hosts
+    url: hosts/blacksky-hosts.yml
+  - type: Vendors
+    url: vendors/blacksky-vendors.yml
   - type: DomainSecurity
     url: security/blacksky-domain-security.yml
   - type: Website
@@ -81,10 +128,6 @@ common:
     url: https://blacksky.com/technology/
   - type: Offerings
     url: https://blacksky.com/offerings/
-  - type: Product
-    url: https://blacksky.com/offerings/blacksky-on-demand/
-  - type: Product
-    url: https://blacksky.com/offerings/blacksky-assured/
   - type: Spectra
     url: https://blacksky.com/technology/
   - type: TaskingPortal
@@ -102,8 +145,6 @@ common:
   - type: Newsletter
     url: https://info.blacksky.com/subscribe
   - type: Partner
-    url: https://www.esri.com/en-us/arcgis/products/blacksky-imagery-tasking
-  - type: Partner
     url: https://docs.up42.com/data/blacksky
   - type: Twitter
     url: https://twitter.com/blackskyinc
@@ -112,7 +153,135 @@ common:
   - type: YouTube
     url: https://www.youtube.com/@BlackSkyInc
   - type: Blog
-    url: https://blacksky.com/news/
-maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+    url: https://blacksky.com/insights/
+  - type: Leadership
+    url: https://blacksky.com/company/leadership/
+  - type: PrivacyPolicy
+    url: https://blacksky.com/privacy-statement/
+  - type: TermsOfService
+    url: https://blacksky.com/blacksky-terms-of-use/
+  - type: Login
+    url: https://login.blacksky.com/
+
+apis:
+- aid: blacksky:spectra-api
+  name: BlackSky Spectra Tasking and Imagery API
+  description: >-
+    Access-controlled API behind BlackSky's Spectra platform for satellite tasking, imagery delivery and
+    analytics. The API host api.blacksky.com answers anonymous requests with 403 and the tasking portal
+    redirects to login.blacksky.com; no public documentation or contract is published.
+  humanURL: https://tasking.blacksky.com
+  baseURL: https://api.blacksky.com
+  tags:
+  - Satellite Imagery
+  - Tasking
+  properties:
+  - type: Login
+    url: https://login.blacksky.com/
+- aid: blacksky:blacksky-budgets-api
+  name: BlackSky Budgets API
+  description: The Budgets API from BlackSky — 4 operation(s) for budgets.
+  humanURL: https://tasking.blacksky.com
+  baseURL: https://api.blacksky.com
+  tags:
+  - Budgets
+  properties:
+  - type: OpenAPI
+    url: openapi/blacksky-budgets-api-openapi.yml
+- aid: blacksky:blacksky-catalog-api
+  name: BlackSky Catalog API
+  description: The Catalog API from BlackSky — 3 operation(s) for catalog.
+  humanURL: https://tasking.blacksky.com
+  baseURL: https://api.blacksky.com
+  tags:
+  - Catalog
+  properties:
+  - type: OpenAPI
+    url: openapi/blacksky-catalog-api-openapi.yml
+- aid: blacksky:blacksky-data-management-api
+  name: BlackSky Data management API
+  description: The Data management API from BlackSky — 8 operation(s) for data management.
+  humanURL: https://tasking.blacksky.com
+  baseURL: https://api.blacksky.com
+  tags:
+  - Data management
+  properties:
+  - type: OpenAPI
+    url: openapi/blacksky-data-management-api-openapi.yml
+- aid: blacksky:blacksky-eulas-api
+  name: BlackSky EULAs API
+  description: The EULAs API from BlackSky — 4 operation(s) for eulas.
+  humanURL: https://tasking.blacksky.com
+  baseURL: https://api.blacksky.com
+  tags:
+  - EULAs
+  properties:
+  - type: OpenAPI
+    url: openapi/blacksky-eulas-api-openapi.yml
+- aid: blacksky:blacksky-geometries-api
+  name: BlackSky Geometries API
+  description: The Geometries API from BlackSky — 2 operation(s) for geometries.
+  humanURL: https://tasking.blacksky.com
+  baseURL: https://api.blacksky.com
+  tags:
+  - Geometries
+  properties:
+  - type: OpenAPI
+    url: openapi/blacksky-geometries-api-openapi.yml
+- aid: blacksky:blacksky-glossary-api
+  name: BlackSky Glossary API
+  description: The Glossary API from BlackSky — 6 operation(s) for glossary.
+  humanURL: https://tasking.blacksky.com
+  baseURL: https://api.blacksky.com
+  tags:
+  - Glossary
+  properties:
+  - type: OpenAPI
+    url: openapi/blacksky-glossary-api-openapi.yml
+- aid: blacksky:blacksky-orders-api
+  name: BlackSky Orders API
+  description: The Orders API from BlackSky — 6 operation(s) for orders.
+  humanURL: https://tasking.blacksky.com
+  baseURL: https://api.blacksky.com
+  tags:
+  - Orders
+  properties:
+  - type: OpenAPI
+    url: openapi/blacksky-orders-api-openapi.yml
+- aid: blacksky:blacksky-processing-api
+  name: BlackSky Processing API
+  description: The Processing API from BlackSky — 7 operation(s) for processing.
+  humanURL: https://tasking.blacksky.com
+  baseURL: https://api.blacksky.com
+  tags:
+  - Processing
+  properties:
+  - type: OpenAPI
+    url: openapi/blacksky-processing-api-openapi.yml
+- aid: blacksky:blacksky-tasking-api
+  name: BlackSky Tasking API
+  description: The Tasking API from BlackSky — 8 operation(s) for tasking.
+  humanURL: https://tasking.blacksky.com
+  baseURL: https://api.blacksky.com
+  tags:
+  - Tasking
+  properties:
+  - type: OpenAPI
+    url: openapi/blacksky-tasking-api-openapi.yml
+x-enrichment:
+  date: '2026-10-20'
+  status: minimal
+  artifacts_added: 0
+  pass: local-v5
+x-coverage:
+  state: gated
+  reason: customer-only-docs
+  detail: The Spectra API host api.blacksky.com returns 403 to anonymous requests and tasking.blacksky.com 302s to login.blacksky.com; BlackSky publishes no developer docs or contract, and the only public spec found (developer.up42.com) is UP42's own reseller API, not BlackSky's.
+  evidence:
+    - url: https://api.blacksky.com/
+      status: 403
+    - url: https://tasking.blacksky.com/
+      status: 302
+    - url: https://blacksky.com/llms.txt
+      status: 404
+  checked: '2026-10-20'
