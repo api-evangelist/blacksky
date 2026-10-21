@@ -14,6 +14,15 @@ checked:
 - https://stacindex.org/api/catalogs
 - https://www.fcc.gov/sites/default/files/ssal.xlsx
 - https://aws.amazon.com/marketplace/search/results?FULFILLMENT_OPTION_TYPE=DATA_EXCHANGE
+- https://api.data.gov/
+- https://api.data.gov/docs/
+- https://github.com/GSA-TTS/identity-site
+- https://github.com/GSA/api.data.gov/blob/main/content/users.csv
+- https://login.gov/partners/
+- https://marketplace.fedramp.gov/
+- https://marketplace.fedramp.gov/products/
+- https://partners.login.gov/
+- https://www.gsaelibrary.gsa.gov/ElibMain/home.do
 summary: null
 marketplace_apps: []
 edges:
@@ -83,4 +92,33 @@ edges:
   publisher_verified:
   - Deployed on AWS
   - Standard Data Agreement
+- partner_name: GSA Multiple Award Schedule (MAS)
+  partner: null
+  partner_match: register
+  type: register
+  channel: standard-directory
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://www.gsaelibrary.gsa.gov/ElibMain/contractorInfo.do?contractNumber=47QTCA18D006R&executeQuery=YES
+  category: federal procurement contract vehicle
+  contract_reference:
+    register: GSA eLibrary, Multiple Award Schedule (MAS) IT SIN contractor listings
+    standard: GSA Multiple Award Schedule (IT Large Category)
+    spec_file: null
+    role: gsa-mas-contract-holder
+    registered_name: BLACKSKY GEOSPATIAL SOLUTIONS, LLC
+    register_id: 47QTCA18D006R
+    matched_domain: blacksky.com
+    matched_by: domain
+    domain_source: web-address
+    sins:
+    - 54151S (IT professional services)
+    contracts:
+    - 47QTCA18D006R
+    signal_note: 'participation only: a MAS award is a federal contract vehicle (GSA pre-negotiated terms and pricing),
+      not a conformance test. SINs and contract numbers are context, never counted'
+    detected_by: sweep-us-federal-api-programs.py
+    detected: '2026-10-21'
+  detected_by: sweep-us-federal-api-programs.py
+  first_seen: '2026-10-21'
 templates: []
