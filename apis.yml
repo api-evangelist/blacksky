@@ -90,6 +90,9 @@ maintainers:
     email: kin@apievangelist.com
 
 common:
+  - type: CapabilityMap
+    url: capabilities/blacksky-capability-edges.yml
+    name: BlackSky Business Capability Map
   - type: AgenticAccess
     url: agentic-access/blacksky-agentic-access.yml
   - type: Spectral
