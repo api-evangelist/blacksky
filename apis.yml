@@ -207,6 +207,8 @@ apis:
   humanURL: https://tasking.blacksky.com
   baseURL: https://api.blacksky.com
   tags:
+  - Data Management
+  tags_raw:
   - Data management
   properties:
   - type: OpenAPI
@@ -247,6 +249,8 @@ apis:
   humanURL: https://tasking.blacksky.com
   baseURL: https://api.blacksky.com
   tags:
+  - Order
+  tags_raw:
   - Orders
   properties:
   - type: OpenAPI
