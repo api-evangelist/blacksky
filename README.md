@@ -1,4 +1,4 @@
-# BlackSky (blacksky)
+# BlackSky
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,104 +64,123 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-BlackSky Technology (NYSE: BKSY) is a Herndon, Virginia headquartered real-time space-based intelligence company. BlackSky operates a high-revisit Earth observation satellite constellation and delivers AI-enhanced tactical ISR imagery and analytics to defense, intelligence, and global security customers through its cloud-based Spectra platform.
+BlackSky Technology (NYSE: BKSY) is a Herndon, Virginia headquartered real-time space-based intelligence company that operates a high-revisit Earth observation constellation and delivers AI-enhanced tactical ISR (intelligence, surveillance, and reconnaissance) imagery and analytics to defense, intelligence, and global security customers. BlackSky's flagship product is the Spectra platform — a cloud-based intelligence hub that provides on-demand satellite tasking, sub-90-minute imagery delivery, automated AI-driven object detection and change monitoring, archived imagery access, and a secure tasking and delivery API. The company operates Gen-2 satellites at 83 cm resolution and a newer Gen-3 constellation delivering 35 cm class very-high-resolution imagery with infrared sensors, inter-satellite links, and on-board AI processing, manufactured at BlackSky's facility in Tukwila, Washington. Commercial offerings include BlackSky ON-DEMAND (flexible global tasking) and BlackSky ASSURED (dedicated, contracted persistent monitoring capacity). BlackSky's Spectra tasking and imagery API is integrated into partner platforms including Esri ArcGIS, UP42, and the STAT (Satellite Tasking API) community spec, however the API is access-controlled for vetted defense, intelligence, and enterprise customers and is not exposed as a public self-service developer portal — there is no public Spectra developer documentation site, OpenAPI specification, or open SDKs at the time of this entry. The customer revenue model is subscription-based Spectra ON-DEMAND and ASSURED contracts, Mission Solutions custom engagements, and through marketplace partners.
 
-**URL:** [Visit APIs.json](https://raw.githubusercontent.com/api-evangelist/blacksky/refs/heads/main/apis.yml)
+**Areas:** Earth Observation · Satellite Imagery · Remote Sensing · Geospatial Intelligence · Space · ISR · Intelligence Surveillance Reconnaissance · Tasking · AI Analytics · Object Detection · Defense · Monitoring
 
-**Run:** [Capabilities Using Naftiko](https://github.com/naftiko/fleet?utm_source=api-evangelist&utm_medium=readme&utm_campaign=company-api-evangelist&utm_content=repo)
+## BlackSky on APIs.io
 
-## Tags
+Everything profiled for BlackSky is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/blacksky/](https://apis.io/providers/blacksky/)** — or go straight to one of the APIs or properties below.
 
-- Earth Observation, Satellite Imagery, Remote Sensing, Geospatial Intelligence, Space, ISR, Tasking, AI Analytics, Object Detection, Defense, Monitoring, Spectra, Gen-3, NYSE BKSY
+### APIs (10)
 
-## Timestamps
+- [BlackSky Spectra Tasking and Imagery API](https://apis.io/apis/blacksky/spectra-api/) — Access-controlled API behind BlackSky's Spectra platform for satellite tasking, imagery delivery and analytics. The API host api.blacksky.com answers…
+- [BlackSky Budgets API](https://apis.io/apis/blacksky/blacksky-budgets-api/) — The Budgets API from BlackSky — 4 operation(s) for budgets.
+- [BlackSky Catalog API](https://apis.io/apis/blacksky/blacksky-catalog-api/) — The Catalog API from BlackSky — 3 operation(s) for catalog.
+- [BlackSky Data management API](https://apis.io/apis/blacksky/blacksky-data-management-api/) — The Data management API from BlackSky — 8 operation(s) for data management.
+- [BlackSky EULAs API](https://apis.io/apis/blacksky/blacksky-eulas-api/) — The EULAs API from BlackSky — 4 operation(s) for eulas.
+- [BlackSky Geometries API](https://apis.io/apis/blacksky/blacksky-geometries-api/) — The Geometries API from BlackSky — 2 operation(s) for geometries.
+- [BlackSky Glossary API](https://apis.io/apis/blacksky/blacksky-glossary-api/) — The Glossary API from BlackSky — 6 operation(s) for glossary.
+- [BlackSky Orders API](https://apis.io/apis/blacksky/blacksky-orders-api/) — The Orders API from BlackSky — 6 operation(s) for orders.
+- [BlackSky Processing API](https://apis.io/apis/blacksky/blacksky-processing-api/) — The Processing API from BlackSky — 7 operation(s) for processing.
+- [BlackSky Tasking API](https://apis.io/apis/blacksky/blacksky-tasking-api/) — The Tasking API from BlackSky — 8 operation(s) for tasking.
 
-- **Created:** 2026-05-24
-- **Modified:** 2026-05-24
+### Published properties
 
-## Company Snapshot
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-| Field | Value |
-|---|---|
-| Headquarters | Herndon, Virginia |
-| Manufacturing | Tukwila, Washington |
-| Stock | NYSE: BKSY (publicly traded since September 2021) |
-| Constellation | Gen-2 (83 cm) and Gen-3 (35 cm class VHR) |
-| Platform | Spectra — tasking, imagery delivery, AI analytics |
-| Revisit | Hourly over select areas; up to 15 time-diverse images per location per day |
-| Delivery SLA | Under 90 minutes target for tasked imagery |
+#### Agentic access (1)
 
-## Offerings
+Which operations an agent can call, which act, and which need a human in the loop.
 
-### BlackSky Spectra
+- [Blacksky Agentic Access](https://apis.io/agentic-access/blacksky/blacksky-agentic-access/)
 
-Spectra is BlackSky's purpose-built cloud intelligence platform. It provides an interactive UI plus a secure tasking and delivery API for vetted customers. Capabilities include:
+#### JSON-LD (1)
 
-- On-demand and recurring satellite tasking with feasibility indicators
-- Sub-90-minute imagery delivery
-- AI-driven automated object detection (vessels, aircraft, vehicles)
-- Comparative / change analytics for continuous monitoring
-- Imagery archive access
-- Partner data integration as additional layers
+Linked-data contexts for the provider's vocabulary.
 
-### BlackSky ON-DEMAND
+- [Blacksky Context](https://apis.io/jsonld/blacksky/blacksky-context/)
 
-Flexible, global tasking subscription tier with hourly revisit over select areas, historical archive access, and AI-driven automated object detection. Designed for customers whose collection priorities shift over time.
+#### Governance rules (1)
 
-### BlackSky ASSURED
+Spectral rulesets for the provider's contracts.
 
-Contract-backed, dedicated tasking capacity for persistent monitoring over defined areas of interest. Guarantees uncontested capacity, time-diverse high-frequency monitoring, and low-latency delivery.
+- [BlackSky API Rules](https://apis.io/rules/blacksky/blacksky-rules/)
 
-### Mission Solutions
+#### Security (2)
 
-Custom capabilities for specific operational requirements where ON-DEMAND or ASSURED subscriptions do not fit — typically defense and intelligence integrations.
+Authentication, trust centre, and vulnerability disclosure.
 
-## Imagery Products
+- [Blacksky Authentication](https://apis.io/security/blacksky/blacksky-authentication/)
+- [Blacksky Domain Security](https://apis.io/security/blacksky/blacksky-domain-security/)
 
-- **Daytime Imagery** — repeat-cycle ground-truth collection
-- **Stereo Imagery** — two-frame or five-frame sets for 3D product generation
-- **Burst Imagery** — five frames in a single pass for motion analysis
-- **Nighttime Imagery** — after-dark activity monitoring
-- **Area 2x1 Imagery** — extended coverage for airports, ports, and other large facilities
+#### OAuth scopes (1)
 
-Delivered as 1 panchromatic + 3 multispectral (RGB) bands; acquired at 12-bit and delivered at 16-bit.
+The permissions the API asks for.
 
-## API Surface (Customer-Gated)
+- [Blacksky Scopes](https://apis.io/scopes/blacksky/blacksky-scopes/)
 
-BlackSky exposes a Spectra tasking and imagery delivery API, but it is access-controlled for vetted defense, intelligence, and enterprise customers and is not published as a public self-service developer portal. As of this entry there is no public Spectra developer documentation site, no public OpenAPI specification, and no official open-source SDK from BlackSky.
+## Where to find this API
 
-BlackSky's API is reachable today through three primary channels:
-
-- **Direct Spectra API** — provisioned to enterprise and government customers after contract; access via `tasking.blacksky.com`
-- **Esri ArcGIS integration** — on-demand BlackSky satellite tasking available to ArcGIS Online customers via the [ArcGIS BlackSky Imagery Tasking app](https://www.esri.com/en-us/arcgis/products/blacksky-imagery-tasking)
-- **UP42 marketplace** — BlackSky Gen-2 and Gen-3 tasking, Mono Catalog, and Stereo Catalog products are orderable through the [UP42 Tasking and Catalog APIs](https://docs.up42.com/data/blacksky)
-
-The community-maintained [STAT (Satellite Tasking API) FastAPI BlackSky backend](https://github.com/stapi-spec/stapi-fastapi-blacksky) demonstrates a third-party proxy pattern (`GET /products`, `POST /opportunities`) that wraps a `BLACKSKY_BACKEND_TOKEN`-authenticated upstream — useful as a reference for what the customer-facing API surface looks like, but not an official BlackSky-published specification.
-
-This repository therefore tracks BlackSky as a provider profile (company, offerings, partners, tags) without generating placeholder OpenAPI, Naftiko capabilities, JSON Schema, plans, rate limits, or FinOps artifacts. Those will be added if and when BlackSky publishes a public developer area.
-
-## Common Properties
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://blacksky.com)
-- [Technology](https://blacksky.com/technology/)
-- [Offerings](https://blacksky.com/offerings/)
-- [BlackSky ON-DEMAND](https://blacksky.com/offerings/blacksky-on-demand/)
-- [BlackSky ASSURED](https://blacksky.com/offerings/blacksky-assured/)
-- [Tasking Portal — tasking.blacksky.com](https://tasking.blacksky.com)
-- [Company](https://blacksky.com/company/)
-- [Newsroom](https://blacksky.com/news/)
-- [Investor Relations](https://ir.blacksky.com/)
-- [Careers](https://blacksky.com/company/careers/)
-- [Contact](https://blacksky.com/company/contact-us/)
-- [Newsletter](https://info.blacksky.com/subscribe)
-- [Partner — Esri ArcGIS](https://www.esri.com/en-us/arcgis/products/blacksky-imagery-tasking)
-- [Partner — UP42 BlackSky data](https://docs.up42.com/data/blacksky)
-- [Twitter / X](https://twitter.com/blackskyinc)
-- [LinkedIn](https://www.linkedin.com/company/blackskyinc)
-- [YouTube](https://www.youtube.com/@BlackSkyInc)
+- [Documentation](https://docs.sa.up42.com/)
+- [Getting started](https://docs.sa.up42.com/getting-started/account-management)
+- [API reference](https://developer.up42.com/reference/overview)
+- [Blog](https://blacksky.com/insights/)
+- [Terms of service](https://blacksky.com/blacksky-terms-of-use/)
+- [Privacy policy](https://blacksky.com/privacy-statement/)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
+**Kin Score 48.4** — developing · rubric 0.24.0 · scored 2026-10-20
 
-**Email:** kin@apievangelist.com
+| Facet | Score |
+|---|---|
+| Discoverability | 69.6 |
+| Contract quality | 54.4 |
+| Contract governance | 79.1 |
+| Operational transparency | 0.0 |
+| Developer ergonomics | 42.9 |
+| Access clarity | 34.2 |
+
+**Agent readiness 43.4** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | unknown |
+| Reversibility Documented | — |
+| MCP Server | documented (partial credit) |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | verified |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | yes |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | documented (partial credit) |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 34.3** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/blacksky/](https://apis.io/providers/blacksky/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for BlackSky: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/blacksky/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
